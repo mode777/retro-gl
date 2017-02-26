@@ -1,0 +1,16 @@
+{
+  "name": "8bit-gl",
+  "version": "1.0.0",
+  "description": "Paletted Renderer for webGl",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "start http-server . && start http://localhost:8080"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://alexklingenbeck.de:3000/mode7/8bit-gl.git"
+  },
+  "author": "",
+  "license": "MIT"
+}
