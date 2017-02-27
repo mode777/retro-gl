@@ -2,6 +2,8 @@
   "name": "8bit-gl",
   "dependencies": {},
   "globalDependencies": {
-    "gl-matrix": "registry:dt/gl-matrix#2.2.2+20161114212859"
+    "es2015-promise": "registry:env/es2015-promise#1.0.0+20160526151700",
+    "gl-matrix": "registry:dt/gl-matrix#2.2.2+20161114212859",
+    "jquery": "registry:dt/jquery#1.10.0+20170123093700"
   }
 }
