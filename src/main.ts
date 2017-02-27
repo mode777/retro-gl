@@ -1,5 +1,6 @@
 let gl: WebGLRenderingContext;
-let paletteId = 5;
+let paletteId = 1;
+let t = 0;
 
 async function main(){
     let canvas = <HTMLCanvasElement>document.getElementById("canvas");
@@ -9,14 +10,14 @@ async function main(){
         alpha: false
     });
 
-    twgl.resizeCanvasToDisplaySize(gl.canvas);
+    //twgl.resizeCanvasToDisplaySize(gl.canvas);
     
     let vs = await $.get("/res/shaders/8bit_vs.glsl");
     let fs = await $.get("/res/shaders/8bit_fs.glsl");
     let programInfo = twgl.createProgramInfo(gl, [vs, fs]);
 
     let quad = createQuad();
-    let texture = createAlphaTexture("/res/textures/tileset.png");    
+    let texture = createAlphaTexture("/res/textures/out2.png");    
     let palette = createTexture("/res/textures/out_pal2.png");    
 
     let projMat = mat4.create();
@@ -29,7 +30,8 @@ async function main(){
             texture: texture,
             palette: palette,
             palette_id: paletteId,
-            proj: projMat
+            proj: projMat,
+            time: t+=0.001
         };
 
         gl.useProgram(programInfo.program);
@@ -46,11 +48,11 @@ function createQuad(){
     let arrays = {
         position: [
             0, 0, 0, 
-            256, 0, 0, 
-            0, 256, 0, 
-            0, 256, 0, 
-            256, 0, 0, 
-            256, 256, 0
+            1024, 0, 0, 
+            0, 1024, 0, 
+            0, 1024, 0, 
+            1024, 0, 0, 
+            1024, 1024, 0
         ],
         texcoord: [
             0,0,

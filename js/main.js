@@ -34,7 +34,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 var gl;
-var paletteId = 5;
+var paletteId = 1;
+var t = 0;
 function main() {
     return __awaiter(this, void 0, void 0, function () {
         function render(time) {
@@ -43,7 +44,8 @@ function main() {
                 texture: texture,
                 palette: palette,
                 palette_id: paletteId,
-                proj: projMat
+                proj: projMat,
+                time: t += 0.001
             };
             gl.useProgram(programInfo.program);
             twgl.setBuffersAndAttributes(gl, programInfo, quad);
@@ -60,7 +62,6 @@ function main() {
                         premultipliedAlpha: false,
                         alpha: false
                     });
-                    twgl.resizeCanvasToDisplaySize(gl.canvas);
                     return [4 /*yield*/, $.get("/res/shaders/8bit_vs.glsl")];
                 case 1:
                     vs = _a.sent();
@@ -69,7 +70,7 @@ function main() {
                     fs = _a.sent();
                     programInfo = twgl.createProgramInfo(gl, [vs, fs]);
                     quad = createQuad();
-                    texture = createAlphaTexture("/res/textures/tileset.png");
+                    texture = createAlphaTexture("/res/textures/out2.png");
                     palette = createTexture("/res/textures/out_pal2.png");
                     projMat = mat4.create();
                     mat4.ortho(projMat, 0, gl.canvas.width, gl.canvas.height, 0, 1, -1);
@@ -83,11 +84,11 @@ function createQuad() {
     var arrays = {
         position: [
             0, 0, 0,
-            256, 0, 0,
-            0, 256, 0,
-            0, 256, 0,
-            256, 0, 0,
-            256, 256, 0
+            1024, 0, 0,
+            0, 1024, 0,
+            0, 1024, 0,
+            1024, 0, 0,
+            1024, 1024, 0
         ],
         texcoord: [
             0, 0,
