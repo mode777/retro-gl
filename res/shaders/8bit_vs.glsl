@@ -6,8 +6,10 @@ uniform float time;
 
 varying vec2 v_uv;
 
+const float tweak = 0.996;
+
 void main() {
-    v_uv = texcoord;
+    v_uv = texcoord * tweak;
     vec4 posNew = position-time;
     vec4 res = proj * (vec4(posNew.xy, 0.0, 1.0));
     //res.x = res.x + time;

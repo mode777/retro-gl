@@ -112,6 +112,8 @@ define(["require", "exports"], function (require, exports) {
             this._indices = idx;
             this._geometry = geo;
         };
+        TileLayer.prototype._setGeometry = function (id, x1, y1, x2, y2) {
+        };
         return TileLayer;
     }());
     exports.TileLayer = TileLayer;

@@ -137,9 +137,14 @@ export class TileLayer{
 
                 vertex += 4;
             }
-        }        
+        }
+
 
         this._indices = idx;
         this._geometry = geo;
     }
+
+    protected _setGeometry(id: number, x1: number, y1: number, x2: number, y2: number){
+        
+    }        
 }
