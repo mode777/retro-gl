@@ -88,7 +88,7 @@ declare namespace twgl {
         numElements: number;
         elementType?: number;
         indices: WebGLBuffer;
-        attribs: {[key: string]: string | AttribInfo};
+        attribs: {[key: string]: AttribInfo};
     }
 
     export type CubemapReadyCallback = (err: any,tex: WebGLTexture, imgs: HTMLImageElement[]) => void;

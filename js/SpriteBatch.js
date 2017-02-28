@@ -7,7 +7,8 @@ define(["require", "exports"], function (require, exports) {
     var UV_TILE = 16;
     var UV_NORM = 256;
     var SpriteBatch = (function () {
-        function SpriteBatch(_size) {
+        function SpriteBatch(_gl, _size) {
+            this._gl = _gl;
             this._size = _size;
             this._geometry = new Uint16Array(_size * VERTICES_QUAD * COMP_POS);
             this._texcoord = new Uint8Array(_size * VERTICES_QUAD * COMP_UV);
@@ -26,6 +27,17 @@ define(["require", "exports"], function (require, exports) {
             enumerable: true,
             configurable: true
         });
+        Object.defineProperty(SpriteBatch.prototype, "bufferInfo", {
+            get: function () {
+                return this._bufferInfo;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        SpriteBatch.prototype.createBuffers = function () {
+            this._bufferInfo = twgl.createBufferInfoFromArrays(this._gl, this._arrays);
+            return this;
+        };
         SpriteBatch.prototype.setPosition = function (id, x1, y1, x2, y2, z) {
             if (z === void 0) { z = 0; }
             var geo = this._geometry;
@@ -54,6 +66,23 @@ define(["require", "exports"], function (require, exports) {
             tileset[offset + 5] = y2;
             tileset[offset + 6] = x1;
             tileset[offset + 7] = y2;
+        };
+        SpriteBatch.prototype.setQuad = function (id, x, y, quad, z) {
+            if (z === void 0) { z = 0; }
+            this.setPosition(id, x, y, x + quad.width, y + quad.height, z);
+            this.setTexture(id, quad.x, quad.y, quad.x + quad.width, quad.y + quad.height);
+        };
+        SpriteBatch.prototype.render = function (shader) {
+            twgl.setBuffersAndAttributes(this._gl, shader, this._bufferInfo);
+            twgl.drawBufferInfo(this._gl, this._bufferInfo);
+        };
+        SpriteBatch.prototype.destroy = function () {
+            this._gl.deleteBuffer(this._bufferInfo.attribs["position"].buffer);
+            this._gl.deleteBuffer(this._bufferInfo.attribs["texcoord"].buffer);
+            this._gl.deleteBuffer(this._bufferInfo.attribs["indices"].buffer);
+            this._indices = null;
+            this._geometry = null;
+            this._texcoord = null;
         };
         SpriteBatch.prototype._createIndices = function () {
             var indices = this._indices;

@@ -40,7 +40,6 @@ define(["require", "exports", "./TileLayer", "./SpriteBatch"], function (require
     var t = 0;
     var tl;
     var layerBuffer;
-    var batch;
     function main() {
         return __awaiter(this, void 0, void 0, function () {
             function render(time) {
@@ -48,15 +47,13 @@ define(["require", "exports", "./TileLayer", "./SpriteBatch"], function (require
                 twgl.setUniforms(programInfo, {
                     palette: palette,
                     palette_id: paletteId,
-                    time: 128 + Math.floor(Math.sin(t) * 256)
                 });
-                twgl.setBuffersAndAttributes(gl, programInfo, layerBuffer);
-                twgl.drawBufferInfo(gl, layerBuffer);
-                twgl.setBuffersAndAttributes(gl, programInfo, batch);
-                twgl.drawBufferInfo(gl, batch);
+                //twgl.setBuffersAndAttributes(gl, programInfo, layerBuffer);
+                //twgl.drawBufferInfo(gl, layerBuffer);
+                batch.render(programInfo);
                 requestAnimationFrame(render);
             }
-            var canvas, vs, fs, programInfo, b, texture, palette, projMat;
+            var canvas, vs, fs, programInfo, batch, quad, texture, palette, projMat;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -76,16 +73,19 @@ define(["require", "exports", "./TileLayer", "./SpriteBatch"], function (require
                         fs = _a.sent();
                         programInfo = twgl.createProgramInfo(gl, [vs, fs]);
                         tl = createTileLayer();
-                        b = new SpriteBatch_1.SpriteBatch(2);
-                        b.setPosition(0, 16, 32, 32, 48);
-                        b.setTexture(0, 16, 0, 32, 16);
-                        b.setPosition(1, 0, 0, 200, 150);
-                        b.setTexture(1, 32, 0, 48, 16);
-                        //b.setTexture(1, 240-16,240-16,255-16,255-16);
-                        console.log(b);
+                        batch = new SpriteBatch_1.SpriteBatch(gl, 2);
+                        quad = {
+                            x: 16,
+                            y: 0,
+                            width: 16,
+                            height: 16
+                        };
+                        batch.setQuad(0, 50, 50, quad);
+                        batch.setQuad(1, 100, 50, quad);
+                        console.log(batch);
                         console.log(tl);
                         layerBuffer = twgl.createBufferInfoFromArrays(gl, tl.arrays);
-                        batch = twgl.createBufferInfoFromArrays(gl, b.arrays);
+                        batch.createBuffers();
                         texture = createAlphaTexture("/res/textures/tileset.png");
                         palette = createTexture("/res/textures/out_pal2.png");
                         projMat = mat4.create();

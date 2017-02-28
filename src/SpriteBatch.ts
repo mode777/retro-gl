@@ -1,3 +1,4 @@
+import { Rectangle } from './interfaces';
 const VERTICES_QUAD = 4;
 const INDICES_QUAD = 6;
 const COMP_POS = 3;
@@ -11,7 +12,9 @@ export class SpriteBatch {
     private _arrays: twgl.Arrays;
     private _indices: Uint16Array;
 
-    constructor(private _size: number){
+    private _bufferInfo: twgl.BufferInfo;
+
+    constructor(private _gl: WebGLRenderingContext, private _size: number){
         this._geometry = new Uint16Array(_size * VERTICES_QUAD * COMP_POS);
         this._texcoord = new Uint8Array(_size * VERTICES_QUAD * COMP_UV);
         let indices = this._indices = new Uint16Array(_size * INDICES_QUAD);
@@ -28,6 +31,15 @@ export class SpriteBatch {
     get arrays(){
         return this._arrays;
     }   
+
+    get bufferInfo(){
+        return this._bufferInfo;
+    }
+
+    createBuffers(){
+        this._bufferInfo = twgl.createBufferInfoFromArrays(this._gl, this._arrays);
+        return this;
+    }
 
     setPosition(id: number, x1: number, y1: number, x2: number, y2: number, z: number = 0){
         let geo = this._geometry;
@@ -65,6 +77,26 @@ export class SpriteBatch {
 
         tileset[offset+6] = x1;
         tileset[offset+7] = y2;  
+    }
+
+    setQuad(id: number, x: number, y: number, quad: Rectangle, z = 0){
+        this.setPosition(id, x, y, x+quad.width,y+quad.height, z);
+        this.setTexture(id, quad.x, quad.y, quad.x+quad.width, quad.y+quad.height);
+    }
+
+    render(shader: twgl.ProgramInfo){
+        twgl.setBuffersAndAttributes(this._gl, shader, this._bufferInfo);
+        twgl.drawBufferInfo(this._gl, this._bufferInfo);
+    }
+
+    destroy(){
+        this._gl.deleteBuffer(this._bufferInfo.attribs["position"].buffer);
+        this._gl.deleteBuffer(this._bufferInfo.attribs["texcoord"].buffer);
+        this._gl.deleteBuffer(this._bufferInfo.attribs["indices"].buffer);
+
+        this._indices = null;
+        this._geometry = null;
+        this._texcoord = null;
     }
 
     private _createIndices(){

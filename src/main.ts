@@ -6,7 +6,6 @@ let paletteId = 5;
 let t = 0;
 let tl: TileLayer;
 let layerBuffer: twgl.BufferInfo;
-let batch: twgl.BufferInfo;
 
 async function main(){
     let canvas = <HTMLCanvasElement>document.getElementById("canvas");
@@ -25,19 +24,21 @@ async function main(){
     let programInfo = twgl.createProgramInfo(gl, [vs, fs]);
 
     tl = createTileLayer();
-    let b = new SpriteBatch(2);
-    b.setPosition(0,16,32,32,48);
-    b.setTexture(0, 16,0,32,16);
+    let batch = new SpriteBatch(gl, 2);
+    let quad = {
+        x: 16,
+        y: 0,
+        width: 16,
+        height: 16
+    };
+    batch.setQuad(0, 50, 50, quad);
+    batch.setQuad(1, 100, 50, quad);
 
-    b.setPosition(1,0,0,200,150);
-    b.setTexture(1, 32,0,48,16);
-    //b.setTexture(1, 240-16,240-16,255-16,255-16);
-
-    console.log(b);
+    console.log(batch);
     console.log(tl);
 
     layerBuffer = twgl.createBufferInfoFromArrays(gl, tl.arrays);
-    batch = twgl.createBufferInfoFromArrays(gl, b.arrays);
+    batch.createBuffers();
 
     let texture = createAlphaTexture("/res/textures/tileset.png");    
     let palette = createTexture("/res/textures/out_pal2.png");    
@@ -60,14 +61,13 @@ async function main(){
         twgl.setUniforms(programInfo, {
             palette: palette,
             palette_id: paletteId,
-            time: 128 + Math.floor(Math.sin(t)*256)
+            //time: 128 + Math.floor(Math.sin(t)*256)
         });
         
-        twgl.setBuffersAndAttributes(gl, programInfo, layerBuffer);
-        twgl.drawBufferInfo(gl, layerBuffer);
+        //twgl.setBuffersAndAttributes(gl, programInfo, layerBuffer);
+        //twgl.drawBufferInfo(gl, layerBuffer);
         
-        twgl.setBuffersAndAttributes(gl, programInfo, batch);
-        twgl.drawBufferInfo(gl, batch);
+        batch.render(programInfo);
 
         requestAnimationFrame(render);
     }
