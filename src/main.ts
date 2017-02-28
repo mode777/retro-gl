@@ -11,7 +11,8 @@ async function main(){
 
     gl = twgl.getContext(canvas, {
         premultipliedAlpha: false,
-        alpha: false
+        alpha: false,
+        antialias: false
     });
 
     //twgl.resizeCanvasToDisplaySize(gl.canvas);
@@ -42,7 +43,7 @@ async function main(){
 
 
     function render(time) {
-        t+=0.01;
+        t+=0.001;
         twgl.setBuffersAndAttributes(gl, programInfo, layerBuffer);
         twgl.setUniforms(programInfo, {
             palette: palette,
@@ -93,4 +94,4 @@ setInterval(()=> {
     }
     offset++;
     twgl.setAttribInfoBufferFromArray(gl, layerBuffer.attribs["texcoord"], tl.arrays["texcoord"]);
-}, 100);
+}, 50);

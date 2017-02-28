@@ -2,20 +2,22 @@ const TILES_X = 32;
 const TILES_Y = 32;
 const TILESIZE_X = 16;
 const TILESIZE_Y = 16;
-const VERTICES_TILE = 6;
+const VERTICES_TILE = 4;
+const INDICES_TILE = 6;
 const COMP_POS = 3;
 const COMP_UV = 2;
-const UV_TILE = 0.0625;
-const UV_NORM = 1;
+const UV_TILE = 16;
+const UV_NORM = 256;
 const TILESET_X = 16;
 const TILESET_Y = 16;
 
 export class TileLayer{
     
-    private _tileset: Float32Array;
-    private _geometry: Float32Array;
-    private _texcoord: Float32Array;
+    private _tileset: Uint8Array;
+    private _geometry: Uint16Array;
+    private _texcoord: Uint8Array;
     private _arrays: twgl.Arrays;
+    private _indices: Uint16Array;
 
     constructor(private _gl: WebGLRenderingContext){
 
@@ -24,11 +26,12 @@ export class TileLayer{
     create(tids?: number[]){
         this._createTileset();
         this._createGeometry();
-        this._texcoord = new Float32Array(TILES_X * TILES_Y * VERTICES_TILE * COMP_UV);
+        this._texcoord = new Uint8Array(TILES_X * TILES_Y * VERTICES_TILE * COMP_UV);
 
         this._arrays = {
             position: this._geometry,
-            texcoord: this._texcoord
+            texcoord: this._texcoord,
+            indices: this._indices
         }
         
         if(tids)
@@ -72,7 +75,7 @@ export class TileLayer{
 
     private _createTileset(){
         let ctr = 0;
-        let tileset = new Float32Array(TILESET_X * TILESET_Y * VERTICES_TILE * COMP_UV);
+        let tileset = new Uint8Array(TILESET_X * TILESET_Y * VERTICES_TILE * COMP_UV);
 
         for(let y = 0; y < UV_NORM; y += UV_TILE){
             for(let x = 0; x < UV_NORM; x += UV_TILE){
@@ -82,17 +85,11 @@ export class TileLayer{
                 tileset[ctr++] = x + UV_TILE;
                 tileset[ctr++] = y;
 
-                tileset[ctr++] = x;
-                tileset[ctr++] = y + UV_TILE;
-                
-                tileset[ctr++] = x;
-                tileset[ctr++] = y + UV_TILE;
-                
-                tileset[ctr++] = x + UV_TILE;
-                tileset[ctr++] = y;
-                
                 tileset[ctr++] = x + UV_TILE;
                 tileset[ctr++] = y + UV_TILE;
+
+                tileset[ctr++] = x;
+                tileset[ctr++] = y + UV_TILE;                
             }
         }
 
@@ -101,7 +98,10 @@ export class TileLayer{
 
     private _createGeometry(){
         let ctr = 0;
+        let idxCtr = 0;
+        let vertex = 0;
         let geo = new Uint16Array(TILES_X * TILES_Y * VERTICES_TILE * COMP_POS);
+        let idx = new Uint16Array(TILES_X * TILES_Y * INDICES_TILE);
 
         for(let y = 0; y < TILES_Y * TILESIZE_Y; y += TILESIZE_Y){
             for(let x = 0; x < TILES_X * TILESIZE_X; x += TILESIZE_X){
@@ -113,24 +113,33 @@ export class TileLayer{
                 geo[ctr++] = y; 
                 geo[ctr++] = 0;
 
+                geo[ctr++] = x + TILESIZE_X; 
+                geo[ctr++] = y + TILESIZE_Y; 
+                geo[ctr++] = 0;
+
                 geo[ctr++] = x; 
                 geo[ctr++] = y + TILESIZE_Y; 
                 geo[ctr++] = 0;
 
-                geo[ctr++] = x; 
-                geo[ctr++] = y + TILESIZE_Y; 
-                geo[ctr++] = 0;
+                /*
+                *1---*2
+                |  /  |
+                *4---*3
+                 */
 
-                geo[ctr++] = x + TILESIZE_X; 
-                geo[ctr++] = y; 
-                geo[ctr++] = 0;
+                idx[idxCtr++] = vertex;     // 1
+                idx[idxCtr++] = vertex + 1; // 2
+                idx[idxCtr++] = vertex + 3; // 4
 
-                geo[ctr++] = x + TILESIZE_X; 
-                geo[ctr++] = y + TILESIZE_Y; 
-                geo[ctr++] = 0
+                idx[idxCtr++] = vertex + 3; // 4
+                idx[idxCtr++] = vertex + 1; // 2
+                idx[idxCtr++] = vertex + 2; // 3
+
+                vertex += 4;
             }
         }        
 
+        this._indices = idx;
         this._geometry = geo;
     }
 }

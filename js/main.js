@@ -43,7 +43,7 @@ define(["require", "exports", "./TileLayer"], function (require, exports, TileLa
     function main() {
         return __awaiter(this, void 0, void 0, function () {
             function render(time) {
-                t += 0.01;
+                t += 0.001;
                 twgl.setBuffersAndAttributes(gl, programInfo, layerBuffer);
                 twgl.setUniforms(programInfo, {
                     palette: palette,
@@ -60,7 +60,8 @@ define(["require", "exports", "./TileLayer"], function (require, exports, TileLa
                         canvas = document.getElementById("canvas");
                         gl = twgl.getContext(canvas, {
                             premultipliedAlpha: false,
-                            alpha: false
+                            alpha: false,
+                            antialias: false
                         });
                         //twgl.resizeCanvasToDisplaySize(gl.canvas);
                         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
@@ -123,6 +124,6 @@ define(["require", "exports", "./TileLayer"], function (require, exports, TileLa
         }
         offset++;
         twgl.setAttribInfoBufferFromArray(gl, layerBuffer.attribs["texcoord"], tl.arrays["texcoord"]);
-    }, 100);
+    }, 50);
 });
 //# sourceMappingURL=main.js.map

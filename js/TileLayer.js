@@ -4,11 +4,12 @@ define(["require", "exports"], function (require, exports) {
     var TILES_Y = 32;
     var TILESIZE_X = 16;
     var TILESIZE_Y = 16;
-    var VERTICES_TILE = 6;
+    var VERTICES_TILE = 4;
+    var INDICES_TILE = 6;
     var COMP_POS = 3;
     var COMP_UV = 2;
-    var UV_TILE = 0.0625;
-    var UV_NORM = 1;
+    var UV_TILE = 16;
+    var UV_NORM = 256;
     var TILESET_X = 16;
     var TILESET_Y = 16;
     var TileLayer = (function () {
@@ -18,10 +19,11 @@ define(["require", "exports"], function (require, exports) {
         TileLayer.prototype.create = function (tids) {
             this._createTileset();
             this._createGeometry();
-            this._texcoord = new Float32Array(TILES_X * TILES_Y * VERTICES_TILE * COMP_UV);
+            this._texcoord = new Uint8Array(TILES_X * TILES_Y * VERTICES_TILE * COMP_UV);
             this._arrays = {
                 position: this._geometry,
-                texcoord: this._texcoord
+                texcoord: this._texcoord,
+                indices: this._indices
             };
             if (tids)
                 this.setTiles(tids);
@@ -58,20 +60,16 @@ define(["require", "exports"], function (require, exports) {
         };
         TileLayer.prototype._createTileset = function () {
             var ctr = 0;
-            var tileset = new Float32Array(TILESET_X * TILESET_Y * VERTICES_TILE * COMP_UV);
+            var tileset = new Uint8Array(TILESET_X * TILESET_Y * VERTICES_TILE * COMP_UV);
             for (var y = 0; y < UV_NORM; y += UV_TILE) {
                 for (var x = 0; x < UV_NORM; x += UV_TILE) {
                     tileset[ctr++] = x;
                     tileset[ctr++] = y;
                     tileset[ctr++] = x + UV_TILE;
                     tileset[ctr++] = y;
-                    tileset[ctr++] = x;
+                    tileset[ctr++] = x + UV_TILE;
                     tileset[ctr++] = y + UV_TILE;
                     tileset[ctr++] = x;
-                    tileset[ctr++] = y + UV_TILE;
-                    tileset[ctr++] = x + UV_TILE;
-                    tileset[ctr++] = y;
-                    tileset[ctr++] = x + UV_TILE;
                     tileset[ctr++] = y + UV_TILE;
                 }
             }
@@ -79,7 +77,10 @@ define(["require", "exports"], function (require, exports) {
         };
         TileLayer.prototype._createGeometry = function () {
             var ctr = 0;
+            var idxCtr = 0;
+            var vertex = 0;
             var geo = new Uint16Array(TILES_X * TILES_Y * VERTICES_TILE * COMP_POS);
+            var idx = new Uint16Array(TILES_X * TILES_Y * INDICES_TILE);
             for (var y = 0; y < TILES_Y * TILESIZE_Y; y += TILESIZE_Y) {
                 for (var x = 0; x < TILES_X * TILESIZE_X; x += TILESIZE_X) {
                     geo[ctr++] = x;
@@ -88,20 +89,27 @@ define(["require", "exports"], function (require, exports) {
                     geo[ctr++] = x + TILESIZE_X;
                     geo[ctr++] = y;
                     geo[ctr++] = 0;
-                    geo[ctr++] = x;
-                    geo[ctr++] = y + TILESIZE_Y;
-                    geo[ctr++] = 0;
-                    geo[ctr++] = x;
-                    geo[ctr++] = y + TILESIZE_Y;
-                    geo[ctr++] = 0;
-                    geo[ctr++] = x + TILESIZE_X;
-                    geo[ctr++] = y;
-                    geo[ctr++] = 0;
                     geo[ctr++] = x + TILESIZE_X;
                     geo[ctr++] = y + TILESIZE_Y;
                     geo[ctr++] = 0;
+                    geo[ctr++] = x;
+                    geo[ctr++] = y + TILESIZE_Y;
+                    geo[ctr++] = 0;
+                    /*
+                    *1---*2
+                    |  /  |
+                    *4---*3
+                     */
+                    idx[idxCtr++] = vertex; // 1
+                    idx[idxCtr++] = vertex + 1; // 2
+                    idx[idxCtr++] = vertex + 3; // 4
+                    idx[idxCtr++] = vertex + 3; // 4
+                    idx[idxCtr++] = vertex + 1; // 2
+                    idx[idxCtr++] = vertex + 2; // 3
+                    vertex += 4;
                 }
             }
+            this._indices = idx;
             this._geometry = geo;
         };
         return TileLayer;
