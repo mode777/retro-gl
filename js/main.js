@@ -33,89 +33,96 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var gl;
-var paletteId = 1;
-var t = 0;
-function main() {
-    return __awaiter(this, void 0, void 0, function () {
-        function render(time) {
-            gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-            var uniforms = {
-                texture: texture,
-                palette: palette,
-                palette_id: paletteId,
-                proj: projMat,
-                time: t += 0.001
-            };
-            gl.useProgram(programInfo.program);
-            twgl.setBuffersAndAttributes(gl, programInfo, quad);
-            twgl.setUniforms(programInfo, uniforms);
-            twgl.drawBufferInfo(gl, quad);
-            requestAnimationFrame(render);
-        }
-        var canvas, vs, fs, programInfo, quad, texture, palette, projMat;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    canvas = document.getElementById("canvas");
-                    gl = twgl.getContext(canvas, {
-                        premultipliedAlpha: false,
-                        alpha: false
-                    });
-                    return [4 /*yield*/, $.get("/res/shaders/8bit_vs.glsl")];
-                case 1:
-                    vs = _a.sent();
-                    return [4 /*yield*/, $.get("/res/shaders/8bit_fs.glsl")];
-                case 2:
-                    fs = _a.sent();
-                    programInfo = twgl.createProgramInfo(gl, [vs, fs]);
-                    quad = createQuad();
-                    texture = createAlphaTexture("/res/textures/out2.png");
-                    palette = createTexture("/res/textures/out_pal2.png");
-                    projMat = mat4.create();
-                    mat4.ortho(projMat, 0, gl.canvas.width, gl.canvas.height, 0, 1, -1);
-                    requestAnimationFrame(render);
-                    return [2 /*return*/];
+define(["require", "exports", "./TileLayer"], function (require, exports, TileLayer_1) {
+    "use strict";
+    var gl;
+    var paletteId = 5;
+    var t = 0;
+    var tl;
+    var layerBuffer;
+    function main() {
+        return __awaiter(this, void 0, void 0, function () {
+            function render(time) {
+                t += 0.01;
+                twgl.setBuffersAndAttributes(gl, programInfo, layerBuffer);
+                twgl.setUniforms(programInfo, {
+                    palette: palette,
+                    palette_id: paletteId,
+                    time: 128 + Math.floor(Math.sin(t) * 256)
+                });
+                twgl.drawBufferInfo(gl, layerBuffer);
+                requestAnimationFrame(render);
             }
+            var canvas, vs, fs, programInfo, texture, palette, projMat;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        canvas = document.getElementById("canvas");
+                        gl = twgl.getContext(canvas, {
+                            premultipliedAlpha: false,
+                            alpha: false
+                        });
+                        //twgl.resizeCanvasToDisplaySize(gl.canvas);
+                        gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+                        return [4 /*yield*/, $.get("/res/shaders/8bit_vs.glsl")];
+                    case 1:
+                        vs = _a.sent();
+                        return [4 /*yield*/, $.get("/res/shaders/8bit_fs.glsl")];
+                    case 2:
+                        fs = _a.sent();
+                        programInfo = twgl.createProgramInfo(gl, [vs, fs]);
+                        tl = creatTileLayer();
+                        console.log(tl);
+                        layerBuffer = twgl.createBufferInfoFromArrays(gl, tl.arrays);
+                        texture = createAlphaTexture("/res/textures/tileset.png");
+                        palette = createTexture("/res/textures/out_pal2.png");
+                        projMat = mat4.create();
+                        mat4.ortho(projMat, 0, gl.canvas.width, gl.canvas.height, 0, 1, -1);
+                        gl.useProgram(programInfo.program);
+                        twgl.setUniforms(programInfo, {
+                            texture: texture,
+                            palette: palette,
+                            palette_id: paletteId,
+                            proj: projMat,
+                            time: t
+                        });
+                        requestAnimationFrame(render);
+                        return [2 /*return*/];
+                }
+            });
         });
-    });
-}
-function createQuad() {
-    var arrays = {
-        position: [
-            0, 0, 0,
-            1024, 0, 0,
-            0, 1024, 0,
-            0, 1024, 0,
-            1024, 0, 0,
-            1024, 1024, 0
-        ],
-        texcoord: [
-            0, 0,
-            1, 0,
-            0, 1,
-            0, 1,
-            1, 0,
-            1, 1
-        ]
-    };
-    return twgl.createBufferInfoFromArrays(gl, arrays);
-}
-function createTexture(path) {
-    return twgl.createTexture(gl, {
-        src: path,
-        min: gl.NEAREST,
-        mag: gl.NEAREST
-    });
-}
-function createAlphaTexture(path) {
-    return twgl.createTexture(gl, {
-        src: path,
-        min: gl.NEAREST,
-        mag: gl.NEAREST,
-        format: gl.LUMINANCE,
-        internalFormat: gl.LUMINANCE
-    });
-}
-main();
+    }
+    function createTexture(path) {
+        return twgl.createTexture(gl, {
+            src: path,
+            min: gl.NEAREST,
+            mag: gl.NEAREST
+        });
+    }
+    function createAlphaTexture(path) {
+        return twgl.createTexture(gl, {
+            src: path,
+            min: gl.NEAREST,
+            mag: gl.NEAREST,
+            format: gl.LUMINANCE,
+            internalFormat: gl.LUMINANCE
+        });
+    }
+    function creatTileLayer() {
+        var tids = [];
+        for (var i = 0; i < 32 * 32; i++) {
+            tids.push(i % 7);
+        }
+        return new TileLayer_1.TileLayer(gl).create(tids);
+    }
+    main();
+    var offset = 0;
+    setInterval(function () {
+        for (var i = 0; i < 32 * 32; i++) {
+            tl.setTileSeq((i + offset) % 7, i);
+        }
+        offset++;
+        twgl.setAttribInfoBufferFromArray(gl, layerBuffer.attribs["texcoord"], tl.arrays["texcoord"]);
+    }, 100);
+});
 //# sourceMappingURL=main.js.map

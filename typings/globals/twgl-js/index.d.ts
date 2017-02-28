@@ -35,7 +35,7 @@ declare namespace twgl {
 
     export function resizeTexture(gl: WebGLRenderingContext, tex: WebGLTexture, options: TextureOptions, width?: number, height?: number);
 
-    export function setAttribInfoBufferFromArray(gl: WebGLRenderingContext, attribInfo: AttribInfo)
+    export function setAttribInfoBufferFromArray(gl: WebGLRenderingContext, attribInfo: AttribInfo, array: ArraySpec, offset?: number)
     
     export function setBlockUniforms(uniformBlockInfo: UniformBlockInfo, values: {[key: string]: number[] | ArrayBuffer | number});
 
@@ -53,7 +53,7 @@ declare namespace twgl {
         [key: string]: number[] | ArrayBuffer 
     }
 
-    export type ArrySpec = number[] |ArrayBuffer | FullArraySpec;
+    export type ArraySpec = number[] | ArrayBuffer | FullArraySpec;
 
     export interface AttachmentOptions {
         attach?: number;
