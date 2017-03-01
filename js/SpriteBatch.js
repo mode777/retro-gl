@@ -3,15 +3,20 @@ define(["require", "exports"], function (require, exports) {
     var VERTICES_QUAD = 4;
     var INDICES_QUAD = 6;
     var COMP_POS = 3;
+    var COMP_SIZE_POS = 2;
     var COMP_UV = 2;
-    var UV_TILE = 16;
-    var UV_NORM = 256;
+    var COMP_SIZE_UV = 1;
+    // const UV_TILE = 16;
+    // const UV_NORM = 256;
+    var OFFSET_UV = COMP_POS * COMP_SIZE_POS;
+    var VERTEX_SIZE = COMP_POS * COMP_SIZE_POS + COMP_UV * COMP_SIZE_UV;
     var SpriteBatch = (function () {
         function SpriteBatch(_gl, _size) {
             this._gl = _gl;
             this._size = _size;
-            this._geometry = new Uint16Array(_size * VERTICES_QUAD * COMP_POS);
-            this._texcoord = new Uint8Array(_size * VERTICES_QUAD * COMP_UV);
+            this._data = new ArrayBuffer(_size * VERTICES_QUAD * VERTEX_SIZE);
+            this._geometry = new Uint16Array(this._data);
+            this._texcoord = new Uint8Array(this._data);
             var indices = this._indices = new Uint16Array(_size * INDICES_QUAD);
             this._createIndices();
             this._arrays = {
@@ -35,37 +40,61 @@ define(["require", "exports"], function (require, exports) {
             configurable: true
         });
         SpriteBatch.prototype.createBuffers = function () {
-            this._bufferInfo = twgl.createBufferInfoFromArrays(this._gl, this._arrays);
+            var packedBuffer = twgl.createBufferFromTypedArray(this._gl, this._data, this._gl.ARRAY_BUFFER, this._gl.DYNAMIC_DRAW);
+            var indexBuffer = twgl.createBufferFromTypedArray(this._gl, this._indices, this._gl.ELEMENT_ARRAY_BUFFER);
+            var stride = VERTEX_SIZE;
+            this._bufferInfo = {
+                numElements: this._indices.length,
+                indices: indexBuffer,
+                elementType: this._gl.UNSIGNED_SHORT,
+                attribs: {
+                    position: {
+                        buffer: packedBuffer,
+                        numComponents: 3,
+                        type: this._gl.UNSIGNED_SHORT,
+                        stride: stride,
+                        offset: 0
+                    },
+                    texcoord: {
+                        buffer: packedBuffer,
+                        numComponents: 2,
+                        type: this._gl.UNSIGNED_BYTE,
+                        stride: stride,
+                        offset: OFFSET_UV,
+                        normalize: true
+                    },
+                },
+            };
+            console.log(this._bufferInfo);
             return this;
         };
         SpriteBatch.prototype.setPosition = function (id, x1, y1, x2, y2, z) {
             if (z === void 0) { z = 0; }
+            var vertex = id * VERTICES_QUAD;
+            this.setVertexPos(vertex, x1, y1, z);
+            this.setVertexPos(vertex + 1, x2, y1, z);
+            this.setVertexPos(vertex + 2, x2, y2, z);
+            this.setVertexPos(vertex + 3, x1, y2, z);
+        };
+        SpriteBatch.prototype.setVertexPos = function (vertex, x, y, z) {
+            var pos = (vertex * VERTEX_SIZE) / COMP_SIZE_POS;
             var geo = this._geometry;
-            var offset = id * VERTICES_QUAD * COMP_POS;
-            geo[offset] = x1;
-            geo[offset + 1] = y1;
-            geo[offset + 2] = z;
-            geo[offset + 3] = x2;
-            geo[offset + 4] = y1;
-            geo[offset + 5] = z;
-            geo[offset + 6] = x2;
-            geo[offset + 7] = y2;
-            geo[offset + 8] = z;
-            geo[offset + 9] = x1;
-            geo[offset + 10] = y2;
-            geo[offset + 11] = z;
+            geo[pos] = x;
+            geo[pos + 1] = y;
+            geo[pos + 2] = z;
         };
         SpriteBatch.prototype.setTexture = function (id, x1, y1, x2, y2) {
-            var tileset = this._texcoord;
-            var offset = id * VERTICES_QUAD * COMP_UV;
-            tileset[offset] = x1;
-            tileset[offset + 1] = y1;
-            tileset[offset + 2] = x2;
-            tileset[offset + 3] = y1;
-            tileset[offset + 4] = x2;
-            tileset[offset + 5] = y2;
-            tileset[offset + 6] = x1;
-            tileset[offset + 7] = y2;
+            var vertex = id * VERTICES_QUAD;
+            this.setVertexUv(vertex, x1, y1);
+            this.setVertexUv(vertex + 1, x2, y1);
+            this.setVertexUv(vertex + 2, x2, y2);
+            this.setVertexUv(vertex + 3, x1, y2);
+        };
+        SpriteBatch.prototype.setVertexUv = function (vertex, x, y) {
+            var uvs = this._texcoord;
+            var pos = (vertex * VERTEX_SIZE) + OFFSET_UV;
+            uvs[pos] = x;
+            uvs[pos + 1] = y;
         };
         SpriteBatch.prototype.setQuad = function (id, x, y, quad, z) {
             if (z === void 0) { z = 0; }

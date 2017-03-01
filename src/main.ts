@@ -10,6 +10,11 @@ let layerBuffer: twgl.BufferInfo;
 async function main(){
     let canvas = <HTMLCanvasElement>document.getElementById("canvas");
 
+    var stats = new Stats();
+    stats.showPanel( 0 ); // 0: fps, 1: ms, 2: mb, 3+: custom
+    document.body.appendChild( stats.dom );
+
+
     gl = twgl.getContext(canvas, {
         premultipliedAlpha: false,
         alpha: false,
@@ -31,13 +36,20 @@ async function main(){
         width: 16,
         height: 16
     };
+    let quad2 = {
+        x: 32,
+        y: 0,
+        width: 16,
+        height: 16
+    };
     batch.setQuad(0, 50, 50, quad);
-    batch.setQuad(1, 100, 50, quad);
+    batch.setQuad(1, 100, 50, quad2);
 
     console.log(batch);
     console.log(tl);
 
     layerBuffer = twgl.createBufferInfoFromArrays(gl, tl.arrays);
+    console.log(layerBuffer);
     batch.createBuffers();
 
     let texture = createAlphaTexture("/res/textures/tileset.png");    
@@ -57,6 +69,8 @@ async function main(){
 
 
     function render(time) {
+        stats.begin();
+
         t+=0.005;
         twgl.setUniforms(programInfo, {
             palette: palette,
@@ -69,6 +83,7 @@ async function main(){
         
         batch.render(programInfo);
 
+        stats.end();
         requestAnimationFrame(render);
     }
     requestAnimationFrame(render);

@@ -4,6 +4,7 @@
   "globalDependencies": {
     "es2015-promise": "registry:env/es2015-promise#1.0.0+20160526151700",
     "gl-matrix": "registry:dt/gl-matrix#2.2.2+20161114212859",
-    "jquery": "registry:dt/jquery#1.10.0+20170123093700"
+    "jquery": "registry:dt/jquery#1.10.0+20170123093700",
+    "stats.js": "registry:dt/stats.js#0.16.0+20161123230554"
   }
 }

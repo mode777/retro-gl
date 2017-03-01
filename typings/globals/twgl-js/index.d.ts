@@ -68,7 +68,7 @@ declare namespace twgl {
         numComponents?: number;
         size?: number;
         type?: number;
-        normalized?: number;
+        normalize?: boolean;
         offset?: number;
         stride?: number;
         buffer?: WebGLBuffer;
@@ -218,6 +218,8 @@ declare namespace twgl {
         elementType: number;
         vertexArrayObject?: WebGLObject;
     }
+
+    export function createBufferFromTypedArray(gl: WebGLRenderingContext, typedArray: ArrayBuffer | ArrayBufferView | WebGLBuffer, type?: number, drawType?: number);
 
 
 }
