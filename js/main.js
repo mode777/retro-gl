@@ -33,29 +33,26 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "./TileLayer", "./SpriteBatch"], function (require, exports, TileLayer_1, SpriteBatch_1) {
+define(["require", "exports", "./QuadMesh", "./TileMesh", "./Renderer", "./Renderable"], function (require, exports, QuadMesh_1, TileMesh_1, Renderer_1, Renderable_1) {
     "use strict";
     var gl;
-    var paletteId = 5;
     var t = 0;
-    var tl;
-    var layerBuffer;
+    var tiles;
+    var renderer;
+    // let tiles2: TileSprite;
+    // let tiles3: TileSprite;
+    // let tiles4: TileSprite;
+    var sprite;
     function main() {
         return __awaiter(this, void 0, void 0, function () {
             function render(time) {
                 stats.begin();
                 t += 0.005;
-                twgl.setUniforms(programInfo, {
-                    palette: palette,
-                    palette_id: paletteId,
-                });
-                //twgl.setBuffersAndAttributes(gl, programInfo, layerBuffer);
-                //twgl.drawBufferInfo(gl, layerBuffer);
-                batch.render(programInfo);
+                renderer.render();
                 stats.end();
                 requestAnimationFrame(render);
             }
-            var canvas, stats, vs, fs, programInfo, batch, quad, quad2, texture, palette, projMat;
+            var canvas, stats, tileset, font, palette, vs, fs, programInfo;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -70,6 +67,9 @@ define(["require", "exports", "./TileLayer", "./SpriteBatch"], function (require
                         });
                         //twgl.resizeCanvasToDisplaySize(gl.canvas);
                         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+                        tileset = createAlphaTexture("/res/textures/tileset.png");
+                        font = createAlphaTexture("/res/textures/font.png");
+                        palette = createTexture("/res/textures/out_pal2.png");
                         return [4 /*yield*/, $.get("/res/shaders/8bit_vs.glsl")];
                     case 1:
                         vs = _a.sent();
@@ -77,39 +77,14 @@ define(["require", "exports", "./TileLayer", "./SpriteBatch"], function (require
                     case 2:
                         fs = _a.sent();
                         programInfo = twgl.createProgramInfo(gl, [vs, fs]);
-                        tl = createTileLayer();
-                        batch = new SpriteBatch_1.SpriteBatch(gl, 2);
-                        quad = {
-                            x: 16,
-                            y: 0,
-                            width: 16,
-                            height: 16
-                        };
-                        quad2 = {
-                            x: 32,
-                            y: 0,
-                            width: 16,
-                            height: 16
-                        };
-                        batch.setQuad(0, 50, 50, quad);
-                        batch.setQuad(1, 100, 50, quad2);
-                        console.log(batch);
-                        console.log(tl);
-                        layerBuffer = twgl.createBufferInfoFromArrays(gl, tl.arrays);
-                        console.log(layerBuffer);
-                        batch.createBuffers();
-                        texture = createAlphaTexture("/res/textures/tileset.png");
-                        palette = createTexture("/res/textures/out_pal2.png");
-                        projMat = mat4.create();
-                        mat4.ortho(projMat, 0, gl.canvas.width, gl.canvas.height, 0, 1, -1);
-                        gl.useProgram(programInfo.program);
-                        twgl.setUniforms(programInfo, {
-                            texture: texture,
-                            palette: palette,
-                            palette_id: paletteId,
-                            proj: projMat,
-                            time: t
-                        });
+                        renderer = new Renderer_1.Renderer(gl, programInfo);
+                        tiles = createTileSprite(tileset, palette, 5);
+                        // tiles2 = createTileSprite();
+                        // tiles3 = createTileSprite();
+                        // tiles4 = createTileSprite();
+                        sprite = createSprite(font, palette, 17, 0, 0, 0, 0, 255, 255);
+                        renderer.renderList.push(tiles);
+                        renderer.renderList.push(sprite);
                         requestAnimationFrame(render);
                         return [2 /*return*/];
                 }
@@ -132,21 +107,38 @@ define(["require", "exports", "./TileLayer", "./SpriteBatch"], function (require
             internalFormat: gl.LUMINANCE
         });
     }
-    function createTileLayer() {
+    var offset = 1;
+    function createTileSprite(texture, palette, paletteId) {
         var tids = [];
         for (var i = 0; i < 32 * 32; i++) {
-            tids.push(i % 7);
+            tids.push((offset % 6) + 1);
         }
-        return new TileLayer_1.TileLayer(gl).create(tids);
+        offset++;
+        var mesh = new TileMesh_1.TileMesh(gl, 32, 32).create(tids);
+        return new Renderable_1.Renderable(mesh, texture, palette, paletteId);
+    }
+    function createSprite(texture, palette, paletteId, x, y, ox, oy, w, h) {
+        var sb = new QuadMesh_1.QuadMesh(gl, 1);
+        sb.setQuad(0, x, y, x + w, y + h, ox, oy, ox + w, oy + w);
+        sb.create();
+        return new Renderable_1.Renderable(sb, texture, palette, paletteId);
     }
     main();
-    var offset = 0;
+    setInterval(function () {
+        // for(var i = 0; i<32*32; i++){
+        //     tiles.setTileSeq(i, (i+offset)%7)
+        //     tiles2.setTileSeq(i, (i+1+offset)%7)
+        //     tiles3.setTileSeq(i, (i+2+offset)%7)
+        //     tiles4.setTileSeq(i, (i+3+offset)%7)
+        // }
+        // tiles.setTile(offset%7,2,2);
+        // tiles.setTile(offset%7,5,5);
+        // tiles.setTile(offset%7,20,20);
+        // tiles.update();    
+        // tiles4.update();    
+        // tiles2.update();    
+        // tiles3.update();    
+        offset++;
+    }, 500);
 });
-// setInterval(()=> {
-//     for(var i = 0; i<32*32; i++){
-//         tl.setTileSeq((i+offset)%7, i);
-//     }
-//     offset++;
-//     twgl.setAttribInfoBufferFromArray(gl, layerBuffer.attribs["texcoord"], tl.arrays["texcoord"]);
-// }, 50); 
 //# sourceMappingURL=main.js.map

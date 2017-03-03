@@ -1,7 +1,7 @@
 define(["require", "exports", "./constants"], function (require, exports, constants_1) {
     "use strict";
-    var SpriteBatch = (function () {
-        function SpriteBatch(_gl, _size) {
+    var QuadMesh = (function () {
+        function QuadMesh(_gl, _size) {
             this._gl = _gl;
             this._size = _size;
             this._dirty_start = constants_1.HUGE;
@@ -17,21 +17,21 @@ define(["require", "exports", "./constants"], function (require, exports, consta
                 indices: this._indices
             };
         }
-        Object.defineProperty(SpriteBatch.prototype, "isDirty", {
+        Object.defineProperty(QuadMesh.prototype, "isDirty", {
             get: function () {
                 return (this._dirty_end - this._dirty_start) > 0;
             },
             enumerable: true,
             configurable: true
         });
-        Object.defineProperty(SpriteBatch.prototype, "bufferInfo", {
+        Object.defineProperty(QuadMesh.prototype, "bufferInfo", {
             get: function () {
                 return this._bufferInfo;
             },
             enumerable: true,
             configurable: true
         });
-        SpriteBatch.prototype.create = function () {
+        QuadMesh.prototype.create = function () {
             var packedBuffer = twgl.createBufferFromTypedArray(this._gl, this._data, this._gl.ARRAY_BUFFER, this._gl.DYNAMIC_DRAW);
             var indexBuffer = twgl.createBufferFromTypedArray(this._gl, this._indices, this._gl.ELEMENT_ARRAY_BUFFER);
             var stride = constants_1.VERTEX_SIZE;
@@ -61,7 +61,7 @@ define(["require", "exports", "./constants"], function (require, exports, consta
             this._dirty_end = 0;
             return this;
         };
-        SpriteBatch.prototype.setPosition = function (id, x1, y1, x2, y2, z) {
+        QuadMesh.prototype.setPosition = function (id, x1, y1, x2, y2, z) {
             if (z === void 0) { z = 0; }
             var vertex = id * constants_1.VERTICES_QUAD;
             this._setVertexPos(vertex, x1, y1, z);
@@ -70,7 +70,7 @@ define(["require", "exports", "./constants"], function (require, exports, consta
             this._setVertexPos(vertex + 3, x1, y2, z);
             this._setQuadDirty(id);
         };
-        SpriteBatch.prototype.setTexture = function (id, x1, y1, x2, y2) {
+        QuadMesh.prototype.setTexture = function (id, x1, y1, x2, y2) {
             //console.log(x1, y1, x2, y2);
             var vertex = id * constants_1.VERTICES_QUAD;
             this._setVertexUv(vertex, x1, y1);
@@ -79,7 +79,7 @@ define(["require", "exports", "./constants"], function (require, exports, consta
             this._setVertexUv(vertex + 3, x1, y2);
             this._setQuadDirty(id);
         };
-        SpriteBatch.prototype.setQuad = function (id, x1, y1, x2, y2, originX1, originY1, originX2, originY2, z) {
+        QuadMesh.prototype.setQuad = function (id, x1, y1, x2, y2, originX1, originY1, originX2, originY2, z) {
             if (z === void 0) { z = 0; }
             var vertex = id * constants_1.VERTICES_QUAD;
             this._setVertexUv(vertex, originX1, originY1);
@@ -92,11 +92,11 @@ define(["require", "exports", "./constants"], function (require, exports, consta
             this._setVertexPos(vertex + 3, x1, y2, z);
             this._setQuadDirty(id);
         };
-        SpriteBatch.prototype.render = function (shader) {
+        QuadMesh.prototype.render = function (shader) {
             twgl.setBuffersAndAttributes(this._gl, shader, this._bufferInfo);
             twgl.drawBufferInfo(this._gl, this._bufferInfo);
         };
-        SpriteBatch.prototype.update = function () {
+        QuadMesh.prototype.update = function () {
             if (this.isDirty) {
                 var gl = this._gl;
                 var buffer = this.bufferInfo.attribs["position"].buffer;
@@ -108,19 +108,20 @@ define(["require", "exports", "./constants"], function (require, exports, consta
                 this._dirty_end = 0;
             }
         };
-        SpriteBatch.prototype.destroy = function () {
+        QuadMesh.prototype.destroy = function () {
             this._gl.deleteBuffer(this._bufferInfo.attribs["position"].buffer);
             this._gl.deleteBuffer(this._bufferInfo.attribs["texcoord"].buffer);
             this._gl.deleteBuffer(this._bufferInfo.attribs["indices"].buffer);
             this._indices = null;
             this._geometry = null;
             this._texcoord = null;
+            this._data = null;
         };
-        SpriteBatch.prototype._setQuadDirty = function (id) {
+        QuadMesh.prototype._setQuadDirty = function (id) {
             this._dirty_start = Math.min(id * constants_1.QUAD_SIZE, this._dirty_start);
             this._dirty_end = Math.max(id * constants_1.QUAD_SIZE + constants_1.QUAD_SIZE, this._dirty_end);
         };
-        SpriteBatch.prototype._setVertexPos = function (vertex, x, y, z) {
+        QuadMesh.prototype._setVertexPos = function (vertex, x, y, z) {
             // divide by two.
             var pos = (vertex * constants_1.VERTEX_SIZE) >> 1;
             var geo = this._geometry;
@@ -128,13 +129,13 @@ define(["require", "exports", "./constants"], function (require, exports, consta
             geo[pos + 1] = y;
             geo[pos + 2] = z;
         };
-        SpriteBatch.prototype._setVertexUv = function (vertex, x, y) {
+        QuadMesh.prototype._setVertexUv = function (vertex, x, y) {
             var uvs = this._texcoord;
             var pos = (vertex * constants_1.VERTEX_SIZE) + constants_1.OFFSET_UV;
             uvs[pos] = x;
             uvs[pos + 1] = y;
         };
-        SpriteBatch.prototype._createIndices = function () {
+        QuadMesh.prototype._createIndices = function () {
             var indices = this._indices;
             var max = this._size * constants_1.INDICES_QUAD;
             var vertex = 0;
@@ -151,8 +152,8 @@ define(["require", "exports", "./constants"], function (require, exports, consta
                 vertex += constants_1.VERTICES_QUAD;
             }
         };
-        return SpriteBatch;
+        return QuadMesh;
     }());
-    exports.SpriteBatch = SpriteBatch;
+    exports.QuadMesh = QuadMesh;
 });
-//# sourceMappingURL=SpriteBatch.js.map
+//# sourceMappingURL=QuadMesh.js.map

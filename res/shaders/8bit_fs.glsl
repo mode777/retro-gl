@@ -2,7 +2,8 @@ precision mediump float;
 
 uniform sampler2D texture;
 uniform sampler2D palette;
-uniform float palette_id;
+uniform float palette_x;
+uniform float palette_y;
 
 const float pixel = 0.0625;
 
@@ -20,7 +21,7 @@ void main() {
     vec2 palUv = vec2(fract(a), pixel * floor(a));
 
     // only needed if you store more palettes in one texture.
-    vec2 offset = vec2(modI(palette_id, 16.0), floor(palette_id / 16.0)) * pixel;
+    vec2 offset = vec2(palette_x, palette_y);
     palUv = (palUv * pixel) + offset;
 
     gl_FragColor = texture2D(palette, palUv);

@@ -4,3 +4,8 @@ export interface Rectangle {
     width: number;
     height: number;
 }
+
+export interface Mesh {
+    bufferInfo: twgl.BufferInfo;
+    update();
+}
