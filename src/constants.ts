@@ -12,3 +12,4 @@ export const PAL_OFFSET = 1 / 16;
 export const OFFSET_UV = COMP_POS * COMP_SIZE_POS;
 export const VERTEX_SIZE = COMP_POS * COMP_SIZE_POS + COMP_UV * COMP_SIZE_UV; 
 export const QUAD_SIZE = VERTEX_SIZE * VERTICES_QUAD; 
+export const MAT4_IDENT = mat4.identity(mat4.create());

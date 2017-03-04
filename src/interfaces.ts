@@ -9,3 +9,10 @@ export interface Mesh {
     bufferInfo: twgl.BufferInfo;
     update();
 }
+
+export interface FontInfo {
+    x: number,
+    y: number,
+    chars: string,
+    widths: number[]
+}

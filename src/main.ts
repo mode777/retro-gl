@@ -2,37 +2,29 @@ import { QuadMesh } from './QuadMesh';
 import { TileMesh } from './TileMesh';
 import { Renderer } from './Renderer';
 import { Renderable } from './Renderable';
+import { TextMesh } from './TextMesh';
+import { FontInfo } from './interfaces';
 
 let gl: WebGLRenderingContext;
 let t = 0;
-let tiles: Renderable<TileMesh>;
 let renderer: Renderer;
-// let tiles2: TileSprite;
-// let tiles3: TileSprite;
-// let tiles4: TileSprite;
 
-let sprite: Renderable<QuadMesh>;
+let tiles: Renderable<TileMesh>;
+let text: Renderable<TextMesh>;
 
 async function main(){
-    let canvas = <HTMLCanvasElement>document.getElementById("canvas");
-
+    
     var stats = new Stats();
     stats.showPanel( 0 ); // 0: fps, 1: ms, 2: mb, 3+: custom
     document.body.appendChild( stats.dom );
 
-    gl = twgl.getContext(canvas, {
-        premultipliedAlpha: false,
-        alpha: false,
-        antialias: false
-    });
-
-    //twgl.resizeCanvasToDisplaySize(gl.canvas);
-    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+    initWebGl();
     
     let tileset = createAlphaTexture("/res/textures/tileset.png");    
     let font = createAlphaTexture("/res/textures/font.png");    
-    let palette = createTexture("/res/textures/out_pal2.png");    
- 
+    let palette = createTexture("/res/textures/out_pal2.png");   
+    let fontInfo = await $.getJSON("/res/fonts/font.json");
+
     let vs = await $.get("/res/shaders/8bit_vs.glsl");
     let fs = await $.get("/res/shaders/8bit_fs.glsl");
     let programInfo = twgl.createProgramInfo(gl, [vs, fs]);
@@ -42,10 +34,12 @@ async function main(){
     // tiles2 = createTileSprite();
     // tiles3 = createTileSprite();
     // tiles4 = createTileSprite();
-    sprite = createSprite(font, palette, 17, 0,0,0,0,255,255);
+    text = createText(font, palette, 17, fontInfo,  "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores");
+    text.mesh.range = 0;
+    console.log(text);
 
     renderer.renderList.push(tiles);
-    renderer.renderList.push(sprite);
+    renderer.renderList.push(text);
 
     function render(time) {
         stats.begin();
@@ -57,6 +51,19 @@ async function main(){
         requestAnimationFrame(render);
     }
     requestAnimationFrame(render);
+}
+
+function initWebGl(){
+    let canvas = <HTMLCanvasElement>document.getElementById("canvas");
+
+    gl = twgl.getContext(canvas, {
+        premultipliedAlpha: false,
+        alpha: false,
+        antialias: false
+    });
+
+    //twgl.resizeCanvasToDisplaySize(gl.canvas);
+    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 }
 
 function createTexture(path: string){
@@ -78,6 +85,7 @@ function createAlphaTexture(path: string){
     });
 }
 
+
 let offset = 1;
 function createTileSprite(texture,palette, paletteId){
     let tids = [];
@@ -97,24 +105,13 @@ function createSprite(texture, palette, paletteId, x,y,ox,oy,w,h){
     return new Renderable(sb,texture,palette,paletteId);
 }
 
+function createText(texture, palette, paletteId, fontInfo, text){
+    let tMesh = new TextMesh(gl, 512, fontInfo).create(text);
+    return new Renderable(tMesh, texture, palette, paletteId);
+}
+
 main();
 
 setInterval(()=> {
-    // for(var i = 0; i<32*32; i++){
-    //     tiles.setTileSeq(i, (i+offset)%7)
-    //     tiles2.setTileSeq(i, (i+1+offset)%7)
-    //     tiles3.setTileSeq(i, (i+2+offset)%7)
-    //     tiles4.setTileSeq(i, (i+3+offset)%7)
-    // }
-
-    // tiles.setTile(offset%7,2,2);
-    // tiles.setTile(offset%7,5,5);
-    // tiles.setTile(offset%7,20,20);
-    
-    // tiles.update();    
-    // tiles4.update();    
-    // tiles2.update();    
-    // tiles3.update();    
-    
-    offset++;
-}, 500);
+    text.mesh.range = ((text.mesh.range+1)%text.mesh.text.length) 
+}, 16);

@@ -33,16 +33,13 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "./QuadMesh", "./TileMesh", "./Renderer", "./Renderable"], function (require, exports, QuadMesh_1, TileMesh_1, Renderer_1, Renderable_1) {
+define(["require", "exports", "./QuadMesh", "./TileMesh", "./Renderer", "./Renderable", "./TextMesh"], function (require, exports, QuadMesh_1, TileMesh_1, Renderer_1, Renderable_1, TextMesh_1) {
     "use strict";
     var gl;
     var t = 0;
-    var tiles;
     var renderer;
-    // let tiles2: TileSprite;
-    // let tiles3: TileSprite;
-    // let tiles4: TileSprite;
-    var sprite;
+    var tiles;
+    var text;
     function main() {
         return __awaiter(this, void 0, void 0, function () {
             function render(time) {
@@ -52,29 +49,25 @@ define(["require", "exports", "./QuadMesh", "./TileMesh", "./Renderer", "./Rende
                 stats.end();
                 requestAnimationFrame(render);
             }
-            var canvas, stats, tileset, font, palette, vs, fs, programInfo;
+            var stats, tileset, font, palette, fontInfo, vs, fs, programInfo;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        canvas = document.getElementById("canvas");
                         stats = new Stats();
                         stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
                         document.body.appendChild(stats.dom);
-                        gl = twgl.getContext(canvas, {
-                            premultipliedAlpha: false,
-                            alpha: false,
-                            antialias: false
-                        });
-                        //twgl.resizeCanvasToDisplaySize(gl.canvas);
-                        gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+                        initWebGl();
                         tileset = createAlphaTexture("/res/textures/tileset.png");
                         font = createAlphaTexture("/res/textures/font.png");
                         palette = createTexture("/res/textures/out_pal2.png");
-                        return [4 /*yield*/, $.get("/res/shaders/8bit_vs.glsl")];
+                        return [4 /*yield*/, $.getJSON("/res/fonts/font.json")];
                     case 1:
+                        fontInfo = _a.sent();
+                        return [4 /*yield*/, $.get("/res/shaders/8bit_vs.glsl")];
+                    case 2:
                         vs = _a.sent();
                         return [4 /*yield*/, $.get("/res/shaders/8bit_fs.glsl")];
-                    case 2:
+                    case 3:
                         fs = _a.sent();
                         programInfo = twgl.createProgramInfo(gl, [vs, fs]);
                         renderer = new Renderer_1.Renderer(gl, programInfo);
@@ -82,14 +75,26 @@ define(["require", "exports", "./QuadMesh", "./TileMesh", "./Renderer", "./Rende
                         // tiles2 = createTileSprite();
                         // tiles3 = createTileSprite();
                         // tiles4 = createTileSprite();
-                        sprite = createSprite(font, palette, 17, 0, 0, 0, 0, 255, 255);
+                        text = createText(font, palette, 17, fontInfo, "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores");
+                        text.mesh.range = 0;
+                        console.log(text);
                         renderer.renderList.push(tiles);
-                        renderer.renderList.push(sprite);
+                        renderer.renderList.push(text);
                         requestAnimationFrame(render);
                         return [2 /*return*/];
                 }
             });
         });
+    }
+    function initWebGl() {
+        var canvas = document.getElementById("canvas");
+        gl = twgl.getContext(canvas, {
+            premultipliedAlpha: false,
+            alpha: false,
+            antialias: false
+        });
+        //twgl.resizeCanvasToDisplaySize(gl.canvas);
+        gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
     }
     function createTexture(path) {
         return twgl.createTexture(gl, {
@@ -123,22 +128,13 @@ define(["require", "exports", "./QuadMesh", "./TileMesh", "./Renderer", "./Rende
         sb.create();
         return new Renderable_1.Renderable(sb, texture, palette, paletteId);
     }
+    function createText(texture, palette, paletteId, fontInfo, text) {
+        var tMesh = new TextMesh_1.TextMesh(gl, 512, fontInfo).create(text);
+        return new Renderable_1.Renderable(tMesh, texture, palette, paletteId);
+    }
     main();
     setInterval(function () {
-        // for(var i = 0; i<32*32; i++){
-        //     tiles.setTileSeq(i, (i+offset)%7)
-        //     tiles2.setTileSeq(i, (i+1+offset)%7)
-        //     tiles3.setTileSeq(i, (i+2+offset)%7)
-        //     tiles4.setTileSeq(i, (i+3+offset)%7)
-        // }
-        // tiles.setTile(offset%7,2,2);
-        // tiles.setTile(offset%7,5,5);
-        // tiles.setTile(offset%7,20,20);
-        // tiles.update();    
-        // tiles4.update();    
-        // tiles2.update();    
-        // tiles3.update();    
-        offset++;
-    }, 500);
+        text.mesh.range = ((text.mesh.range + 1) % text.mesh.text.length);
+    }, 16);
 });
 //# sourceMappingURL=main.js.map

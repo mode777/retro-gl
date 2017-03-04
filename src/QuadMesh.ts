@@ -10,6 +10,7 @@ export class QuadMesh implements Mesh {
 
     private _dirty_start = HUGE;
     private _dirty_end = 0;
+    private _range;
 
     private _bufferInfo: twgl.BufferInfo;
 
@@ -36,6 +37,21 @@ export class QuadMesh implements Mesh {
         return this._bufferInfo;
     }
 
+    get size(){
+        return this._size;
+    }
+
+    get range(){
+        return this._range;
+    }
+
+    set range(value: number){
+        this._range = value;
+        if(this._bufferInfo){
+            this._bufferInfo.numElements = value * INDICES_QUAD;
+        }
+    }
+
     create(){
         var packedBuffer = twgl.createBufferFromTypedArray(
             this._gl, this._data, this._gl.ARRAY_BUFFER, this._gl.DYNAMIC_DRAW);
@@ -46,7 +62,7 @@ export class QuadMesh implements Mesh {
         var stride = VERTEX_SIZE;
 
         this._bufferInfo = {
-            numElements: this._indices.length,
+            numElements: this._range ? this._range * INDICES_QUAD : this._indices.length,
             indices: indexBuffer,            
             elementType: this._gl.UNSIGNED_SHORT,  
             attribs: {
@@ -67,6 +83,8 @@ export class QuadMesh implements Mesh {
                 },
             },
         };
+
+        this._range = this._bufferInfo.numElements / INDICES_QUAD;
 
         this._dirty_start = HUGE;
         this._dirty_end = 0;

@@ -2,39 +2,31 @@ import { TEXTURE_SIZE, UV_TILE, VERTICES_QUAD, COMP_UV } from './constants';
 import { QuadMesh } from './QuadMesh';
 import { Mesh } from './interfaces';
 
-export class TileMesh implements Mesh {
+export class TileMesh extends QuadMesh {
 
     private _tileset: Uint8Array;
-    private _batch: QuadMesh;
 
     constructor(    
-        private _gl: WebGLRenderingContext,
+        gl: WebGLRenderingContext,
         private _width: number, 
         private _height: number, 
         private _twidth: number = 16, 
         private _theight: number = 16){
-    }
-
-    get bufferInfo(){
-        return this._batch.bufferInfo;
+        
+        super(gl, _width * _height);
     }
 
     create(tids?: number[]){
         this._createTileset();
         
-        this._batch = new QuadMesh(this._gl, this._width * this._height);
-        this._createGeometry();
+        //this._createGeometry();
         
         if(tids)
             this.setTiles(tids);
         
-        this._batch.create();
+        super.create();
 
         return this;
-    }
-
-    render(shader: twgl.ProgramInfo){
-        this._batch.render(shader);
     }
 
     setTile(tid: number, x: number, y: number, z = 0){
@@ -54,7 +46,7 @@ export class TileMesh implements Mesh {
 
     setTileSeq(seq: number, tid: number, z = 0){
         if(tid == 0){
-            this._batch.setQuad(seq, 0,0,0,0,0,0,0,0);
+            this.setQuad(seq, 0,0,0,0,0,0,0,0);
             return;
         }
 
@@ -66,15 +58,7 @@ export class TileMesh implements Mesh {
         let x2 = x1 + this._twidth;
         let y2 = y1 + this._theight;
         
-        this._batch.setQuad(seq, x1, y1, x2, y2, ts[offset], ts[offset+1], ts[offset+2], ts[offset+3]);
-    }
-
-    update(){
-        this._batch.update();
-    }
-
-    destroy(){
-        this._batch.destroy();
+        this.setQuad(seq, x1, y1, x2, y2, ts[offset], ts[offset+1], ts[offset+2], ts[offset+3]);
     }
 
     private _createTileset(){
@@ -101,7 +85,7 @@ export class TileMesh implements Mesh {
 
         for(let y = 0; y < this._theight * this._height; y += this._theight){
             for(let x = 0; x < this._twidth * this._width; x += this._twidth){
-                this._batch.setPosition(ctr, x, y, x + this._twidth, y + this._theight);
+                this.setPosition(ctr, x, y, x + this._twidth, y + this._theight);
                 ctr++;
             }
         }

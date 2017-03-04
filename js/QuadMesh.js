@@ -31,12 +31,32 @@ define(["require", "exports", "./constants"], function (require, exports, consta
             enumerable: true,
             configurable: true
         });
+        Object.defineProperty(QuadMesh.prototype, "size", {
+            get: function () {
+                return this._size;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(QuadMesh.prototype, "range", {
+            get: function () {
+                return this._range;
+            },
+            set: function (value) {
+                this._range = value;
+                if (this._bufferInfo) {
+                    this._bufferInfo.numElements = value * constants_1.INDICES_QUAD;
+                }
+            },
+            enumerable: true,
+            configurable: true
+        });
         QuadMesh.prototype.create = function () {
             var packedBuffer = twgl.createBufferFromTypedArray(this._gl, this._data, this._gl.ARRAY_BUFFER, this._gl.DYNAMIC_DRAW);
             var indexBuffer = twgl.createBufferFromTypedArray(this._gl, this._indices, this._gl.ELEMENT_ARRAY_BUFFER);
             var stride = constants_1.VERTEX_SIZE;
             this._bufferInfo = {
-                numElements: this._indices.length,
+                numElements: this._range ? this._range * constants_1.INDICES_QUAD : this._indices.length,
                 indices: indexBuffer,
                 elementType: this._gl.UNSIGNED_SHORT,
                 attribs: {
@@ -57,6 +77,7 @@ define(["require", "exports", "./constants"], function (require, exports, consta
                     },
                 },
             };
+            this._range = this._bufferInfo.numElements / constants_1.INDICES_QUAD;
             this._dirty_start = constants_1.HUGE;
             this._dirty_end = 0;
             return this;
