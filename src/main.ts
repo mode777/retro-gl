@@ -124,7 +124,7 @@ let offset = 5;
 function createTileSprite(texture,palette, paletteId){
     let tids = [];
     for(var i = 0; i<32*32; i++){
-        tids.push((offset%6)+1);
+        tids.push(6);
     }
     
     offset++;

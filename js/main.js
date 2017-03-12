@@ -141,7 +141,7 @@ define(["require", "exports", "./QuadBuffer", "./TileBuffer", "./Renderer", "./R
     function createTileSprite(texture, palette, paletteId) {
         var tids = [];
         for (var i = 0; i < 32 * 32; i++) {
-            tids.push((offset % 6) + 1);
+            tids.push(6);
         }
         offset++;
         var mesh = new TileBuffer_1.TileBuffer(gl, 32, 32).create(tids, 1);

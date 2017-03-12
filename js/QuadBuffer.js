@@ -72,7 +72,7 @@ define(["require", "exports", "./constants", "./Transform"], function (require, 
                 this._buffer.setPositionTransformed(id, a.x, a.y, a.x + a.w, a.y + a.h, m);
                 this._buffer.setZ(id, a.z || 1);
                 this._buffer.setPalShift(id, a.palOffset || 0);
-                this._buffer.setUv(id, a.textureX, a.textureY, a.textureX + a.w, a.textureY + a.h);
+                this._buffer.setUv(id, a.textureX, a.textureY, a.textureX + a.w - 1, a.textureY + a.h - 1);
                 this._isDirty = false;
             }
         };
@@ -190,7 +190,7 @@ define(["require", "exports", "./constants", "./Transform"], function (require, 
                         type: this._gl.UNSIGNED_BYTE,
                         stride: constants_1.VERTEX_SIZE,
                         offset: constants_1.OFFSET_UV,
-                        normalize: true
+                        normalize: false
                     },
                 },
             };
