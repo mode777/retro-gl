@@ -1,16 +1,18 @@
-import { QuadMesh } from './QuadMesh';
-import { TileMesh } from './TileMesh';
+import { QuadBuffer } from './QuadBuffer';
+import { TileBuffer } from './TileBuffer';
 import { Renderer } from './Renderer';
 import { Renderable } from './Renderable';
-import { TextMesh } from './TextMesh';
-import { FontInfo } from './interfaces';
+import { TextBuffer } from './TextBuffer';
+import { FontInfo, Sprite } from './interfaces';
+import { MIN_Z, VERTEX_SIZE, VERTICES_QUAD, QUAD_SIZE } from './constants';
+import { Quad } from './Quad';
 
 let gl: WebGLRenderingContext;
 let t = 0;
 let renderer: Renderer;
 
-let tiles: Renderable<TileMesh>;
-let text: Renderable<TextMesh>;
+let tiles: Renderable<TileBuffer>;
+let text: Renderable<TextBuffer>;
 
 async function main(){
     
@@ -22,35 +24,67 @@ async function main(){
     
     let tileset = createAlphaTexture("/res/textures/tileset.png");    
     let font = createAlphaTexture("/res/textures/font.png");    
-    let palette = createTexture("/res/textures/out_pal2.png");   
+    let palette = createTexture("/res/textures/pal_new.png");   
     let fontInfo = await $.getJSON("/res/fonts/font.json");
 
     let vs = await $.get("/res/shaders/8bit_vs.glsl");
     let fs = await $.get("/res/shaders/8bit_fs.glsl");
     let programInfo = twgl.createProgramInfo(gl, [vs, fs]);
-    renderer = new Renderer(gl, programInfo);
+    renderer = new Renderer(gl, {
+        shader: programInfo,
+        palette: palette,
+        texture: font,
+        paletteId: 0,
+        zSort: true,
+        blendMode: "none"
+    });
 
-    tiles = createTileSprite(tileset, palette, 5);
-    // tiles2 = createTileSprite();
-    // tiles3 = createTileSprite();
-    // tiles4 = createTileSprite();
-    text = createText(font, palette, 17, fontInfo,  "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores");
-    text.mesh.range = 0;
-    console.log(text);
+    tiles = createTileSprite(tileset, palette, 1);
+    //let tiles2 = createTileSprite(tileset, palette, 1);
+    
+    let fntBuffer = new TextBuffer(gl, 128, fontInfo).create();
+    fntBuffer.write("Start Game", 320, 130,50,4,4);
+    fntBuffer.write("Load Game", 320, 130,50+16,4);
+    fntBuffer.write("Settings", 320, 130,50+16*2,4);
+    fntBuffer.write("Quit", 320, 130,50+16*3,4);    
+    text = new Renderable({
+        buffer: fntBuffer,
+        texture: font
+    });
 
-    renderer.renderList.push(tiles);
+    let sprites: Sprite[] = [];
+    for (var i = 0; i < "Start Game".length; i++) {
+        let sprite = fntBuffer.createSprite(i);
+        sprites.push(sprite);
+    }
+
+    let statsBuffer = new TextBuffer(gl, 33, fontInfo).create();
+    let statsRend = new Renderable({
+        buffer: statsBuffer,
+        texture: font
+    });
+
     renderer.renderList.push(text);
+    renderer.renderList.push(tiles);
+    let a = .5;
 
     function render(time) {
         stats.begin();
+        
+        t+=0.1;
+        a*=0.9;
+        sprites.forEach(s => s.transform.y = Math.sin(s.x/4+t)*3);
 
-        t+=0.005;
         renderer.render();
-
+        
         stats.end();
         requestAnimationFrame(render);
     }
     requestAnimationFrame(render);
+
+    setInterval(()=> {
+
+    }, 16);
 }
 
 function initWebGl(){
@@ -86,7 +120,7 @@ function createAlphaTexture(path: string){
 }
 
 
-let offset = 1;
+let offset = 5;
 function createTileSprite(texture,palette, paletteId){
     let tids = [];
     for(var i = 0; i<32*32; i++){
@@ -94,24 +128,48 @@ function createTileSprite(texture,palette, paletteId){
     }
     
     offset++;
-    let mesh = new TileMesh(gl, 32, 32).create(tids);
-    return new Renderable(mesh,texture, palette, paletteId);
+    
+    let mesh = new TileBuffer(gl, 32, 32).create(tids, 1);
+    
+    return new Renderable({
+        buffer: mesh,
+        texture: texture,
+        palette: palette,
+        paletteId: paletteId
+    });
 }
 
 function createSprite(texture, palette, paletteId, x,y,ox,oy,w,h){
-    let sb = new QuadMesh(gl,1);
-    sb.setQuad(0,x,y,x+w,y+h,ox,oy,ox+w,oy+w);
+    let sb = new QuadBuffer(gl,1);
+    sb.setAttributes(0,x,y,x+w,y+h,ox,oy,ox+w,oy+w, MIN_Z, 0);
     sb.create();
-    return new Renderable(sb,texture,palette,paletteId);
-}
-
-function createText(texture, palette, paletteId, fontInfo, text){
-    let tMesh = new TextMesh(gl, 512, fontInfo).create(text);
-    return new Renderable(tMesh, texture, palette, paletteId);
+    return new Renderable({
+        buffer:sb, 
+        texture: texture, 
+        palette: palette, 
+        paletteId: 
+        paletteId
+    });
 }
 
 main();
 
-setInterval(()=> {
-    text.mesh.range = ((text.mesh.range+1)%text.mesh.text.length) 
-}, 16);
+let o = mat4.ortho(mat4.create(), 0, 320, 180, 0, -256, 0);
+let p = mat4.perspective(mat4.create(), 1, 1, 0.1, 100);
+let v = mat4.lookAt(mat4.create(), vec3.fromValues(0,0,0), vec3.create(), vec3.fromValues(0, 1, 0));
+let res = mat4.create();
+//let res = o;
+mat4.mul(res, p, v);
+mat4.mul(res, res, o);
+
+let p1 = vec3.fromValues(0,0,1);
+let p2 = vec3.fromValues(320,0,1);
+let p3 = vec3.fromValues(320,180,1);
+let p4 = vec3.fromValues(0,180,1);
+
+vec3.transformMat4(p1,p1,res);
+vec3.transformMat4(p2,p2,res);
+vec3.transformMat4(p3,p3,res);
+vec3.transformMat4(p4,p4,res);
+
+console.log(p1,p2,p3,p4);

@@ -11,11 +11,7 @@ define(["require", "exports", "./constants"], function (require, exports, consta
             this._texcoord = new Uint8Array(this._data);
             var indices = this._indices = new Uint16Array(_size * constants_1.INDICES_QUAD);
             this._createIndices();
-            this._arrays = {
-                position: this._geometry,
-                texcoord: this._texcoord,
-                indices: this._indices
-            };
+            this._transTemp = vec3.create();
         }
         Object.defineProperty(QuadMesh.prototype, "isDirty", {
             get: function () {
@@ -67,6 +63,22 @@ define(["require", "exports", "./constants"], function (require, exports, consta
                         stride: stride,
                         offset: 0
                     },
+                    z_index: {
+                        buffer: packedBuffer,
+                        numComponents: 1,
+                        type: this._gl.UNSIGNED_BYTE,
+                        stride: stride,
+                        offset: 4,
+                        normalize: false
+                    },
+                    pal_shift: {
+                        buffer: packedBuffer,
+                        numComponents: 1,
+                        type: this._gl.UNSIGNED_BYTE,
+                        stride: stride,
+                        offset: 5,
+                        normalize: true
+                    },
                     texcoord: {
                         buffer: packedBuffer,
                         numComponents: 2,
@@ -83,13 +95,34 @@ define(["require", "exports", "./constants"], function (require, exports, consta
             return this;
         };
         QuadMesh.prototype.setPosition = function (id, x1, y1, x2, y2, z) {
-            if (z === void 0) { z = 0; }
+            if (z === void 0) { z = constants_1.MIN_Z; }
             var vertex = id * constants_1.VERTICES_QUAD;
             this._setVertexPos(vertex, x1, y1, z);
             this._setVertexPos(vertex + 1, x2, y1, z);
             this._setVertexPos(vertex + 2, x2, y2, z);
             this._setVertexPos(vertex + 3, x1, y2, z);
             this._setQuadDirty(id);
+        };
+        QuadMesh.prototype.transformFunc = function (func) {
+            for (var i = 0; i < this._size * constants_1.VERTICES_QUAD; i++) {
+                var pos = (i * constants_1.VERTEX_SIZE) >> 1;
+                this._loadTemp(pos);
+                func(i, this._transTemp);
+                this._applyTemp(pos);
+            }
+            this._setAllDirty();
+        };
+        QuadMesh.prototype._loadTemp = function (offset) {
+            var geo = this._geometry;
+            this._transTemp[0] = geo[offset];
+            this._transTemp[1] = geo[offset + 1];
+            this._transTemp[2] = geo[offset + 2];
+        };
+        QuadMesh.prototype._applyTemp = function (offset) {
+            var geo = this._geometry;
+            geo[offset] = this._transTemp[0];
+            geo[offset + 1] = this._transTemp[1];
+            geo[offset + 2] = this._transTemp[2];
         };
         QuadMesh.prototype.setTexture = function (id, x1, y1, x2, y2) {
             //console.log(x1, y1, x2, y2);
@@ -100,8 +133,9 @@ define(["require", "exports", "./constants"], function (require, exports, consta
             this._setVertexUv(vertex + 3, x1, y2);
             this._setQuadDirty(id);
         };
-        QuadMesh.prototype.setQuad = function (id, x1, y1, x2, y2, originX1, originY1, originX2, originY2, z) {
-            if (z === void 0) { z = 0; }
+        QuadMesh.prototype.setQuad = function (id, x1, y1, x2, y2, originX1, originY1, originX2, originY2, z, pal) {
+            if (z === void 0) { z = constants_1.MIN_Z; }
+            if (pal === void 0) { pal = 0; }
             var vertex = id * constants_1.VERTICES_QUAD;
             this._setVertexUv(vertex, originX1, originY1);
             this._setVertexUv(vertex + 1, originX2, originY1);
@@ -111,18 +145,29 @@ define(["require", "exports", "./constants"], function (require, exports, consta
             this._setVertexPos(vertex + 1, x2, y1, z);
             this._setVertexPos(vertex + 2, x2, y2, z);
             this._setVertexPos(vertex + 3, x1, y2, z);
+            this._setVertexPal(vertex, pal);
+            this._setVertexPal(vertex + 1, pal);
+            this._setVertexPal(vertex + 2, pal);
+            this._setVertexPal(vertex + 3, pal);
             this._setQuadDirty(id);
         };
-        QuadMesh.prototype.render = function (shader) {
-            twgl.setBuffersAndAttributes(this._gl, shader, this._bufferInfo);
-            twgl.drawBufferInfo(this._gl, this._bufferInfo);
+        QuadMesh.prototype.setPal = function (id, pal) {
+            var vertex = id * constants_1.VERTICES_QUAD;
+            this._setVertexPal(vertex, pal);
+            this._setVertexPal(vertex + 1, pal);
+            this._setVertexPal(vertex + 2, pal);
+            this._setVertexPal(vertex + 3, pal);
+            this._setQuadDirty(id);
         };
+        // render(shader: twgl.ProgramInfo){
+        //     twgl.setBuffersAndAttributes(this._gl, shader, this._bufferInfo);
+        //     twgl.drawBufferInfo(this._gl, this._bufferInfo);
+        // }
         QuadMesh.prototype.update = function () {
             if (this.isDirty) {
                 var gl = this._gl;
                 var buffer = this.bufferInfo.attribs["position"].buffer;
                 var data = new Uint8Array(this._data, this._dirty_start, this._dirty_end - this._dirty_start);
-                //let data = this._data;
                 gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
                 gl.bufferSubData(gl.ARRAY_BUFFER, this._dirty_start, data);
                 this._dirty_start = constants_1.HUGE;
@@ -142,13 +187,28 @@ define(["require", "exports", "./constants"], function (require, exports, consta
             this._dirty_start = Math.min(id * constants_1.QUAD_SIZE, this._dirty_start);
             this._dirty_end = Math.max(id * constants_1.QUAD_SIZE + constants_1.QUAD_SIZE, this._dirty_end);
         };
+        QuadMesh.prototype._setAllDirty = function () {
+            this._dirty_start = 0;
+            this._dirty_end = this._size * constants_1.QUAD_SIZE;
+        };
         QuadMesh.prototype._setVertexPos = function (vertex, x, y, z) {
             // divide by two.
             var pos = (vertex * constants_1.VERTEX_SIZE) >> 1;
             var geo = this._geometry;
             geo[pos] = x;
             geo[pos + 1] = y;
-            geo[pos + 2] = z;
+            this._setVertexZ(vertex, z);
+            //geo[pos+ 2] = z;
+        };
+        QuadMesh.prototype._setVertexZ = function (vertex, z) {
+            var uvs = this._texcoord;
+            var pos = (vertex * constants_1.VERTEX_SIZE) + 4;
+            uvs[pos] = z;
+        };
+        QuadMesh.prototype._setVertexPal = function (vertex, palette) {
+            var uvs = this._texcoord;
+            var pos = (vertex * constants_1.VERTEX_SIZE) + 5;
+            uvs[pos] = palette;
         };
         QuadMesh.prototype._setVertexUv = function (vertex, x, y) {
             var uvs = this._texcoord;

@@ -1,8 +1,8 @@
-import { TEXTURE_SIZE, UV_TILE, VERTICES_QUAD, COMP_UV } from './constants';
-import { QuadMesh } from './QuadMesh';
-import { Mesh } from './interfaces';
+import { TEXTURE_SIZE, UV_TILE, VERTICES_QUAD, COMP_UV, MIN_Z } from './constants';
+import { QuadBuffer } from './QuadBuffer';
+import { Buffer } from './interfaces';
 
-export class TileMesh extends QuadMesh {
+export class TileBuffer extends QuadBuffer {
 
     private _tileset: Uint8Array;
 
@@ -16,37 +16,34 @@ export class TileMesh extends QuadMesh {
         super(gl, _width * _height);
     }
 
-    create(tids?: number[]){
+    create(tids?: number[], baseZ = MIN_Z){
         this._createTileset();
         
-        //this._createGeometry();
-        
         if(tids)
-            this.setTiles(tids);
+            this.setTiles(tids, baseZ);
         
         super.create();
 
         return this;
     }
 
-    setTile(tid: number, x: number, y: number, z = 0){
+    setTile(tid: number, x: number, y: number, z = MIN_Z){
         let seq = y * this._width + x;
         this.setTileSeq(seq, tid);
 
         return this;
     }
 
-    setTiles(tids: number[]){
+    setTiles(tids: number[], baseZ = MIN_Z){
         for(let i = 0; i < tids.length; i ++){
-            this.setTileSeq(i, tids[i]);            
+            this.setTileSeq(i, tids[i], baseZ);            
         }
-
         return this;
     }
 
-    setTileSeq(seq: number, tid: number, z = 0){
+    setTileSeq(seq: number, tid: number, z = MIN_Z){
         if(tid == 0){
-            this.setQuad(seq, 0,0,0,0,0,0,0,0);
+            this.setAttributes(seq, 0,0,0,0,0,0,0,0,0,0);
             return;
         }
 
@@ -58,7 +55,7 @@ export class TileMesh extends QuadMesh {
         let x2 = x1 + this._twidth;
         let y2 = y1 + this._theight;
         
-        this.setQuad(seq, x1, y1, x2, y2, ts[offset], ts[offset+1], ts[offset+2], ts[offset+3]);
+        this.setAttributes(seq, x1, y1, x2, y2, ts[offset], ts[offset+1], ts[offset+2], ts[offset+3],z, 0);
     }
 
     private _createTileset(){

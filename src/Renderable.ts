@@ -1,30 +1,47 @@
-import { Mesh } from './interfaces';
+import { Buffer, MatrixTransform, RenderableOptions, RenderableBufferOptions } from './interfaces';
 import { PAL_OFFSET } from './constants';
+import { Transform2d } from './Transform';
 
-export class Renderable<T extends Mesh> {
+export class Renderable<T extends Buffer> implements RenderableBufferOptions<T> {
     
-    private _pOffsetX: number; 
-    private _pOffsetY: number; 
-
-    constructor(public mesh: T, public texture: WebGLTexture, public palette: WebGLTexture, private _paletteId: number){
-        this.paletteId = _paletteId;
+    constructor(private _options: RenderableBufferOptions<T>){
+        _options.transform = _options.transform || new Transform2d();
+        this.paletteId = _options.paletteId;
     }
 
     get paletteId(){
-        return this._paletteId;
+        return this._options.paletteId;
     }
 
     set paletteId(value: number){
-        this._paletteId = value;
-        this._pOffsetX = (value % 16) * PAL_OFFSET;
-        this._pOffsetY = Math.floor(value / 16) * PAL_OFFSET;
+        this._options.paletteId = value;
     }
 
-    get palOffsetX(){
-        return this._pOffsetX;
+    get texture(){
+        return this._options.texture;
     }
 
-    get palOffsetY(){
-        return this._pOffsetY;
+    get buffer(){
+        return this._options.buffer;
+    }
+
+    get palette(){
+        return this._options.palette;
+    }
+
+    get shader(){
+        return this._options.shader;
+    }
+
+    get transform(){
+        return this._options.transform;
+    }
+
+    get zSort(){
+        return this._options.zSort;
+    }
+
+    get blendMode(){
+        return this._options.blendMode;
     }
 }

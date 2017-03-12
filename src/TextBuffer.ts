@@ -1,12 +1,13 @@
-import { QuadMesh } from './QuadMesh';
+import { QuadBuffer } from './QuadBuffer';
 import { FontInfo } from './interfaces';
-import { VERTICES_QUAD, TEXTURE_SIZE } from './constants';
+import { VERTICES_QUAD, TEXTURE_SIZE, MIN_Z, HUGE } from './constants';
 
-export class TextMesh extends QuadMesh {
+export class TextBuffer extends QuadBuffer {
     
     private _fontLoookup: number[] = [];
     private _font: Uint8Array; 
-    private _text: string;
+    private _text = "";
+    private _ptr = 0;
     
     constructor(_gl: WebGLRenderingContext, _size: number, private _fontInfo: FontInfo){
         super(_gl, _size);
@@ -16,23 +17,48 @@ export class TextMesh extends QuadMesh {
         return this._text;
     }
 
-    public create(text?: string){
+    create(text?: string, width = HUGE, x = 0, y = 0, z = MIN_Z){
         this._createFont();
 
         if(text)
-            this.putText(text);
+            this.write(text, width, x, y, z);
 
         super.create();
+        //this.range = text ? text.length : 0;
 
         return this;
     }
 
-    public putText(text: string){
-        if(text.length > this.size)
-            text = text.substr(0,this.size);
+    seek(pos: number){
+        this._ptr = pos;
+    }
 
-        let ox = 0;
-        let oy = 0;
+    // public setText(text: string, offset=0, width = HUGE, x = 0, y = 0, z = MIN_Z, pal = 0){
+    //     this._putText(text, width, offset, x,y,z,pal)
+    //     //this.range = offset + text.length;
+    //     this._text = text;
+    // }
+
+    public clear(length: number){
+        for (var i = this._ptr; i < this._ptr + length; i++){
+            this.clearQuad(i);
+        }
+        this._ptr += length;
+    }
+
+    // public appendText(text: string, width = HUGE, x = 0, y = 0, z = MIN_Z, pal = 0){
+    //     this._putText(text, width, this.range,x,y,z,pal);
+    //     //this.range += text.length;
+    //     this._text += text;
+    // }
+
+    public write(text: string, width = HUGE, x = 0, y = 0, z = MIN_Z, pal = 0){
+        let ctr = 0;
+        if(this._ptr + text.length > this.size)
+            text = text.substr(0,this.size - this._ptr);
+
+        let ox = x;
+        let oy = y;
 
         for(let i = 0; i < text.length; i++){
             let offset = this._fontLoookup[text.charCodeAt(i)];   
@@ -40,18 +66,16 @@ export class TextMesh extends QuadMesh {
             let y = this._font[offset+1]; 
             let w = this._font[offset+2]; 
             let h = this._font[offset+3];
-            this.setQuad(i, ox, oy, ox+w, oy+h, x,y,x+w,y+h);
-            console.log(ox);
-            if(ox>256){
+            this.setAttributes(this._ptr+i, ox, oy, ox+w, oy+h, x,y,x+w,y+h,z,pal);
+            if(ox>width){
                 oy += h;
                 ox = 0;
             } else {
                 ox+=w; 
             }
-        }
+        }       
 
-        this.range = text.length;
-        this._text = text;
+        this._ptr += text.length; 
     }
 
     private _createFont(){

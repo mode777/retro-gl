@@ -3,11 +3,11 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", "./constants", "./QuadMesh"], function (require, exports, constants_1, QuadMesh_1) {
+define(["require", "exports", "./constants", "./QuadBuffer"], function (require, exports, constants_1, QuadBuffer_1) {
     "use strict";
-    var TileMesh = (function (_super) {
-        __extends(TileMesh, _super);
-        function TileMesh(gl, _width, _height, _twidth, _theight) {
+    var TileBuffer = (function (_super) {
+        __extends(TileBuffer, _super);
+        function TileBuffer(gl, _width, _height, _twidth, _theight) {
             if (_twidth === void 0) { _twidth = 16; }
             if (_theight === void 0) { _theight = 16; }
             var _this = _super.call(this, gl, _width * _height) || this;
@@ -17,32 +17,31 @@ define(["require", "exports", "./constants", "./QuadMesh"], function (require, e
             _this._theight = _theight;
             return _this;
         }
-        TileMesh.prototype.create = function (tids, baseZ) {
+        TileBuffer.prototype.create = function (tids, baseZ) {
             if (baseZ === void 0) { baseZ = constants_1.MIN_Z; }
             this._createTileset();
-            //this._createGeometry();
             if (tids)
                 this.setTiles(tids, baseZ);
             _super.prototype.create.call(this);
             return this;
         };
-        TileMesh.prototype.setTile = function (tid, x, y, z) {
+        TileBuffer.prototype.setTile = function (tid, x, y, z) {
             if (z === void 0) { z = constants_1.MIN_Z; }
             var seq = y * this._width + x;
             this.setTileSeq(seq, tid);
             return this;
         };
-        TileMesh.prototype.setTiles = function (tids, baseZ) {
+        TileBuffer.prototype.setTiles = function (tids, baseZ) {
             if (baseZ === void 0) { baseZ = constants_1.MIN_Z; }
             for (var i = 0; i < tids.length; i++) {
                 this.setTileSeq(i, tids[i], baseZ);
             }
             return this;
         };
-        TileMesh.prototype.setTileSeq = function (seq, tid, z) {
+        TileBuffer.prototype.setTileSeq = function (seq, tid, z) {
             if (z === void 0) { z = constants_1.MIN_Z; }
             if (tid == 0) {
-                this.setQuad(seq, 0, 0, 0, 0, 0, 0, 0, 0);
+                this.setAttributes(seq, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
                 return;
             }
             var ts = this._tileset;
@@ -51,9 +50,9 @@ define(["require", "exports", "./constants", "./QuadMesh"], function (require, e
             var y1 = Math.floor(seq / this._width) * this._theight;
             var x2 = x1 + this._twidth;
             var y2 = y1 + this._theight;
-            this.setQuad(seq, x1, y1, x2, y2, ts[offset], ts[offset + 1], ts[offset + 2], ts[offset + 3], z);
+            this.setAttributes(seq, x1, y1, x2, y2, ts[offset], ts[offset + 1], ts[offset + 2], ts[offset + 3], z, 0);
         };
-        TileMesh.prototype._createTileset = function () {
+        TileBuffer.prototype._createTileset = function () {
             var ctr = 0;
             var tileset = new Uint8Array((constants_1.TEXTURE_SIZE / this._twidth) * (constants_1.TEXTURE_SIZE / this._theight) * constants_1.VERTICES_QUAD);
             for (var y = 0; y < constants_1.TEXTURE_SIZE; y += this._twidth) {
@@ -66,7 +65,7 @@ define(["require", "exports", "./constants", "./QuadMesh"], function (require, e
             }
             this._tileset = tileset;
         };
-        TileMesh.prototype._createGeometry = function () {
+        TileBuffer.prototype._createGeometry = function () {
             var ctr = 0;
             var idxCtr = 0;
             var vertex = 0;
@@ -77,8 +76,8 @@ define(["require", "exports", "./constants", "./QuadMesh"], function (require, e
                 }
             }
         };
-        return TileMesh;
-    }(QuadMesh_1.QuadMesh));
-    exports.TileMesh = TileMesh;
+        return TileBuffer;
+    }(QuadBuffer_1.QuadBuffer));
+    exports.TileBuffer = TileBuffer;
 });
-//# sourceMappingURL=TileMesh.js.map
+//# sourceMappingURL=TileBuffer.js.map
