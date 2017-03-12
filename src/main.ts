@@ -64,8 +64,8 @@ async function main(){
         texture: font
     });
 
-    renderer.renderList.push(text);
     renderer.renderList.push(tiles);
+    renderer.renderList.push(text);
     let a = .5;
 
     function render(time) {
@@ -136,7 +136,8 @@ function createTileSprite(texture,palette, paletteId){
         texture: texture,
         palette: palette,
         paletteId: paletteId,
-        mode7: false
+        mode7: true,
+        zSort: false
     });
 }
 
@@ -148,8 +149,8 @@ function createSprite(texture, palette, paletteId, x,y,ox,oy,w,h){
         buffer:sb, 
         texture: texture, 
         palette: palette, 
-        paletteId: 
-        paletteId
+        paletteId: paletteId,
+        zSort: false
     });
 }
 

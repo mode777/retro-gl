@@ -17,14 +17,14 @@ export class Renderer {
     constructor(private _gl: WebGLRenderingContext, settings: RendererSettings){
         
         this._ortho = mat4.ortho(mat4.create(), 0, _gl.canvas.width, _gl.canvas.height, 0, -256, 0);
-        this._projection = mat4.perspective(mat4.create(), 1, 1, 1, -1);
-        this._view = mat4.lookAt(mat4.create(), vec3.fromValues(0,-1,2.2), vec3.fromValues(0,0,0), vec3.fromValues(0, 1, 0));
+        this._projection = mat4.perspective(mat4.create(), 1, 1, -255, 0);
+        this._view = mat4.lookAt(mat4.create(), vec3.fromValues(0,-1,1.3), vec3.fromValues(0,1,.5), vec3.fromValues(0, 1, 0));
 
         this._matrix = mat4.create();
 
-        let t = vec3.fromValues(0,0,0);
-        this._buildMatrix(true);
-        vec3.transformMat4(t, t, this._matrix);
+        let t = vec4.fromValues(0,0,0,1);
+        this._buildMatrix(false);
+        vec4.transformMat4(t, t, this._matrix);
         console.log(t);
         
         this.setDefaults(settings);
@@ -54,9 +54,9 @@ export class Renderer {
     }
 
     protected _setOptions(r: RenderableOptions){
-        let zSort = r.zSort || this._defaults.zSort; 
+        let zSort = r.zSort != undefined ? r.zSort : this._defaults.zSort; 
         let blendMode = r.blendMode || this._defaults.blendMode;
-
+            
         if(zSort != this._settings.zSort){
             zSort 
             ? this._gl.enable(this._gl.DEPTH_TEST) 

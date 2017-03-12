@@ -100,8 +100,8 @@ define(["require", "exports", "./QuadBuffer", "./TileBuffer", "./Renderer", "./R
                             buffer: statsBuffer,
                             texture: font
                         });
-                        renderer.renderList.push(text);
                         renderer.renderList.push(tiles);
+                        renderer.renderList.push(text);
                         a = .5;
                         requestAnimationFrame(render);
                         setInterval(function () {
@@ -150,7 +150,8 @@ define(["require", "exports", "./QuadBuffer", "./TileBuffer", "./Renderer", "./R
             texture: texture,
             palette: palette,
             paletteId: paletteId,
-            mode7: false
+            mode7: true,
+            zSort: false
         });
     }
     function createSprite(texture, palette, paletteId, x, y, ox, oy, w, h) {
@@ -161,7 +162,8 @@ define(["require", "exports", "./QuadBuffer", "./TileBuffer", "./Renderer", "./R
             buffer: sb,
             texture: texture,
             palette: palette,
-            paletteId: paletteId
+            paletteId: paletteId,
+            zSort: false
         });
     }
     main();

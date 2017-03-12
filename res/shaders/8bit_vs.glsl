@@ -14,9 +14,8 @@ const float PX = 0.00390625;
 void main() {
     v_uv = texcoord * PX + HALF_PX;// vec2(PX * texcoord.x + HALF_PX, PX * texcoord.y + HALF_PX);//(texcoord - tweak2);
     v_pal = pal_shift;
-    //vec4 v1 = (matrix * vec4(position.xy, z_index, 1.0));
-    //gl_Position = (projection * view * matrix) * vec4(position.xy, z_index, 1.0);
     vec4 res = matrix * vec4(position.xy, z_index, 1.0);
-    //res.z = -1.0 + z_index / 128.0;
+    //res.z =  -(z_index / 128.0) + 1.0;
+    //res.w = res.w * res.z;
     gl_Position = res;
 }
