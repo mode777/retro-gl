@@ -66,7 +66,7 @@ export class TextBuffer extends QuadBuffer {
             let y = this._font[offset+1]; 
             let w = this._font[offset+2]; 
             let h = this._font[offset+3];
-            this.setAttributes(this._ptr+i, ox, oy, ox+w, oy+h, x,y,x+w-1,y+h-1,z,pal);
+            this.setAttributes(this._ptr+i, ox, oy, ox+w, oy+h, x,y,x+w,y+h,z,pal);
             if(ox>width){
                 oy += h;
                 ox = 0;

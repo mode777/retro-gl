@@ -44,4 +44,8 @@ export class Renderable<T extends Buffer> implements RenderableBufferOptions<T> 
     get blendMode(){
         return this._options.blendMode;
     }
+
+    get mode7() {
+        return this._options.mode7;
+    }
 }

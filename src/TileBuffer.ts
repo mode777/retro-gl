@@ -67,8 +67,8 @@ export class TileBuffer extends QuadBuffer {
                 tileset[ctr++] = x;
                 tileset[ctr++] = y;
 
-                tileset[ctr++] = x + this._twidth-1;
-                tileset[ctr++] = y + this._theight-1;
+                tileset[ctr++] = x + this._twidth;
+                tileset[ctr++] = y + this._theight;
             }
         }
 

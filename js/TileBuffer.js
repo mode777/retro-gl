@@ -59,8 +59,8 @@ define(["require", "exports", "./constants", "./QuadBuffer"], function (require,
                 for (var x = 0; x < constants_1.TEXTURE_SIZE; x += this._theight) {
                     tileset[ctr++] = x;
                     tileset[ctr++] = y;
-                    tileset[ctr++] = x + this._twidth - 1;
-                    tileset[ctr++] = y + this._theight - 1;
+                    tileset[ctr++] = x + this._twidth;
+                    tileset[ctr++] = y + this._theight;
                 }
             }
             this._tileset = tileset;

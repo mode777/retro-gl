@@ -141,7 +141,7 @@ define(["require", "exports", "./QuadBuffer", "./TileBuffer", "./Renderer", "./R
     function createTileSprite(texture, palette, paletteId) {
         var tids = [];
         for (var i = 0; i < 32 * 32; i++) {
-            tids.push(6);
+            tids.push(3 + i % 4);
         }
         offset++;
         var mesh = new TileBuffer_1.TileBuffer(gl, 32, 32).create(tids, 1);
@@ -149,7 +149,8 @@ define(["require", "exports", "./QuadBuffer", "./TileBuffer", "./Renderer", "./R
             buffer: mesh,
             texture: texture,
             palette: palette,
-            paletteId: paletteId
+            paletteId: paletteId,
+            mode7: false
         });
     }
     function createSprite(texture, palette, paletteId, x, y, ox, oy, w, h) {
@@ -164,21 +165,5 @@ define(["require", "exports", "./QuadBuffer", "./TileBuffer", "./Renderer", "./R
         });
     }
     main();
-    var o = mat4.ortho(mat4.create(), 0, 320, 180, 0, -256, 0);
-    var p = mat4.perspective(mat4.create(), 1, 1, 0.1, 100);
-    var v = mat4.lookAt(mat4.create(), vec3.fromValues(0, 0, 0), vec3.create(), vec3.fromValues(0, 1, 0));
-    var res = mat4.create();
-    //let res = o;
-    mat4.mul(res, p, v);
-    mat4.mul(res, res, o);
-    var p1 = vec3.fromValues(0, 0, 1);
-    var p2 = vec3.fromValues(320, 0, 1);
-    var p3 = vec3.fromValues(320, 180, 1);
-    var p4 = vec3.fromValues(0, 180, 1);
-    vec3.transformMat4(p1, p1, res);
-    vec3.transformMat4(p2, p2, res);
-    vec3.transformMat4(p3, p3, res);
-    vec3.transformMat4(p4, p4, res);
-    console.log(p1, p2, p3, p4);
 });
 //# sourceMappingURL=main.js.map

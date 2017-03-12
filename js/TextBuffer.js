@@ -70,7 +70,7 @@ define(["require", "exports", "./QuadBuffer", "./constants"], function (require,
                 var y_1 = this._font[offset + 1];
                 var w = this._font[offset + 2];
                 var h = this._font[offset + 3];
-                this.setAttributes(this._ptr + i, ox, oy, ox + w, oy + h, x_1, y_1, x_1 + w - 1, y_1 + h - 1, z, pal);
+                this.setAttributes(this._ptr + i, ox, oy, ox + w, oy + h, x_1, y_1, x_1 + w, y_1 + h, z, pal);
                 if (ox > width) {
                     oy += h;
                     ox = 0;

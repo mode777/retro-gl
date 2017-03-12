@@ -6,14 +6,14 @@ define(["require", "exports", "./constants"], function (require, exports, consta
             this.renderList = [];
             this._settings = {};
             this.a = 0;
-            this._projection = mat4.create();
-            mat4.ortho(this._projection, 0, _gl.canvas.width, _gl.canvas.height, 0, -256, 0);
-            //let o = mat4.ortho(mat4.create(), 0, _gl.canvas.width, _gl.canvas.height, 0, -256, 0);
-            //let p = mat4.perspective(mat4.create(), 1, 1, 0.1, 100);
-            //let v = mat4.lookAt(mat4.create(), vec3.fromValues(1,1,1), vec3.create(), vec3.fromValues(0, 1, 0));
-            //mat4.mul(this._projection, v, p);
-            //mat4.mul(this._projection, this._projection, o);
+            this._ortho = mat4.ortho(mat4.create(), 0, _gl.canvas.width, _gl.canvas.height, 0, -256, 0);
+            this._projection = mat4.perspective(mat4.create(), 1, 1, 1, -1);
+            this._view = mat4.lookAt(mat4.create(), vec3.fromValues(0, -1, 2.2), vec3.fromValues(0, 0, 0), vec3.fromValues(0, 1, 0));
             this._matrix = mat4.create();
+            var t = vec3.fromValues(0, 0, 0);
+            this._buildMatrix(true);
+            vec3.transformMat4(t, t, this._matrix);
+            console.log(t);
             this.setDefaults(settings);
         }
         Renderer.prototype.setDefaults = function (defaults) {
@@ -26,6 +26,7 @@ define(["require", "exports", "./constants"], function (require, exports, consta
             this._gl.useProgram(this._defaults.shader.program);
             this.renderList.forEach(function (r) {
                 _this._setOptions(r);
+                _this._buildMatrix(r.mode7);
                 var u = _this._getUniforms(r);
                 if (u) {
                     twgl.setUniforms(_this._defaults.shader, u);
@@ -56,14 +57,20 @@ define(["require", "exports", "./constants"], function (require, exports, consta
                 this._settings.blendMode = blendMode;
             }
         };
+        Renderer.prototype._buildMatrix = function (mode7) {
+            if (mode7) {
+                mat4.mul(this._matrix, this._projection, this._view);
+                mat4.mul(this._matrix, this._matrix, this._ortho);
+            }
+            else {
+                mat4.mul(this._matrix, this._ortho, constants_1.MAT4_IDENT);
+            }
+        };
         Renderer.prototype._getUniforms = function (r) {
-            mat4.multiply(this._matrix, this._projection, r.transform.matrix);
-            //this.a-=0.001;
+            this.a -= 0.0001;
             var a = this.a;
             var u = {
                 matrix: this._matrix,
-                projection: mat4.perspective(mat4.create(), 1, 1, -255, 0),
-                view: mat4.lookAt(mat4.create(), vec3.fromValues(0, -0.5 + a, 1.7), vec3.fromValues(0, 1 + a, 0), vec3.fromValues(0, 1, 0))
             };
             var texture = r.texture || this._defaults.texture;
             var palette = r.palette || this._defaults.palette;

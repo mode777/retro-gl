@@ -72,7 +72,7 @@ define(["require", "exports", "./constants", "./Transform"], function (require, 
                 this._buffer.setPositionTransformed(id, a.x, a.y, a.x + a.w, a.y + a.h, m);
                 this._buffer.setZ(id, a.z || 1);
                 this._buffer.setPalShift(id, a.palOffset || 0);
-                this._buffer.setUv(id, a.textureX, a.textureY, a.textureX + a.w - 1, a.textureY + a.h - 1);
+                this._buffer.setUv(id, a.textureX, a.textureY, a.textureX + a.w, a.textureY + a.h);
                 this._isDirty = false;
             }
         };
@@ -229,12 +229,12 @@ define(["require", "exports", "./constants", "./Transform"], function (require, 
             var bytes = this._byteView;
             bytes[start + UV_OFFSET_1X] = x1;
             bytes[start + UV_OFFSET_1Y] = y1;
-            bytes[start + UV_OFFSET_2X] = x2;
+            bytes[start + UV_OFFSET_2X] = x2 - 1;
             bytes[start + UV_OFFSET_2Y] = y1;
-            bytes[start + UV_OFFSET_3X] = x2;
-            bytes[start + UV_OFFSET_3Y] = y2;
+            bytes[start + UV_OFFSET_3X] = x2 - 1;
+            bytes[start + UV_OFFSET_3Y] = y2 - 1;
             bytes[start + UV_OFFSET_4X] = x1;
-            bytes[start + UV_OFFSET_4Y] = y2;
+            bytes[start + UV_OFFSET_4Y] = y2 - 1;
             this.setQuadDirty(start);
         };
         QuadBuffer.prototype.setPalShift = function (id, pal) {
@@ -276,20 +276,20 @@ define(["require", "exports", "./constants", "./Transform"], function (require, 
             shorts[startShort + POS_OFFSET_2Y] = y1;
             bytes[startByte + Z_OFFSET_2] = z;
             bytes[startByte + PAL_OFFSET_2] = pal;
-            bytes[startByte + UV_OFFSET_2X] = uvx2;
+            bytes[startByte + UV_OFFSET_2X] = uvx2 - 1;
             bytes[startByte + UV_OFFSET_2Y] = uvy1;
             shorts[startShort + POS_OFFSET_3X] = x2;
             shorts[startShort + POS_OFFSET_3Y] = y2;
             bytes[startByte + Z_OFFSET_3] = z;
             bytes[startByte + PAL_OFFSET_3] = pal;
-            bytes[startByte + UV_OFFSET_3X] = uvx2;
-            bytes[startByte + UV_OFFSET_3Y] = uvy2;
+            bytes[startByte + UV_OFFSET_3X] = uvx2 - 1;
+            bytes[startByte + UV_OFFSET_3Y] = uvy2 - 1;
             shorts[startShort + POS_OFFSET_4X] = x1;
             shorts[startShort + POS_OFFSET_4Y] = y2;
             bytes[startByte + Z_OFFSET_4] = z;
             bytes[startByte + PAL_OFFSET_4] = pal;
             bytes[startByte + UV_OFFSET_4X] = uvx1;
-            bytes[startByte + UV_OFFSET_4Y] = uvy2;
+            bytes[startByte + UV_OFFSET_4Y] = uvy2 - 1;
             this.setQuadDirty(startByte);
         };
         QuadBuffer.prototype.getAttributeInfo = function (id) {

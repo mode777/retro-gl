@@ -65,6 +65,13 @@ define(["require", "exports", "./Transform"], function (require, exports, Transf
             enumerable: true,
             configurable: true
         });
+        Object.defineProperty(Renderable.prototype, "mode7", {
+            get: function () {
+                return this._options.mode7;
+            },
+            enumerable: true,
+            configurable: true
+        });
         return Renderable;
     }());
     exports.Renderable = Renderable;

@@ -124,7 +124,7 @@ let offset = 5;
 function createTileSprite(texture,palette, paletteId){
     let tids = [];
     for(var i = 0; i<32*32; i++){
-        tids.push(6);
+        tids.push(3 + i%4);
     }
     
     offset++;
@@ -135,7 +135,8 @@ function createTileSprite(texture,palette, paletteId){
         buffer: mesh,
         texture: texture,
         palette: palette,
-        paletteId: paletteId
+        paletteId: paletteId,
+        mode7: false
     });
 }
 
@@ -153,23 +154,3 @@ function createSprite(texture, palette, paletteId, x,y,ox,oy,w,h){
 }
 
 main();
-
-let o = mat4.ortho(mat4.create(), 0, 320, 180, 0, -256, 0);
-let p = mat4.perspective(mat4.create(), 1, 1, 0.1, 100);
-let v = mat4.lookAt(mat4.create(), vec3.fromValues(0,0,0), vec3.create(), vec3.fromValues(0, 1, 0));
-let res = mat4.create();
-//let res = o;
-mat4.mul(res, p, v);
-mat4.mul(res, res, o);
-
-let p1 = vec3.fromValues(0,0,1);
-let p2 = vec3.fromValues(320,0,1);
-let p3 = vec3.fromValues(320,180,1);
-let p4 = vec3.fromValues(0,180,1);
-
-vec3.transformMat4(p1,p1,res);
-vec3.transformMat4(p2,p2,res);
-vec3.transformMat4(p3,p3,res);
-vec3.transformMat4(p4,p4,res);
-
-console.log(p1,p2,p3,p4);

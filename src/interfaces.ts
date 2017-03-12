@@ -39,6 +39,7 @@ export interface RenderableOptions {
     shader?: twgl.ProgramInfo
     zSort?: boolean,
     blendMode?: "none" | "alpha"
+    mode7?: boolean
 }
 
 export interface RenderableBufferOptions<TBuffer extends Buffer> extends RenderableOptions {
