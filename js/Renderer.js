@@ -1,5 +1,6 @@
 define(["require", "exports", "./constants"], function (require, exports, constants_1) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     var Renderer = (function () {
         function Renderer(_gl, settings) {
             this._gl = _gl;
@@ -65,6 +66,7 @@ define(["require", "exports", "./constants"], function (require, exports, consta
             }
             else {
                 mat4.mul(this._matrix, this._ortho, transform);
+                //mat4.mul(this._matrix, this._ortho, r.transform.matrix);
             }
         };
         Renderer.prototype._getUniforms = function (r) {

@@ -1,5 +1,6 @@
 define(["require", "exports", "./constants"], function (require, exports, constants_1) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     var Quad = (function () {
         function Quad(_data, _offset) {
             if (_data === void 0) { _data = new ArrayBuffer(constants_1.VERTEX_SIZE * constants_1.VERTICES_QUAD); }

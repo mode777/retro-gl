@@ -1,4 +1,4 @@
-precision lowp float;
+precision mediump float;
 
 uniform sampler2D texture;
 uniform sampler2D palette;
@@ -15,7 +15,7 @@ void main() {
     float lookup = texture2D(texture, v_uv).r;
     
     // create uv from palette index and palette offset
-    vec2 palUv = vec2(lookup+v_pal+HALF_PX,pal_offset+HALF_PX);
+    vec2 palUv = vec2(lookup+v_pal,pal_offset);
     
     //lookup color and discard if alpha is present.
     vec4 res = texture2D(palette, palUv);

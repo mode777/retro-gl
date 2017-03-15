@@ -35,6 +35,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 define(["require", "exports", "./QuadBuffer", "./TileBuffer", "./Renderer", "./Renderable", "./TextBuffer", "./constants"], function (require, exports, QuadBuffer_1, TileBuffer_1, Renderer_1, Renderable_1, TextBuffer_1, constants_1) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     var gl;
     var t = 0;
     var renderer;
@@ -51,7 +52,7 @@ define(["require", "exports", "./QuadBuffer", "./TileBuffer", "./Renderer", "./R
                 stats.end();
                 requestAnimationFrame(render);
             }
-            var stats, tileset, font, palette, fontInfo, vs, fs, programInfo, fntBuffer, sprites, i, sprite, statsBuffer, statsRend, a;
+            var stats, tileset, font, palette, fontInfo, vs, fs, programInfo, fntBuffer, sprites, i, sprite, a, posx, posy;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -59,7 +60,7 @@ define(["require", "exports", "./QuadBuffer", "./TileBuffer", "./Renderer", "./R
                         stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
                         document.body.appendChild(stats.dom);
                         initWebGl();
-                        tileset = createAlphaTexture("/res/textures/tileset.png");
+                        tileset = createAlphaTexture("/res/textures/tileset2.png");
                         font = createAlphaTexture("/res/textures/font.png");
                         palette = createTexture("/res/textures/pal_new.png");
                         return [4 /*yield*/, $.getJSON("/res/fonts/font.json")];
@@ -80,7 +81,7 @@ define(["require", "exports", "./QuadBuffer", "./TileBuffer", "./Renderer", "./R
                             zSort: true,
                             blendMode: "none"
                         });
-                        tiles = createTileSprite(tileset, palette, 1);
+                        tiles = createTileSprite(tileset, palette, 0);
                         fntBuffer = new TextBuffer_1.TextBuffer(gl, 128, fontInfo).create();
                         fntBuffer.write("Start Game", 320, 130, 50, 4, 4);
                         fntBuffer.write("Load Game", 320, 130, 50 + 16, 4);
@@ -88,25 +89,23 @@ define(["require", "exports", "./QuadBuffer", "./TileBuffer", "./Renderer", "./R
                         fntBuffer.write("Quit", 320, 130, 50 + 16 * 3, 4);
                         text = new Renderable_1.Renderable({
                             buffer: fntBuffer,
-                            texture: font
+                            texture: font,
+                            paletteId: 1
                         });
                         sprites = [];
                         for (i = 0; i < "Start Game".length; i++) {
                             sprite = fntBuffer.createSprite(i);
                             sprites.push(sprite);
                         }
-                        statsBuffer = new TextBuffer_1.TextBuffer(gl, 33, fontInfo).create();
-                        statsRend = new Renderable_1.Renderable({
-                            buffer: statsBuffer,
-                            texture: font
-                        });
                         renderer.renderList.push(tiles);
                         renderer.renderList.push(text);
                         a = .5;
                         requestAnimationFrame(render);
+                        posx = 0;
+                        posy = 0;
                         setInterval(function () {
-                            tiles.transform.x = (tiles.transform.x - 0.1) % (4 * 16);
-                            tiles.transform.y = (tiles.transform.y - 0.1) % (16);
+                            //tiles.transform.x = Math.floor((posx -= 0.1)%(4*16));
+                            //tiles.transform.y = Math.floor((posy -= 0.1)%(16));
                         }, 16);
                         return [2 /*return*/];
                 }
@@ -143,7 +142,7 @@ define(["require", "exports", "./QuadBuffer", "./TileBuffer", "./Renderer", "./R
     function createTileSprite(texture, palette, paletteId) {
         var tids = [];
         for (var i = 0; i < 32 * 32; i++) {
-            tids.push(3 + i % 4);
+            tids.push(1);
         }
         offset++;
         var mesh = new TileBuffer_1.TileBuffer(gl, 32, 32).create(tids, 1);
@@ -152,7 +151,7 @@ define(["require", "exports", "./QuadBuffer", "./TileBuffer", "./Renderer", "./R
             texture: texture,
             palette: palette,
             paletteId: paletteId,
-            mode7: true,
+            //mode7: true,
             zSort: false
         });
     }
