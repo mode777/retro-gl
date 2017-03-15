@@ -83,7 +83,8 @@ async function main(){
     requestAnimationFrame(render);
 
     setInterval(()=> {
-
+        tiles.transform.x = (tiles.transform.x - 0.1)%(4*16);
+        tiles.transform.y = (tiles.transform.y - 0.1)%(16);
     }, 16);
 }
 

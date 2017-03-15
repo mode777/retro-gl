@@ -13,6 +13,7 @@ export class Renderer {
     private _view: mat4;
     
     private _matrix: mat4;
+    private _matrixTemp: mat4;
 
     constructor(private _gl: WebGLRenderingContext, settings: RendererSettings){
         
@@ -21,11 +22,7 @@ export class Renderer {
         this._view = mat4.lookAt(mat4.create(), vec3.fromValues(0,-1,1.3), vec3.fromValues(0,1,.5), vec3.fromValues(0, 1, 0));
 
         this._matrix = mat4.create();
-
-        let t = vec4.fromValues(0,0,0,1);
-        this._buildMatrix(false);
-        vec4.transformMat4(t, t, this._matrix);
-        console.log(t);
+        this._matrixTemp = mat4.create();
         
         this.setDefaults(settings);
     }
@@ -42,7 +39,7 @@ export class Renderer {
         
         this.renderList.forEach((r)=>{
             this._setOptions(r);
-            this._buildMatrix(r.mode7);
+            this._buildMatrix(r);
             let u = this._getUniforms(r);
             
             if(u){
@@ -79,13 +76,18 @@ export class Renderer {
 
     a = 0;
 
-    protected _buildMatrix(mode7: boolean){
-        if(mode7){
+    protected _buildMatrix(r: RenderableBufferOptions<Buffer>){
+        let transform = r.transform
+            ? r.transform.matrix
+            : MAT4_IDENT;
+        
+        if(r.mode7){
+            mat4.mul(this._matrixTemp, this._ortho, transform);
             mat4.mul(this._matrix, this._projection, this._view);
-            mat4.mul(this._matrix, this._matrix, this._ortho);
+            mat4.mul(this._matrix, this._matrix, this._matrixTemp);
         }
         else {
-            mat4.mul(this._matrix, this._ortho, MAT4_IDENT);
+            mat4.mul(this._matrix, this._ortho, transform);
             //mat4.mul(this._matrix, this._ortho, r.transform.matrix);
         }
     }

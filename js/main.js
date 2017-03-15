@@ -105,6 +105,8 @@ define(["require", "exports", "./QuadBuffer", "./TileBuffer", "./Renderer", "./R
                         a = .5;
                         requestAnimationFrame(render);
                         setInterval(function () {
+                            tiles.transform.x = (tiles.transform.x - 0.1) % (4 * 16);
+                            tiles.transform.y = (tiles.transform.y - 0.1) % (16);
                         }, 16);
                         return [2 /*return*/];
                 }
