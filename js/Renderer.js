@@ -8,7 +8,7 @@ define(["require", "exports", "./constants"], function (require, exports, consta
             this.a = 0;
             this._ortho = mat4.ortho(mat4.create(), 0, _gl.canvas.width, _gl.canvas.height, 0, -256, 0);
             this._projection = mat4.perspective(mat4.create(), 1, 1, -255, 0);
-            this._view = mat4.lookAt(mat4.create(), vec3.fromValues(0, -1, 1.3), vec3.fromValues(0, 1, .5), vec3.fromValues(0, 1, 0));
+            this._view = mat4.lookAt(mat4.create(), vec3.fromValues(0, -1, 1.5), vec3.fromValues(0, 1, .7), vec3.fromValues(0, 1, 0));
             this._matrix = mat4.create();
             var t = vec4.fromValues(0, 0, 0, 1);
             this._buildMatrix(false);
