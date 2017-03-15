@@ -1,5 +1,6 @@
 define(["require", "exports", "./constants"], function (require, exports, constants_1) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     var Renderer = (function () {
         function Renderer(_gl, settings) {
             this._gl = _gl;
@@ -10,10 +11,7 @@ define(["require", "exports", "./constants"], function (require, exports, consta
             this._projection = mat4.perspective(mat4.create(), 1, 1, -255, 0);
             this._view = mat4.lookAt(mat4.create(), vec3.fromValues(0, -1, 1.5), vec3.fromValues(0, 1, .7), vec3.fromValues(0, 1, 0));
             this._matrix = mat4.create();
-            var t = vec4.fromValues(0, 0, 0, 1);
-            this._buildMatrix(false);
-            vec4.transformMat4(t, t, this._matrix);
-            console.log(t);
+            this._matrixTemp = mat4.create();
             this.setDefaults(settings);
         }
         Renderer.prototype.setDefaults = function (defaults) {
@@ -26,7 +24,7 @@ define(["require", "exports", "./constants"], function (require, exports, consta
             this._gl.useProgram(this._defaults.shader.program);
             this.renderList.forEach(function (r) {
                 _this._setOptions(r);
-                _this._buildMatrix(r.mode7);
+                _this._buildMatrix(r);
                 var u = _this._getUniforms(r);
                 if (u) {
                     twgl.setUniforms(_this._defaults.shader, u);
@@ -57,13 +55,18 @@ define(["require", "exports", "./constants"], function (require, exports, consta
                 this._settings.blendMode = blendMode;
             }
         };
-        Renderer.prototype._buildMatrix = function (mode7) {
-            if (mode7) {
+        Renderer.prototype._buildMatrix = function (r) {
+            var transform = r.transform
+                ? r.transform.matrix
+                : constants_1.MAT4_IDENT;
+            if (r.mode7) {
+                mat4.mul(this._matrixTemp, this._ortho, transform);
                 mat4.mul(this._matrix, this._projection, this._view);
-                mat4.mul(this._matrix, this._matrix, this._ortho);
+                mat4.mul(this._matrix, this._matrix, this._matrixTemp);
             }
             else {
-                mat4.mul(this._matrix, this._ortho, constants_1.MAT4_IDENT);
+                mat4.mul(this._matrix, this._ortho, transform);
+                //mat4.mul(this._matrix, this._ortho, r.transform.matrix);
             }
         };
         Renderer.prototype._getUniforms = function (r) {

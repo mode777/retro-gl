@@ -1,5 +1,6 @@
 define(["require", "exports"], function (require, exports) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     var Sprite = (function () {
         function Sprite(_id, _buffer) {
             this._id = _id;

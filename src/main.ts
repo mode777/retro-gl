@@ -22,7 +22,7 @@ async function main(){
 
     initWebGl();
     
-    let tileset = createAlphaTexture("/res/textures/tileset.png");    
+    let tileset = createAlphaTexture("/res/textures/tileset2.png");    
     let font = createAlphaTexture("/res/textures/font.png");    
     let palette = createTexture("/res/textures/pal_new.png");   
     let fontInfo = await $.getJSON("/res/fonts/font.json");
@@ -39,7 +39,7 @@ async function main(){
         blendMode: "none"
     });
 
-    tiles = createTileSprite(tileset, palette, 1);
+    tiles = createTileSprite(tileset, palette, 0);
     //let tiles2 = createTileSprite(tileset, palette, 1);
     
     let fntBuffer = new TextBuffer(gl, 128, fontInfo).create();
@@ -49,7 +49,8 @@ async function main(){
     fntBuffer.write("Quit", 320, 130,50+16*3,4);    
     text = new Renderable({
         buffer: fntBuffer,
-        texture: font
+        texture: font,
+        paletteId: 1
     });
 
     let sprites: Sprite[] = [];
@@ -57,12 +58,6 @@ async function main(){
         let sprite = fntBuffer.createSprite(i);
         sprites.push(sprite);
     }
-
-    let statsBuffer = new TextBuffer(gl, 33, fontInfo).create();
-    let statsRend = new Renderable({
-        buffer: statsBuffer,
-        texture: font
-    });
 
     renderer.renderList.push(tiles);
     renderer.renderList.push(text);
@@ -82,8 +77,12 @@ async function main(){
     }
     requestAnimationFrame(render);
 
-    setInterval(()=> {
+    let posx = 0;
+    let posy = 0;
 
+    setInterval(()=> {
+        //tiles.transform.x = Math.floor((posx -= 0.1)%(4*16));
+        //tiles.transform.y = Math.floor((posy -= 0.1)%(16));
     }, 16);
 }
 
@@ -124,7 +123,7 @@ let offset = 5;
 function createTileSprite(texture,palette, paletteId){
     let tids = [];
     for(var i = 0; i<32*32; i++){
-        tids.push(3 + i%4);
+        tids.push(1);
     }
     
     offset++;
@@ -136,7 +135,8 @@ function createTileSprite(texture,palette, paletteId){
         texture: texture,
         palette: palette,
         paletteId: paletteId,
-        mode7: true,
+
+        //mode7: true,
         zSort: false
     });
 }

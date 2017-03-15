@@ -1,10 +1,11 @@
-precision lowp float;
+precision mediump float;
 
 uniform sampler2D texture;
 uniform sampler2D palette;
 uniform float pal_offset;
 
-const float pixel = 0.0625;
+const float HALF_PX = 0.001953125; 
+const float PX = 0.00390625;
 
 varying vec2 v_uv;
 varying float v_pal;
