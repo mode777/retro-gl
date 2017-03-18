@@ -1,4 +1,4 @@
 require = {
     waitSeconds: 30,
-    baseUrl: '/js/'
+    baseUrl: 'out/browser'
 };

@@ -1,11 +1,6 @@
-import { QuadBuffer } from './QuadBuffer';
-import { TileBuffer } from './TileBuffer';
-import { Renderer } from './Renderer';
-import { Renderable } from './Renderable';
-import { TextBuffer } from './TextBuffer';
-import { FontInfo, Sprite } from './interfaces';
-import { MIN_Z, VERTEX_SIZE, VERTICES_QUAD, QUAD_SIZE } from './constants';
-import { Quad } from './Quad';
+
+import { Renderer, Renderable, TextBuffer, TileBuffer, Sprite, QuadBuffer, MIN_Z } from "./core/index";
+import * as png from "./pngreader";
 
 let gl: WebGLRenderingContext;
 let t = 0;
@@ -155,3 +150,4 @@ function createSprite(texture, palette, paletteId, x,y,ox,oy,w,h){
 }
 
 main();
+png.main();

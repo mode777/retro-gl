@@ -21,12 +21,14 @@
     </head>
     <body style="overflow: hidden">
         <canvas id="canvas" width="320" height="180" style="width:100%"></canvas>
+        <input type="file" id="file-input" style="position: fixed;top:10px;right:10px;" />
         
         <script src="/bower_components/es6-promise-polyfill/promise.min.js"></script>
         <script src="/bower_components/jquery/dist/jquery.min.js"></script>
         <script src="/bower_components/stats.js/build/stats.min.js"></script>
         <script src="/bower_components/twgl.js/dist/3.x/twgl-full.js"></script>
         <script src="/bower_components/gl-matrix/dist/gl-matrix.js"></script>
+        <script src="/bower_components/pako/dist/pako.min.js"></script>
         <script src="/require.config.js"></script>
         <script src="/bower_components/requirejs/require.js" data-main="index"></script>
     </body>

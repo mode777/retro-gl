@@ -9,7 +9,7 @@
     "sourceMap": true,
     "target": "es5",
     "module": "amd",
-    "outDir": "js"
+    "outDir": "out/browser"
 
   },
   "exclude": [
