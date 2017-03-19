@@ -33,15 +33,39 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "./lib/JQueryBinaryTransport", "./PngReader/PngReader"], function (require, exports, binaryPlugin, PngReader_1) {
+define(["require", "exports", "./lib/JQueryBinaryTransport", "./PngReader/PngReader", "./helpers", "./core/index", "./core/QuadBuffer", "./core/Renderable", "./core/PaletteTexture", "./core/IndexedTexture"], function (require, exports, binaryPlugin, PngReader_1, helpers_1, index_1, QuadBuffer_1, Renderable_1, PaletteTexture_1, IndexedTexture_1) {
     "use strict";
-    function main() {
+    binaryPlugin.register();
+    (function main() {
         return __awaiter(this, void 0, void 0, function () {
-            var buffer, png;
+            function render() {
+                renderer.render();
+                requestAnimationFrame(render);
+            }
+            var gl, vs, fs, fs24, programInfo, renderer, buffer, png, palTex, idxTex, quadBuffer, renderable;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        binaryPlugin.register();
+                        gl = helpers_1.initWebGl();
+                        return [4 /*yield*/, $.get("/res/shaders/8bit_vs.glsl")];
+                    case 1:
+                        vs = _a.sent();
+                        return [4 /*yield*/, $.get("/res/shaders/8bit_fs.glsl")];
+                    case 2:
+                        fs = _a.sent();
+                        return [4 /*yield*/, $.get("/res/shaders/24bit_fs.glsl")];
+                    case 3:
+                        fs24 = _a.sent();
+                        programInfo = twgl.createProgramInfo(gl, [vs, fs]);
+                        renderer = new index_1.Renderer(gl, {
+                            shader: programInfo,
+                            palette: null,
+                            texture: null,
+                            paletteId: 0,
+                            zSort: true,
+                            blendMode: "none"
+                        });
+                        requestAnimationFrame(render);
                         return [4 /*yield*/, $.ajax({
                                 url: "res/textures/8bit_test.png",
                                 type: "GET",
@@ -49,18 +73,35 @@ define(["require", "exports", "./lib/JQueryBinaryTransport", "./PngReader/PngRea
                                 responseType: "arraybuffer",
                                 processData: false
                             })];
-                    case 1:
+                    case 4:
                         buffer = _a.sent();
                         png = new PngReader_1.PngReader(buffer);
-                        console.log(png.header);
-                        console.log(png.palette);
-                        console.log(png.palette.getColor(4));
-                        console.log(png.imageData.decompress(png.header.width, png.header.height));
+                        palTex = new PaletteTexture_1.PaletteTexture(gl);
+                        palTex.setPngPalette(0, png.palette.data);
+                        palTex.create();
+                        idxTex = new IndexedTexture_1.IndexedTexture(gl);
+                        idxTex.setPngData(png.imageData.decompress());
+                        idxTex.create();
+                        quadBuffer = new QuadBuffer_1.QuadBuffer(gl, 1);
+                        quadBuffer.setAttributes(0, 0, 0, 256, 256, 0, 0, 256, 256, 1, 0);
+                        quadBuffer.create();
+                        renderable = new Renderable_1.Renderable({
+                            buffer: quadBuffer,
+                            texture: idxTex,
+                            palette: palTex,
+                            paletteId: 0
+                        });
+                        renderer.renderList.push(renderable);
+                        setInterval(function () {
+                            palTex.shift(0, 157, 160);
+                            palTex.update();
+                        }, 300);
                         return [2 /*return*/];
                 }
             });
         });
+    })();
+    function render() {
     }
-    exports.main = main;
 });
-//# sourceMappingURL=pngreader.js.map
+//# sourceMappingURL=main2.js.map

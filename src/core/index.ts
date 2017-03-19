@@ -7,3 +7,6 @@ export * from "./Renderer";
 export * from "./TextBuffer";
 export * from "./TileBuffer";
 export * from "./Transform";
+export * from "./PixelTexture";
+export * from "./IndexedTexture";
+export * from "./PaletteTexture";

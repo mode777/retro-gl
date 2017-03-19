@@ -18,6 +18,9 @@ define(["require", "exports"], function (require, exports) {
     exports.HUGE = Number.MAX_VALUE;
     exports.MIN_Z = 1;
     exports.MAX_Z = 255;
+    exports.COMP_RGBA = 4;
+    exports.COMP_RGB = 3;
+    exports.COMP_INDEXED = 1;
     exports.PAL_OFFSET = 1 / 256;
     exports.OFFSET_Z_INDEX = exports.COMP_POS * exports.COMP_SIZE_POS;
     exports.OFFSET_PAL_SHIFT = exports.OFFSET_Z_INDEX + exports.COMP_SIZE_Z_INDEX;

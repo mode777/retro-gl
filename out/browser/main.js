@@ -33,7 +33,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "./core/index", "./pngreader"], function (require, exports, index_1, png) {
+define(["require", "exports", "./core/index", "./helpers"], function (require, exports, index_1, helpers_1) {
     "use strict";
     var gl;
     var t = 0;
@@ -51,17 +51,17 @@ define(["require", "exports", "./core/index", "./pngreader"], function (require,
                 stats.end();
                 requestAnimationFrame(render);
             }
-            var stats, tileset, font, palette, fontInfo, vs, fs, programInfo, fntBuffer, sprites, i, sprite, a, posx, posy;
+            var stats, tileset, font, palette, fontInfo, vs, fs, fs24, programInfo, fntBuffer, sprites, i, sprite, a, posx, posy;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         stats = new Stats();
                         stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
                         document.body.appendChild(stats.dom);
-                        initWebGl();
-                        tileset = createAlphaTexture("/res/textures/tileset2.png");
-                        font = createAlphaTexture("/res/textures/font.png");
-                        palette = createTexture("/res/textures/pal_new.png");
+                        gl = helpers_1.initWebGl();
+                        tileset = helpers_1.createAlphaTexture(gl, "/res/textures/tileset2.png");
+                        font = helpers_1.createAlphaTexture(gl, "/res/textures/font.png");
+                        palette = helpers_1.createTexture(gl, "/res/textures/pal_new.png");
                         return [4 /*yield*/, $.getJSON("/res/fonts/font.json")];
                     case 1:
                         fontInfo = _a.sent();
@@ -71,6 +71,9 @@ define(["require", "exports", "./core/index", "./pngreader"], function (require,
                         return [4 /*yield*/, $.get("/res/shaders/8bit_fs.glsl")];
                     case 3:
                         fs = _a.sent();
+                        return [4 /*yield*/, $.get("/res/shaders/24bit_fs.glsl")];
+                    case 4:
+                        fs24 = _a.sent();
                         programInfo = twgl.createProgramInfo(gl, [vs, fs]);
                         renderer = new index_1.Renderer(gl, {
                             shader: programInfo,
@@ -80,7 +83,7 @@ define(["require", "exports", "./core/index", "./pngreader"], function (require,
                             zSort: true,
                             blendMode: "none"
                         });
-                        tiles = createTileSprite(tileset, palette, 0);
+                        tiles = helpers_1.createTileSprite(gl, tileset, palette, 0);
                         fntBuffer = new index_1.TextBuffer(gl, 128, fontInfo).create();
                         fntBuffer.write("Start Game", 320, 130, 50, 4, 4);
                         fntBuffer.write("Load Game", 320, 130, 50 + 16, 4);
@@ -111,62 +114,6 @@ define(["require", "exports", "./core/index", "./pngreader"], function (require,
             });
         });
     }
-    function initWebGl() {
-        var canvas = document.getElementById("canvas");
-        gl = twgl.getContext(canvas, {
-            premultipliedAlpha: false,
-            alpha: false,
-            antialias: false
-        });
-        //twgl.resizeCanvasToDisplaySize(gl.canvas);
-        gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-    }
-    function createTexture(path) {
-        return twgl.createTexture(gl, {
-            src: path,
-            min: gl.NEAREST,
-            mag: gl.NEAREST
-        });
-    }
-    function createAlphaTexture(path) {
-        return twgl.createTexture(gl, {
-            src: path,
-            min: gl.NEAREST,
-            mag: gl.NEAREST,
-            format: gl.LUMINANCE,
-            internalFormat: gl.LUMINANCE
-        });
-    }
-    var offset = 5;
-    function createTileSprite(texture, palette, paletteId) {
-        var tids = [];
-        for (var i = 0; i < 32 * 32; i++) {
-            tids.push(1);
-        }
-        offset++;
-        var mesh = new index_1.TileBuffer(gl, 32, 32).create(tids, 1);
-        return new index_1.Renderable({
-            buffer: mesh,
-            texture: texture,
-            palette: palette,
-            paletteId: paletteId,
-            //mode7: true,
-            zSort: false
-        });
-    }
-    function createSprite(texture, palette, paletteId, x, y, ox, oy, w, h) {
-        var sb = new index_1.QuadBuffer(gl, 1);
-        sb.setAttributes(0, x, y, x + w, y + h, ox, oy, ox + w, oy + w, index_1.MIN_Z, 0);
-        sb.create();
-        return new index_1.Renderable({
-            buffer: sb,
-            texture: texture,
-            palette: palette,
-            paletteId: paletteId,
-            zSort: false
-        });
-    }
     main();
-    png.main();
 });
 //# sourceMappingURL=main.js.map

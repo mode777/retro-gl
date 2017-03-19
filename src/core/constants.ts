@@ -16,6 +16,9 @@ export const TEXTURE_SIZE = 256;
 export const HUGE = Number.MAX_VALUE;
 export const MIN_Z = 1;
 export const MAX_Z = 255;
+export const COMP_RGBA = 4;
+export const COMP_RGB = 3;
+export const COMP_INDEXED = 1;
 
 export const PAL_OFFSET = 1 / 256;
 export const OFFSET_Z_INDEX = COMP_POS * COMP_SIZE_POS;
