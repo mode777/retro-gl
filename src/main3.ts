@@ -24,7 +24,18 @@ import { initWebGl, createTexture } from './helpers';
     }
     var bufferPp = twgl.createBufferInfoFromArrays(gl, arraysPp);
 
-    var fbi = twgl.createFramebufferInfo(gl);
+    var fbi = twgl.createFramebufferInfo(gl, [
+        {
+            attach: gl.COLOR_ATTACHMENT0,
+            mag: gl.NEAREST,
+            min: gl.NEAREST
+        },
+        {
+            attach: gl.DEPTH_STENCIL_ATTACHMENT,
+            format: gl.DEPTH_STENCIL
+        }
+    ]);
+    console.log(fbi);
     twgl.bindFramebufferInfo(gl, fbi);
     gl.useProgram(programInfo.program);
     twgl.setBuffersAndAttributes(gl, programInfo, buffer);

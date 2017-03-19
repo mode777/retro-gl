@@ -55,7 +55,7 @@ declare namespace twgl {
 
     export type ArraySpec = number[] | ArrayBuffer | FullArraySpec;
 
-    export interface AttachmentOptions {
+    export interface AttachmentOptions extends TextureOptions {
         attach?: number;
         format?: number;
         type?: number;
