@@ -9,7 +9,7 @@ import { initWebGl, createTexture } from './helpers';
     let programInfo = twgl.createProgramInfo(gl, [vs, fs]);    
     
     var arrays = {
-        position: [-0.9, -0.9, 0, 0.9, -0.9, 0, -0.9, 0.9, 0, -0.9, 0.9, 0, 0.9, -0.9, 0, 0.9, 0.9, 0],
+        position: [-1.1, -1.1, 0, 1.1, -1.1, 0, -1.1, 1.1, 0, -1.1, 1.1, 0, 1.1, -1.1, 0, 1.1, 1.1, 0],
         texcoord: [ 0,  1,    1,  1,     0, 0,     0, 0,    1,  1,    1, 0   ],        
     };
     var buffer = twgl.createBufferInfoFromArrays(gl, arrays);
@@ -19,7 +19,7 @@ import { initWebGl, createTexture } from './helpers';
     let programInfoPp = twgl.createProgramInfo(gl, [vsPp, fsPp]); 
 
     var arraysPp = {
-        position: [-1, -1, 0, 1, -1, 0, -1, 1, 0, -1, 1, 0, 1, -1, 0, 1, 1, 0],
+        position: [-1.5, -1.5, 0, 1.5, -1.5, 0, -1.5, 1.5, 0, -1.5, 1.5, 0, 1.5, -1.5, 0, 1.5, 1.5, 0],
         texcoord: [ 0,  1,    1,  1,     0, 0,     0, 0,    1,  1,    1, 0   ],        
     }
     var bufferPp = twgl.createBufferInfoFromArrays(gl, arraysPp);
@@ -28,31 +28,38 @@ import { initWebGl, createTexture } from './helpers';
         {
             attach: gl.COLOR_ATTACHMENT0,
             mag: gl.NEAREST,
-            min: gl.NEAREST
+            min: gl.NEAREST,
+            width: 512,
+            height: 512
         },
         {
             attach: gl.DEPTH_STENCIL_ATTACHMENT,
             format: gl.DEPTH_STENCIL
         }
-    ]);
+    ], 512, 512);
     console.log(fbi);
-    twgl.bindFramebufferInfo(gl, fbi);
-    gl.useProgram(programInfo.program);
-    twgl.setBuffersAndAttributes(gl, programInfo, buffer);
-    twgl.drawBufferInfo(gl, buffer);
-    twgl.bindFramebufferInfo(gl);
 
 
     let offset = 0;
-
+    let offsetPp = 0;
     function render(){
+        twgl.bindFramebufferInfo(gl, fbi);
+        gl.useProgram(programInfo.program);
+        twgl.setBuffersAndAttributes(gl, programInfo, buffer);
+        twgl.setUniforms(programInfo, {
+            offset: offset+=0.0001
+        });
+        twgl.drawBufferInfo(gl, buffer);
+        twgl.bindFramebufferInfo(gl);
+        
         gl.useProgram(programInfoPp.program);
         twgl.setBuffersAndAttributes(gl, programInfoPp, bufferPp);
         twgl.setUniforms(programInfoPp, {
             texture: fbi.attachments[0],
-            offset: offset+=0.1
+            offset: offsetPp+=0.1
         });
         twgl.drawBufferInfo(gl, bufferPp);
+
         requestAnimationFrame(render);
     }
     requestAnimationFrame(render);

@@ -38,16 +38,24 @@ define(["require", "exports", "./helpers"], function (require, exports, helpers_
     (function main() {
         return __awaiter(this, void 0, void 0, function () {
             function render() {
+                twgl.bindFramebufferInfo(gl, fbi);
+                gl.useProgram(programInfo.program);
+                twgl.setBuffersAndAttributes(gl, programInfo, buffer);
+                twgl.setUniforms(programInfo, {
+                    offset: offset += 0.0001
+                });
+                twgl.drawBufferInfo(gl, buffer);
+                twgl.bindFramebufferInfo(gl);
                 gl.useProgram(programInfoPp.program);
                 twgl.setBuffersAndAttributes(gl, programInfoPp, bufferPp);
                 twgl.setUniforms(programInfoPp, {
                     texture: fbi.attachments[0],
-                    offset: offset += 0.1
+                    offset: offsetPp += 0.1
                 });
                 twgl.drawBufferInfo(gl, bufferPp);
                 requestAnimationFrame(render);
             }
-            var gl, vs, fs, programInfo, arrays, buffer, vsPp, fsPp, programInfoPp, arraysPp, bufferPp, fbi, offset;
+            var gl, vs, fs, programInfo, arrays, buffer, vsPp, fsPp, programInfoPp, arraysPp, bufferPp, fbi, offset, offsetPp;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -60,7 +68,7 @@ define(["require", "exports", "./helpers"], function (require, exports, helpers_
                         fs = _a.sent();
                         programInfo = twgl.createProgramInfo(gl, [vs, fs]);
                         arrays = {
-                            position: [-0.9, -0.9, 0, 0.9, -0.9, 0, -0.9, 0.9, 0, -0.9, 0.9, 0, 0.9, -0.9, 0, 0.9, 0.9, 0],
+                            position: [-1.1, -1.1, 0, 1.1, -1.1, 0, -1.1, 1.1, 0, -1.1, 1.1, 0, 1.1, -1.1, 0, 1.1, 1.1, 0],
                             texcoord: [0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0],
                         };
                         buffer = twgl.createBufferInfoFromArrays(gl, arrays);
@@ -72,7 +80,7 @@ define(["require", "exports", "./helpers"], function (require, exports, helpers_
                         fsPp = _a.sent();
                         programInfoPp = twgl.createProgramInfo(gl, [vsPp, fsPp]);
                         arraysPp = {
-                            position: [-1, -1, 0, 1, -1, 0, -1, 1, 0, -1, 1, 0, 1, -1, 0, 1, 1, 0],
+                            position: [-1.5, -1.5, 0, 1.5, -1.5, 0, -1.5, 1.5, 0, -1.5, 1.5, 0, 1.5, -1.5, 0, 1.5, 1.5, 0],
                             texcoord: [0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0],
                         };
                         bufferPp = twgl.createBufferInfoFromArrays(gl, arraysPp);
@@ -80,20 +88,18 @@ define(["require", "exports", "./helpers"], function (require, exports, helpers_
                             {
                                 attach: gl.COLOR_ATTACHMENT0,
                                 mag: gl.NEAREST,
-                                min: gl.NEAREST
+                                min: gl.NEAREST,
+                                width: 512,
+                                height: 512
                             },
                             {
                                 attach: gl.DEPTH_STENCIL_ATTACHMENT,
                                 format: gl.DEPTH_STENCIL
                             }
-                        ]);
+                        ], 512, 512);
                         console.log(fbi);
-                        twgl.bindFramebufferInfo(gl, fbi);
-                        gl.useProgram(programInfo.program);
-                        twgl.setBuffersAndAttributes(gl, programInfo, buffer);
-                        twgl.drawBufferInfo(gl, buffer);
-                        twgl.bindFramebufferInfo(gl);
                         offset = 0;
+                        offsetPp = 0;
                         requestAnimationFrame(render);
                         return [2 /*return*/];
                 }
