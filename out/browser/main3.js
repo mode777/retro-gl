@@ -35,6 +35,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 define(["require", "exports", "./helpers"], function (require, exports, helpers_1) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     (function main() {
         return __awaiter(this, void 0, void 0, function () {
             function render() {
@@ -88,15 +89,13 @@ define(["require", "exports", "./helpers"], function (require, exports, helpers_
                             {
                                 attach: gl.COLOR_ATTACHMENT0,
                                 mag: gl.NEAREST,
-                                min: gl.NEAREST,
-                                width: 512,
-                                height: 512
+                                min: gl.NEAREST
                             },
                             {
                                 attach: gl.DEPTH_STENCIL_ATTACHMENT,
                                 format: gl.DEPTH_STENCIL
                             }
-                        ], 512, 512);
+                        ]);
                         console.log(fbi);
                         offset = 0;
                         offsetPp = 0;

@@ -35,6 +35,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 define(["require", "exports", "./core/index", "./helpers"], function (require, exports, index_1, helpers_1) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     var gl;
     var t = 0;
     var renderer;

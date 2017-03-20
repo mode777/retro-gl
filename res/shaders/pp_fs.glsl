@@ -16,9 +16,15 @@ void shift(inout vec2 texcoord){
         discard; 
 }
 
+void axelay(inout vec2 texcoord){
+    texcoord.y *= (cos(texcoord.y)+1.0)*4.0;
+}
+
+
 void main() {
-    vec2 texcoord = v_uv * 512.0;
-    ripple(texcoord);
-    gl_FragColor = texture2D(texture, texcoord / 512.0);
+    vec2 texcoord = v_uv;
+    //ripple(texcoord);
+    axelay(texcoord);
+    gl_FragColor = texture2D(texture, texcoord);
 }
 

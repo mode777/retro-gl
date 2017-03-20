@@ -1,5 +1,6 @@
 define(["require", "exports"], function (require, exports) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     var ChunkType;
     (function (ChunkType) {
         ChunkType[ChunkType["Header"] = 1229472850] = "Header";

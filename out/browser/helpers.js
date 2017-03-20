@@ -1,5 +1,6 @@
 define(["require", "exports", "./core/index"], function (require, exports, index_1) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     function initWebGl() {
         var canvas = document.getElementById("canvas");
         var gl = twgl.getContext(canvas, {

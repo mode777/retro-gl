@@ -28,15 +28,13 @@ import { initWebGl, createTexture } from './helpers';
         {
             attach: gl.COLOR_ATTACHMENT0,
             mag: gl.NEAREST,
-            min: gl.NEAREST,
-            width: 512,
-            height: 512
+            min: gl.NEAREST
         },
         {
             attach: gl.DEPTH_STENCIL_ATTACHMENT,
             format: gl.DEPTH_STENCIL
         }
-    ], 512, 512);
+    ]);
     console.log(fbi);
 
 
