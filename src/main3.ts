@@ -45,7 +45,7 @@ import { initWebGl, createTexture } from './helpers';
         gl.useProgram(programInfo.program);
         twgl.setBuffersAndAttributes(gl, programInfo, buffer);
         twgl.setUniforms(programInfo, {
-            offset: offset+=0.0001
+            offset: offset+=0.001
         });
         twgl.drawBufferInfo(gl, buffer);
         twgl.bindFramebufferInfo(gl);

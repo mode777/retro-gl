@@ -1,2 +1,2 @@
-require(["main3"]);
+require(["main"]);
 //# sourceMappingURL=index.js.map
