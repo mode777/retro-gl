@@ -1,6 +1,5 @@
 define(["require", "exports"], function (require, exports) {
     "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
     exports.FLOAT_SIZE = 4;
     exports.SHORT_SIZE = 2;
     exports.BYTE_SIZE = 1;

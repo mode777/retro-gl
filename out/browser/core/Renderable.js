@@ -1,6 +1,5 @@
 define(["require", "exports", "./Transform"], function (require, exports, Transform_1) {
     "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
     var Renderable = (function () {
         function Renderable(_options) {
             this._options = _options;

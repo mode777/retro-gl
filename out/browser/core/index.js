@@ -3,7 +3,6 @@ define(["require", "exports", "./constants", "./Quad", "./QuadBuffer", "./Render
     function __export(m) {
         for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
     }
-    Object.defineProperty(exports, "__esModule", { value: true });
     __export(constants_1);
     __export(Quad_1);
     __export(QuadBuffer_1);

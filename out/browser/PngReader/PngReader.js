@@ -1,6 +1,5 @@
 define(["require", "exports", "./chunks", "./constants"], function (require, exports, chunks_1, constants_1) {
     "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
     var PngReader = (function () {
         function PngReader(data) {
             this.data = data;
