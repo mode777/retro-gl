@@ -3,36 +3,13 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", "./constants", "./PixelTexture"], function (require, exports, constants_1, PixelTexture_1) {
+define(["require", "exports", "./RgbaTexture", "./constants", "./PixelTexture"], function (require, exports, RgbaTexture_1, constants_1, PixelTexture_1) {
     "use strict";
     var PaletteTexture = (function (_super) {
         __extends(PaletteTexture, _super);
-        function PaletteTexture(gl) {
-            return _super.call(this, gl) || this;
+        function PaletteTexture() {
+            return _super !== null && _super.apply(this, arguments) || this;
         }
-        Object.defineProperty(PaletteTexture.prototype, "_components", {
-            get: function () {
-                return constants_1.COMP_RGBA;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(PaletteTexture.prototype, "_options", {
-            get: function () {
-                return {
-                    target: this._gl.TEXTURE_2D,
-                    width: constants_1.TEXTURE_SIZE,
-                    height: constants_1.TEXTURE_SIZE,
-                    min: this._gl.NEAREST,
-                    mag: this._gl.NEAREST,
-                    src: this._texdata,
-                    format: this._gl.RGBA,
-                    type: this._gl.UNSIGNED_BYTE
-                };
-            },
-            enumerable: true,
-            configurable: true
-        });
         PaletteTexture.prototype.setPalFunc = function (palId, func) {
             var tex = this._texdata;
             var f = Math.floor;
@@ -71,16 +48,16 @@ define(["require", "exports", "./constants", "./PixelTexture"], function (requir
         PaletteTexture.prototype.shift = function (palId, start, end) {
             var len = end - start;
             for (var i = 0; i < len; i++) {
-                this.switch(palId, start + i, end);
+                this.switchColors(palId, start + i, end);
             }
         };
-        PaletteTexture.prototype.switch = function (palId, idx1, idx2) {
+        PaletteTexture.prototype.switchColors = function (palId, idx1, idx2) {
             var temp = this.getIndex(palId, idx1);
             this.setIndex(palId, idx1, this.getIndex(palId, idx2));
             this.setIndex(palId, idx2, temp);
         };
         return PaletteTexture;
-    }(PixelTexture_1.PixelTexture));
+    }(RgbaTexture_1.RgbaTexture));
     exports.PaletteTexture = PaletteTexture;
 });
 //# sourceMappingURL=PaletteTexture.js.map

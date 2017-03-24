@@ -7,6 +7,7 @@ import { Renderable } from './core/Renderable';
 import { PaletteTexture } from './core/PaletteTexture';
 import { ColorComponent } from './core/PixelTexture';
 import { IndexedTexture } from './core/IndexedTexture';
+import { RessourceWriter } from './RessourceProcessor/RessourceWriter';
 
 binaryPlugin.register();
 
@@ -67,8 +68,10 @@ binaryPlugin.register();
         palTex.update();
     }, 300)
 
+    let rw = new RessourceWriter();
+    rw.addTexture("texture", idxTex);
+    rw.addTexture("palettes", palTex);
+    rw.download("ressource.json");
+
 })();
 
-function render(){
-
-}

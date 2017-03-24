@@ -33,7 +33,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "./lib/JQueryBinaryTransport", "./PngReader/PngReader", "./helpers", "./core/index", "./core/QuadBuffer", "./core/Renderable", "./core/PaletteTexture", "./core/IndexedTexture"], function (require, exports, binaryPlugin, PngReader_1, helpers_1, index_1, QuadBuffer_1, Renderable_1, PaletteTexture_1, IndexedTexture_1) {
+define(["require", "exports", "./lib/JQueryBinaryTransport", "./PngReader/PngReader", "./helpers", "./core/index", "./core/QuadBuffer", "./core/Renderable", "./core/PaletteTexture", "./core/IndexedTexture", "./RessourceProcessor/RessourceWriter"], function (require, exports, binaryPlugin, PngReader_1, helpers_1, index_1, QuadBuffer_1, Renderable_1, PaletteTexture_1, IndexedTexture_1, RessourceWriter_1) {
     "use strict";
     binaryPlugin.register();
     (function main() {
@@ -42,7 +42,7 @@ define(["require", "exports", "./lib/JQueryBinaryTransport", "./PngReader/PngRea
                 renderer.render();
                 requestAnimationFrame(render);
             }
-            var gl, vs, fs, fs24, programInfo, renderer, buffer, png, palTex, idxTex, quadBuffer, renderable;
+            var gl, vs, fs, fs24, programInfo, renderer, buffer, png, palTex, idxTex, quadBuffer, renderable, rw;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -96,12 +96,14 @@ define(["require", "exports", "./lib/JQueryBinaryTransport", "./PngReader/PngRea
                             palTex.shift(0, 157, 160);
                             palTex.update();
                         }, 300);
+                        rw = new RessourceWriter_1.RessourceWriter();
+                        rw.addTexture("texture", idxTex);
+                        rw.addTexture("palettes", palTex);
+                        rw.download("ressource.json");
                         return [2 /*return*/];
                 }
             });
         });
     })();
-    function render() {
-    }
 });
 //# sourceMappingURL=main2.js.map

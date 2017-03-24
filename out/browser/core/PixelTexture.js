@@ -23,6 +23,28 @@ define(["require", "exports", "./constants"], function (require, exports, consta
             enumerable: true,
             configurable: true
         });
+        Object.defineProperty(PixelTexture.prototype, "rawData", {
+            get: function () {
+                return this._texdata;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(PixelTexture.prototype, "colorDepth", {
+            get: function () {
+                switch (this._options.format) {
+                    case this._gl.RGBA:
+                        return 32;
+                    case this._gl.LUMINANCE:
+                    case this._gl.ALPHA:
+                        return 8;
+                    case this._gl.RGB:
+                        return 24;
+                }
+            },
+            enumerable: true,
+            configurable: true
+        });
         PixelTexture.prototype.setDataFunc = function (func) {
             var tex = this._texdata;
             var f = Math.floor;

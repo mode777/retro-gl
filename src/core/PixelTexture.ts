@@ -28,6 +28,22 @@ export abstract class PixelTexture {
     protected abstract get _options(): twgl.TextureOptions;
     protected abstract get _components(): number;
 
+    public get rawData() {
+        return this._texdata;
+    }
+
+    public get colorDepth(): 8 | 24 | 32 {
+        switch (this._options.format) {
+            case this._gl.RGBA:
+                return 32;
+            case this._gl.LUMINANCE:
+            case this._gl.ALPHA:
+                return 8;
+            case this._gl.RGB:
+                return 24;
+        }
+    }
+
     public setDataFunc(func: (x:number, y: number, comp: ColorComponent) => number){
         let tex = this._texdata;
         let f = Math.floor;
@@ -100,5 +116,6 @@ export abstract class PixelTexture {
         this._dirtyStart = Math.min(this._dirtyStart, start);
         this._dirtyEnd = Math.max(this._dirtyEnd, start + TEXTURE_SIZE * this._components);
     }
+
 
 }
