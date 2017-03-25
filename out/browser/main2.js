@@ -33,7 +33,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "./lib/JQueryBinaryTransport", "./PngReader/PngReader", "./helpers", "./core/index", "./core/QuadBuffer", "./core/Renderable", "./core/PaletteTexture", "./core/IndexedTexture", "./RessourceProcessor/RessourceWriter"], function (require, exports, binaryPlugin, PngReader_1, helpers_1, index_1, QuadBuffer_1, Renderable_1, PaletteTexture_1, IndexedTexture_1, RessourceWriter_1) {
+define(["require", "exports", "./lib/JQueryBinaryTransport", "./PngReader/PngReader", "./helpers", "./core/index", "./core/QuadBuffer", "./core/Renderable", "./core/PaletteTexture", "./core/IndexedTexture", "./RessourceProcessor/JsonRessourceWriter"], function (require, exports, binaryPlugin, PngReader_1, helpers_1, index_1, QuadBuffer_1, Renderable_1, PaletteTexture_1, IndexedTexture_1, JsonRessourceWriter_1) {
     "use strict";
     binaryPlugin.register();
     (function main() {
@@ -96,7 +96,7 @@ define(["require", "exports", "./lib/JQueryBinaryTransport", "./PngReader/PngRea
                             palTex.shift(0, 157, 160);
                             palTex.update();
                         }, 300);
-                        rw = new RessourceWriter_1.RessourceWriter();
+                        rw = new JsonRessourceWriter_1.JsonRessourceWriter();
                         rw.addTexture("texture", idxTex);
                         rw.addTexture("palettes", palTex);
                         rw.download("ressource.json");

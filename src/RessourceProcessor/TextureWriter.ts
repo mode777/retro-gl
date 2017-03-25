@@ -1,9 +1,9 @@
 import { PixelTexture } from '../core/PixelTexture';
-import { JsonRessource, JsonTexture } from './interfaces';
+import { JsonRessource, JsonTexture, RessourceWriter } from './interfaces';
 import { BitDepth } from '../PngReader/constants';
 import { compressAndEncode } from './utils';
 
-export class TextureWriter {
+export class TextureWriter implements RessourceWriter {
     constructor(private _texture: PixelTexture) {
 
     }
@@ -11,7 +11,7 @@ export class TextureWriter {
     public getJson(): JsonTexture {
         return {
             colorDepth: this._texture.colorDepth,
-            imageData: compressAndEncode(this._texture.rawData)
+            imageData: compressAndEncode(this._texture.getRawData())
         }
     }
 }

@@ -1,9 +1,9 @@
 import { PixelTexture } from '../core/PixelTexture';
 import { PaletteTexture } from '../core/PaletteTexture';
-import { JsonRessource } from './interfaces';
+import { JsonRessource, RessourceWriter } from './interfaces';
 import { TextureWriter } from "./TextureWriter";
 
-export class RessourceWriter {
+export class JsonRessourceWriter implements RessourceWriter {
     
     private _textures: {[key: string]: PixelTexture} = {};
     private _palettes: {[key: string]: PaletteTexture} = {};

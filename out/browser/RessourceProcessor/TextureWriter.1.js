@@ -14,4 +14,4 @@ define(["require", "exports", "./utils"], function (require, exports, utils_1) {
     }());
     exports.TextureWriter = TextureWriter;
 });
-//# sourceMappingURL=TextureWriter.js.map
+//# sourceMappingURL=TextureWriter.1.js.map

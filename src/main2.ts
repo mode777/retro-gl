@@ -7,7 +7,7 @@ import { Renderable } from './core/Renderable';
 import { PaletteTexture } from './core/PaletteTexture';
 import { ColorComponent } from './core/PixelTexture';
 import { IndexedTexture } from './core/IndexedTexture';
-import { RessourceWriter } from './RessourceProcessor/RessourceWriter';
+import { JsonRessourceWriter } from './RessourceProcessor/JsonRessourceWriter';
 
 binaryPlugin.register();
 
@@ -42,11 +42,10 @@ binaryPlugin.register();
     });
 
     let png = new PngReader(buffer);
-
+    
     let palTex = new PaletteTexture(gl);
     palTex.setPngPalette(0, png.palette.data);
     palTex.create();
-
     let idxTex = new IndexedTexture(gl);
     idxTex.setPngData(png.imageData.decompress());
     idxTex.create();
@@ -68,7 +67,7 @@ binaryPlugin.register();
         palTex.update();
     }, 300)
 
-    let rw = new RessourceWriter();
+    let rw = new JsonRessourceWriter();
     rw.addTexture("texture", idxTex);
     rw.addTexture("palettes", palTex);
     rw.download("ressource.json");

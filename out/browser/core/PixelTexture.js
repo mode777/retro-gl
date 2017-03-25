@@ -23,13 +23,13 @@ define(["require", "exports", "./constants"], function (require, exports, consta
             enumerable: true,
             configurable: true
         });
-        Object.defineProperty(PixelTexture.prototype, "rawData", {
-            get: function () {
-                return this._texdata;
-            },
-            enumerable: true,
-            configurable: true
-        });
+        PixelTexture.prototype.getRawData = function () {
+            return this._texdata;
+        };
+        PixelTexture.prototype.setRawData = function (value) {
+            this._texdata = value;
+            this.setAllDirty();
+        };
         Object.defineProperty(PixelTexture.prototype, "colorDepth", {
             get: function () {
                 switch (this._options.format) {

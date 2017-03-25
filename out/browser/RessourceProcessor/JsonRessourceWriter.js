@@ -37,4 +37,4 @@ define(["require", "exports", "./TextureWriter"], function (require, exports, Te
     }());
     exports.JsonRessourceWriter = JsonRessourceWriter;
 });
-//# sourceMappingURL=RessourceWriter.js.map
+//# sourceMappingURL=JsonRessourceWriter.js.map

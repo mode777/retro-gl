@@ -28,8 +28,13 @@ export abstract class PixelTexture {
     protected abstract get _options(): twgl.TextureOptions;
     protected abstract get _components(): number;
 
-    public get rawData() {
+    public getRawData() {
         return this._texdata;
+    }
+
+    public setRawData(value: Uint8Array){
+        this._texdata = value;
+        this.setAllDirty();
     }
 
     public get colorDepth(): 8 | 24 | 32 {

@@ -11,3 +11,12 @@ export interface JsonTexture {
 export interface JsonPalette {
     texture: JsonTexture;
 }
+
+export interface RessourceReader<T>{
+    getRessource(): T;
+}
+
+export interface RessourceWriter {
+    getJson() : any;
+}
+
