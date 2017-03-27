@@ -1,5 +1,5 @@
 import { PaletteChunk, HeaderChunk, DataChunk, EndChunk } from './chunks';
-import { ChunkType, SIGN_OFFSET } from './constants';
+import { ChunkType, SIGN_OFFSET, ColorType } from './constants';
 
 
 
@@ -18,7 +18,7 @@ export class PngReader {
 
     get header() {
         return this._header;
-    }
+    }    
 
     get palette(){
         return this._palette;
@@ -26,6 +26,64 @@ export class PngReader {
 
     get imageData(){
         return this._data;
+    }
+
+    get imageColorComponents(){
+        switch (this._header.colorType) {
+            case ColorType.Greyscale:
+            case ColorType.Indexed:
+                return 1;
+            case ColorType.TruecolorAlpha:
+                return 4;
+            case ColorType.Truecolor:
+                return 3;        
+            default:
+                throw "unsupported color format";
+        }
+    }
+
+    createPixelData(){
+        const w = this._header.width;
+        const h = this._header.height;
+        const c = this.imageColorComponents;
+        let bytes = w * h  * c;
+
+        let pngData = this.imageData.decompress();
+        let data = new Uint8Array(bytes);
+
+        for (var y = 0; y < h; y++) {
+            for (var x = 0; x < w; x++) {
+                let pngOffset =  y * (w*c+1) + x*c+1;
+                let pxOffset =  y * (w*c) + x*c;
+                
+                for (var i = 0; i < c; i++) {
+                    data[pxOffset+i] = pngData[pngOffset+i];     
+                }
+            }            
+        }      
+        
+        return data;
+    }
+
+    createPaletteDataRgba(size: number){
+        // rgba
+        const c = 4;
+        // rgb
+        const cPng = 3;
+        
+        let data = new Uint8Array(size * c);
+        let pngData = this._palette.data;
+
+        for (var i = 0; i < this._palette.colors; i++) {
+            let offsetPng = cPng * i;
+            let offset = c * i;
+            data[offset] = pngData[offsetPng];
+            data[offset+1] = pngData[offsetPng+1];
+            data[offset+2] = pngData[offsetPng+2];
+            data[offset+3] = 255;
+        }
+
+        return data;
     }
 
     private _read(){

@@ -25,11 +25,11 @@ export class IndexedTexture extends PixelTexture {
         };
     }
 
-    public setPngData(pngData: Uint8Array){
-        this.setDataFunc((x,y,comp) => {
-            let pngOffset = y * (TEXTURE_SIZE+1) + x +1;
-            return pngData[pngOffset];
-        });
-    }
+    // public setPngData(pngData: Uint8Array){
+    //     this.setDataFunc((x,y,comp) => {
+    //         let pngOffset = y * (TEXTURE_SIZE+1) + x +1;
+    //         return pngData[pngOffset];
+    //     });
+    // }
     
 }

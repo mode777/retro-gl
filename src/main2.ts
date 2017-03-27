@@ -42,12 +42,14 @@ binaryPlugin.register();
     });
 
     let png = new PngReader(buffer);
+
+    
     
     let palTex = new PaletteTexture(gl);
-    palTex.setPngPalette(0, png.palette.data);
+    palTex.setRawPalette(0, png.createPaletteDataRgba(256));
     palTex.create();
     let idxTex = new IndexedTexture(gl);
-    idxTex.setPngData(png.imageData.decompress());
+    idxTex.setRawData(png.createPixelData());
     idxTex.create();
 
     let quadBuffer = new QuadBuffer(gl,1);

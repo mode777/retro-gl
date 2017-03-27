@@ -18,25 +18,32 @@ export class PaletteTexture extends RgbaTexture {
 
         this.setPalDirty(palId);
     }   
+
+    public setRawPalette(palId: number, data: Uint8Array){
+        let offset = this._components * TEXTURE_SIZE * palId;
+        for (var i = 0; i < data.length; i++) {
+            this._texdata[offset+i] = data[i];            
+        } 
+    }
     
     public setPalDirty(palId: number){
         this.setRowDirty(palId);
     }
 
-    public setPngPalette(palId: number, pngPal: Uint8Array){
-        this.setPalFunc(palId, (x, comp) => {
-            // Make first color transparent
-            if(x == 0 && comp == ColorComponent.A)
-                return 0;
+    // public setPngPalette(palId: number, pngPal: Uint8Array){
+    //     this.setPalFunc(palId, (x, comp) => {
+    //         // Make first color transparent
+    //         if(x == 0 && comp == ColorComponent.A)
+    //             return 0;
 
-            switch (comp) {
-                case ColorComponent.A:
-                    return 255;
-                default:
-                    return pngPal[x * COMP_RGB + comp]; 
-            }
-        });
-    }
+    //         switch (comp) {
+    //             case ColorComponent.A:
+    //                 return 255;
+    //             default:
+    //                 return pngPal[x * COMP_RGB + comp]; 
+    //         }
+    //     });
+    // }
 
     public setIndex(palId: number, index: number, color: ArrayLike<number>){
         return this.setPixel(index, palId, color);        

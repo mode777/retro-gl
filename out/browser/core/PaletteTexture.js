@@ -3,7 +3,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", "./RgbaTexture", "./constants", "./PixelTexture"], function (require, exports, RgbaTexture_1, constants_1, PixelTexture_1) {
+define(["require", "exports", "./RgbaTexture", "./constants"], function (require, exports, RgbaTexture_1, constants_1) {
     "use strict";
     var PaletteTexture = (function (_super) {
         __extends(PaletteTexture, _super);
@@ -23,22 +23,28 @@ define(["require", "exports", "./RgbaTexture", "./constants", "./PixelTexture"],
             }
             this.setPalDirty(palId);
         };
+        PaletteTexture.prototype.setRawPalette = function (palId, data) {
+            var offset = this._components * constants_1.TEXTURE_SIZE * palId;
+            for (var i = 0; i < data.length; i++) {
+                this._texdata[offset + i] = data[i];
+            }
+        };
         PaletteTexture.prototype.setPalDirty = function (palId) {
             this.setRowDirty(palId);
         };
-        PaletteTexture.prototype.setPngPalette = function (palId, pngPal) {
-            this.setPalFunc(palId, function (x, comp) {
-                // Make first color transparent
-                if (x == 0 && comp == PixelTexture_1.ColorComponent.A)
-                    return 0;
-                switch (comp) {
-                    case PixelTexture_1.ColorComponent.A:
-                        return 255;
-                    default:
-                        return pngPal[x * constants_1.COMP_RGB + comp];
-                }
-            });
-        };
+        // public setPngPalette(palId: number, pngPal: Uint8Array){
+        //     this.setPalFunc(palId, (x, comp) => {
+        //         // Make first color transparent
+        //         if(x == 0 && comp == ColorComponent.A)
+        //             return 0;
+        //         switch (comp) {
+        //             case ColorComponent.A:
+        //                 return 255;
+        //             default:
+        //                 return pngPal[x * COMP_RGB + comp]; 
+        //         }
+        //     });
+        // }
         PaletteTexture.prototype.setIndex = function (palId, index, color) {
             return this.setPixel(index, palId, color);
         };

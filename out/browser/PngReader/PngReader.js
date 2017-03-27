@@ -28,6 +28,58 @@ define(["require", "exports", "./chunks", "./constants"], function (require, exp
             enumerable: true,
             configurable: true
         });
+        Object.defineProperty(PngReader.prototype, "imageColorComponents", {
+            get: function () {
+                switch (this._header.colorType) {
+                    case constants_1.ColorType.Greyscale:
+                    case constants_1.ColorType.Indexed:
+                        return 1;
+                    case constants_1.ColorType.TruecolorAlpha:
+                        return 4;
+                    case constants_1.ColorType.Truecolor:
+                        return 3;
+                    default:
+                        throw "unsupported color format";
+                }
+            },
+            enumerable: true,
+            configurable: true
+        });
+        PngReader.prototype.createPixelData = function () {
+            var w = this._header.width;
+            var h = this._header.height;
+            var c = this.imageColorComponents;
+            var bytes = w * h * c;
+            var pngData = this.imageData.decompress();
+            var data = new Uint8Array(bytes);
+            for (var y = 0; y < h; y++) {
+                for (var x = 0; x < w; x++) {
+                    var pngOffset = y * (w * c + 1) + x * c + 1;
+                    var pxOffset = y * (w * c) + x * c;
+                    for (var i = 0; i < c; i++) {
+                        data[pxOffset + i] = pngData[pngOffset + i];
+                    }
+                }
+            }
+            return data;
+        };
+        PngReader.prototype.createPaletteDataRgba = function (size) {
+            // rgba
+            var c = 4;
+            // rgb
+            var cPng = 3;
+            var data = new Uint8Array(size * c);
+            var pngData = this._palette.data;
+            for (var i = 0; i < this._palette.colors; i++) {
+                var offsetPng = cPng * i;
+                var offset = c * i;
+                data[offset] = pngData[offsetPng];
+                data[offset + 1] = pngData[offsetPng + 1];
+                data[offset + 2] = pngData[offsetPng + 2];
+                data[offset + 3] = 255;
+            }
+            return data;
+        };
         PngReader.prototype._read = function () {
             this._checkSignature();
             this._readChunks();
