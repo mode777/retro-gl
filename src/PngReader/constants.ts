@@ -9,7 +9,7 @@ export type BitDepth = 1 | 2 | 4 | 8 | 16;
 
 export enum ColorType {
     Greyscale = 0,
-    TrueColor = 2,
+    Truecolor = 2,
     Indexed = 3,
     GreyscaleAlpha = 4,
     TruecolorAlpha = 6

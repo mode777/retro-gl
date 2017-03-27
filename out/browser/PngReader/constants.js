@@ -10,7 +10,7 @@ define(["require", "exports"], function (require, exports) {
     var ColorType;
     (function (ColorType) {
         ColorType[ColorType["Greyscale"] = 0] = "Greyscale";
-        ColorType[ColorType["TrueColor"] = 2] = "TrueColor";
+        ColorType[ColorType["Truecolor"] = 2] = "Truecolor";
         ColorType[ColorType["Indexed"] = 3] = "Indexed";
         ColorType[ColorType["GreyscaleAlpha"] = 4] = "GreyscaleAlpha";
         ColorType[ColorType["TruecolorAlpha"] = 6] = "TruecolorAlpha";

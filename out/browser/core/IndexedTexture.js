@@ -33,12 +33,6 @@ define(["require", "exports", "./constants", "./PixelTexture"], function (requir
             enumerable: true,
             configurable: true
         });
-        IndexedTexture.prototype.setPngData = function (pngData) {
-            this.setDataFunc(function (x, y, comp) {
-                var pngOffset = y * (constants_1.TEXTURE_SIZE + 1) + x + 1;
-                return pngData[pngOffset];
-            });
-        };
         return IndexedTexture;
     }(PixelTexture_1.PixelTexture));
     exports.IndexedTexture = IndexedTexture;

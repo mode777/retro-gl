@@ -77,10 +77,10 @@ define(["require", "exports", "./lib/JQueryBinaryTransport", "./PngReader/PngRea
                         buffer = _a.sent();
                         png = new PngReader_1.PngReader(buffer);
                         palTex = new PaletteTexture_1.PaletteTexture(gl);
-                        palTex.setPngPalette(0, png.palette.data);
+                        palTex.setRawPalette(0, png.createPaletteDataRgba(256));
                         palTex.create();
                         idxTex = new IndexedTexture_1.IndexedTexture(gl);
-                        idxTex.setPngData(png.imageData.decompress());
+                        idxTex.setRawData(png.createPixelData());
                         idxTex.create();
                         quadBuffer = new QuadBuffer_1.QuadBuffer(gl, 1);
                         quadBuffer.setAttributes(0, 0, 0, 256, 256, 0, 0, 256, 256, 1, 0);
