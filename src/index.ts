@@ -1,2 +1,2 @@
 declare let require: any;
-require(["main2"]);
+require(["main4"]);

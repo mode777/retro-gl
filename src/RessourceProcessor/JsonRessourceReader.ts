@@ -2,7 +2,7 @@ import { RessourceReader, JsonRessource } from './interfaces';
 import { IndexedTextureReader } from './IndexedTextureReader';
 import { PixelTexture } from '../core/PixelTexture';
 import { RgbaTexture } from '../core/RgbaTexture';
-import { RgbaTextureReader } from "./RgbaTextureReader";
+//import { RgbaTextureReader } from "./RgbaTextureReader";
 
 export class JsonRessourceReader {
     constructor(private _gl: WebGLRenderingContext, private _resource: JsonRessource){
@@ -18,7 +18,7 @@ export class JsonRessourceReader {
             case 8:
                 return new IndexedTextureReader(this._gl, tex).getRessource();
             case 32:
-                return new RgbaTextureReader(this._gl, tex).getRessource();
+                //return new RgbaTextureReader(this._gl, tex).getRessource();
             default:
                 throw "Unsupported color depth "+ tex.colorDepth;
         }
