@@ -1,1 +1,0 @@
-{"version":3,"file":"TextureReader.js","sourceRoot":"","sources":["../../../src/RessourceProcessor/TextureReader.ts"],"names":[],"mappings":";;;IAKA;QACI,uBAAoB,QAAqB;YAArB,aAAQ,GAAR,QAAQ,CAAa;QAEzC,CAAC;QAIS,mCAAW,GAArB;YACI,MAAM,CAAC,2BAAmB,CAAC,IAAI,CAAC,QAAQ,CAAC,SAAS,CAAC,CAAC;QACxD,CAAC;QACL,oBAAC;IAAD,CAAC,AAVD,IAUC;IAVqB,sCAAa"}
