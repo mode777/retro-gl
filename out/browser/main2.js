@@ -35,6 +35,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 define(["require", "exports", "./lib/JQueryBinaryTransport", "./PngReader/PngReader", "./helpers", "./core/index", "./core/QuadBuffer", "./core/Renderable", "./core/PaletteTexture", "./core/IndexedTexture", "./RessourceProcessor/JsonRessourceWriter"], function (require, exports, binaryPlugin, PngReader_1, helpers_1, index_1, QuadBuffer_1, Renderable_1, PaletteTexture_1, IndexedTexture_1, JsonRessourceWriter_1) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     binaryPlugin.register();
     (function main() {
         return __awaiter(this, void 0, void 0, function () {

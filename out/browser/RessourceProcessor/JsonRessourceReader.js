@@ -1,5 +1,6 @@
 define(["require", "exports", "./IndexedTextureReader"], function (require, exports, IndexedTextureReader_1) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     //import { RgbaTextureReader } from "./RgbaTextureReader";
     var JsonRessourceReader = (function () {
         function JsonRessourceReader(_gl, _resource) {

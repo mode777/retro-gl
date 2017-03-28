@@ -1,10 +1,16 @@
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 define(["require", "exports"], function (require, exports) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     var GifBlock = (function () {
         function GifBlock(_view, _offset) {
             this._view = _view;
@@ -18,10 +24,8 @@ define(["require", "exports"], function (require, exports) {
     var SORT_FLAG = 8;
     var LogicalScreenDescriptorBlock = (function (_super) {
         __extends(LogicalScreenDescriptorBlock, _super);
-        function LogicalScreenDescriptorBlock(view, offset) {
-            var _this = _super.call(this, view, offset) || this;
-            _this._read();
-            return _this;
+        function LogicalScreenDescriptorBlock() {
+            return _super !== null && _super.apply(this, arguments) || this;
         }
         Object.defineProperty(LogicalScreenDescriptorBlock.prototype, "length", {
             get: function () {
@@ -30,12 +34,13 @@ define(["require", "exports"], function (require, exports) {
             enumerable: true,
             configurable: true
         });
-        LogicalScreenDescriptorBlock.prototype._read = function () {
+        LogicalScreenDescriptorBlock.prototype.read = function () {
             this._cw = this._view.getUint16(this._offset, true);
             this._ch = this._view.getUint16(this._offset + 2, true);
             this._flags = this._view.getUint8(this._offset + 4);
             this._bg = this._view.getUint8(this._offset + 5);
             this._ratio = this._view.getUint8(this._offset + 6);
+            return length;
         };
         Object.defineProperty(LogicalScreenDescriptorBlock.prototype, "canvasWidth", {
             get: function () {
@@ -102,7 +107,6 @@ define(["require", "exports"], function (require, exports) {
         function ColorTableBock(view, offset, _colors) {
             var _this = _super.call(this, view, offset) || this;
             _this._colors = _colors;
-            _this._read();
             return _this;
         }
         Object.defineProperty(ColorTableBock.prototype, "length", {
@@ -112,9 +116,10 @@ define(["require", "exports"], function (require, exports) {
             enumerable: true,
             configurable: true
         });
-        ColorTableBock.prototype._read = function () {
+        ColorTableBock.prototype.read = function () {
             console.log(this._colors);
             this._data = new Uint8Array(this._view.buffer, this._offset, this.length);
+            return this.length;
         };
         ColorTableBock.prototype.data = function () {
             return this._data;
@@ -123,4 +128,6 @@ define(["require", "exports"], function (require, exports) {
     }(GifBlock));
     exports.ColorTableBock = ColorTableBock;
 });
+// export class ExtensionBlock extends GifBlock {
+// } 
 //# sourceMappingURL=blocks.js.map

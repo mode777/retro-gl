@@ -35,6 +35,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 define(["require", "exports", "./lib/JQueryBinaryTransport", "./helpers", "./core/Renderer", "./GifReader/GifReader"], function (require, exports, binaryPlugin, helpers_1, Renderer_1, GifReader_1) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     binaryPlugin.register();
     (function main() {
         return __awaiter(this, void 0, void 0, function () {

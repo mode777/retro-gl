@@ -2,9 +2,7 @@ export abstract class GifBlock {
     constructor(protected _view: DataView, protected _offset: number){
     }
 
-    public abstract get length();
-    
-    protected abstract _read();
+    public abstract read(): number;
 }
 
 const COLOR_TABLE_FLAG  = 0b10000000;
@@ -19,21 +17,17 @@ export class LogicalScreenDescriptorBlock extends GifBlock {
     private _bg: number;
     private _ratio: number;
 
-    constructor(view: DataView, offset: number){
-        super(view, offset);
-        this._read();
-    }
-
     get length(){
         return 7;
     }
 
-    protected _read(){
+    public read(){
         this._cw = this._view.getUint16(this._offset,true);
         this._ch = this._view.getUint16(this._offset+2,true);
         this._flags = this._view.getUint8(this._offset+4);
         this._bg = this._view.getUint8(this._offset+5);
         this._ratio = this._view.getUint8(this._offset+6);
+        return length;
     }
 
     get canvasWidth(){
@@ -77,19 +71,23 @@ export class ColorTableBock extends GifBlock {
     
     constructor(view: DataView, offset: number, protected _colors: number){
         super(view, offset);
-        this._read();
     }
 
     get length(){
         return this._colors * PAL_COLOR_COMP;
     }
 
-    protected _read(){
+    read(){
         console.log(this._colors);
         this._data = new Uint8Array(this._view.buffer, this._offset, this.length);
+        return this.length
     }
 
     data(){
         return this._data;
     }
 }
+
+// export class ExtensionBlock extends GifBlock {
+
+// }

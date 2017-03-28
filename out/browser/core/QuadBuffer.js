@@ -1,5 +1,6 @@
 define(["require", "exports", "./constants", "./Transform"], function (require, exports, constants_1, Transform_1) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     var POS_OFFSET_1X = 0;
     var POS_OFFSET_1Y = POS_OFFSET_1X + 1;
     var POS_OFFSET_2X = constants_1.VERTEX_SIZE_SHORT;

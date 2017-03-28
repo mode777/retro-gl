@@ -1,5 +1,6 @@
 define(["require", "exports"], function (require, exports) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     function compressAndEncode(data) {
         var compressed = pako.deflate(data, {
             to: "string"

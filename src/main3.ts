@@ -19,7 +19,7 @@ import { initWebGl, createTexture } from './helpers';
     let programInfoPp = twgl.createProgramInfo(gl, [vsPp, fsPp]); 
 
     var arraysPp = {
-        position: [-1, -1, 0, 1, -1, 0, -1, 1, 0, -1, 1, 0, 1, -1, 0, 1, 1, 0],
+        position: [-1.5, -1.5, 0, 1.5, -1.5, 0, -1.5, 1.5, 0, -1.5, 1.5, 0, 1.5, -1.5, 0, 1.5, 1.5, 0],
         texcoord: [ 0,  1,    1,  1,     0, 0,     0, 0,    1,  1,    1, 0   ],        
     }
     var bufferPp = twgl.createBufferInfoFromArrays(gl, arraysPp);
@@ -61,7 +61,6 @@ import { initWebGl, createTexture } from './helpers';
         requestAnimationFrame(render);
     }
     requestAnimationFrame(render);
-       
 
     
 })();

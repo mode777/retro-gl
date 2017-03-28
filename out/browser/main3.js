@@ -35,6 +35,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 define(["require", "exports", "./helpers"], function (require, exports, helpers_1) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     (function main() {
         return __awaiter(this, void 0, void 0, function () {
             function render() {
@@ -80,7 +81,7 @@ define(["require", "exports", "./helpers"], function (require, exports, helpers_
                         fsPp = _a.sent();
                         programInfoPp = twgl.createProgramInfo(gl, [vsPp, fsPp]);
                         arraysPp = {
-                            position: [-1, -1, 0, 1, -1, 0, -1, 1, 0, -1, 1, 0, 1, -1, 0, 1, 1, 0],
+                            position: [-1.5, -1.5, 0, 1.5, -1.5, 0, -1.5, 1.5, 0, -1.5, 1.5, 0, 1.5, -1.5, 0, 1.5, 1.5, 0],
                             texcoord: [0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0],
                         };
                         bufferPp = twgl.createBufferInfoFromArrays(gl, arraysPp);

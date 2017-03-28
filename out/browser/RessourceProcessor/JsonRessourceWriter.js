@@ -1,5 +1,6 @@
 define(["require", "exports", "./TextureWriter"], function (require, exports, TextureWriter_1) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     var JsonRessourceWriter = (function () {
         function JsonRessourceWriter() {
             this._textures = {};

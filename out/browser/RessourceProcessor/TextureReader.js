@@ -1,5 +1,6 @@
 define(["require", "exports", "./utils"], function (require, exports, utils_1) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     var TextureReader = (function () {
         function TextureReader(_texture) {
             this._texture = _texture;
