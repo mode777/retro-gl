@@ -265,8 +265,30 @@ export class ImageDescriptorBlock extends GifBlock {
 
 export class ImageDataBlock extends GifBlock {
     
+    private _lmcs: number;
+    private _imageData: DataSubBlock[];
+
     public read(): number {
-        throw new Error('Method not implemented.');
+        let offset = this._offset;
+
+        this._lmcs = this._view.getUint8(offset);
+        offset++;
+
+        this._imageData = [];
+        while(this._view.getUint8(offset) != 0){
+            let dsb = new DataSubBlock(this._view, offset);
+            this._imageData.push(dsb);
+            offset += dsb.read();
+        }
+
+        // skip block terminator
+        offset++;
+
+        return offset - this._offset;
+    }
+
+    public decompress(){
+        
     }
 
 }

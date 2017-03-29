@@ -31,24 +31,32 @@ export class GifImage extends GifBlock {
         let offset = this._offset;
 
         if(this._hasGce){
+            //console.log("Graphic Control Extension Block");
             this._gce = new GraphicControlExtensionBlock(this._view, offset);
             offset += this._gce.read();
             // skip image seperator
             offset++;
         }
 
+        //console.log("Image Descriptor Block");
         this._id = new ImageDescriptorBlock(this._view, offset);
         offset += this._id.read();
 
         if(this._id.hasLocalColorTable){
+            //console.log("Local Color Table");
             this._lct = new ColorTableBock(this._view, offset, this._id.totalColors);
             offset += this._lct.read();
         }
 
+        //console.log("Image Data Block");
         this._data = new ImageDataBlock(this._view, offset);
         offset += this._data.read();
 
         return offset - this._offset;
+    }
+
+    public decompressRawFrameData() {
+        return this._data.decompress();
     }
 
 }

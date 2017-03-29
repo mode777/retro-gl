@@ -34,16 +34,47 @@ export class GifReader{
         this._read();
     }
 
+    get frames(){
+        return this._img.length;
+    }
+
+    createRawFrameData(id: number){
+        let img = this._img[id];
+        img.decompress();
+    }
+
+    createGlobalPaletteDataRgba(size: number){
+        // rgba
+        const c = 4;
+        // rgb
+        const cGif = 3;
+        
+        let data = new Uint8Array(size * c);
+        let pngData = this._gtt.data;
+
+        for (var i = 0; i < this._lsd.totalColors; i++) {
+            let offsetPng = cGif * i;
+            let offset = c * i;
+            data[offset] = pngData[offsetPng];
+            data[offset+1] = pngData[offsetPng+1];
+            data[offset+2] = pngData[offsetPng+2];
+            data[offset+3] = 255;
+        }
+
+        return data;
+    }
+
     protected _read(){
         let offset = 0;
         this._checkHeader();
         offset += HEADER_OFFSET;
+        //console.log("Logical Logical Screen Descriptor");
         this._lsd = new LogicalScreenDescriptorBlock(this._view, offset);
         offset += this._lsd.read();
         if(this._lsd.hasGlobalColorTable){
+            //console.log("Global Color Table");
             this._gtt = new ColorTableBock(this._view, offset, this._lsd.totalColors);
             offset += this._gtt.read();
-            console.log(this._gtt.data);
         }
 
         let introducer = this._view.getUint8(offset);
@@ -51,7 +82,7 @@ export class GifReader{
 
         this._img = [];
         
-        while (this._view.getUint8(offset) != BlockIntroducer.Trailer) {
+        while (introducer != BlockIntroducer.Trailer) {
             switch (introducer) {
                 case BlockIntroducer.Extension:
                     let ext = this._view.getUint8(offset);
@@ -63,6 +94,7 @@ export class GifReader{
                             this._img.push(img);
                             break;
                         case ExtensionType.Application:
+                            //console.log("Application Extension Block");
                             this._ae = new ApplicationExtensionBlock(this._view, offset);
                             offset += this._ae.read();
                             break;
@@ -101,4 +133,5 @@ export class GifReader{
         && h[5]==0x61))
             throw "Image is not a (suported) gif.";
     }
+
 }
