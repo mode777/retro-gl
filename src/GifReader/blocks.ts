@@ -288,6 +288,9 @@ export class ImageDataBlock extends GifBlock {
     }
 
     public decompress(){
+        let clearCode = 1 << this._lmcs;
+        let eoi = clearCode+1;
+        
         
     }
 
