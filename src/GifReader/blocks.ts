@@ -268,6 +268,14 @@ export class ImageDataBlock extends GifBlock {
     private _lmcs: number;
     private _imageData: DataSubBlock[];
 
+    public get lzwMinCodeSize() {
+        return this._lmcs;
+    }
+
+    public get blocks() {
+        return this._imageData;
+    }
+
     public read(): number {
         let offset = this._offset;
 
@@ -285,13 +293,6 @@ export class ImageDataBlock extends GifBlock {
         offset++;
 
         return offset - this._offset;
-    }
-
-    public decompress(){
-        let clearCode = 1 << this._lmcs;
-        let eoi = clearCode+1;
-        
-        
     }
 
 }

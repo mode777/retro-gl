@@ -56,7 +56,7 @@ export class GifImage extends GifBlock {
     }
 
     public decompressRawFrameData() {
-        return this._data.decompress();
+        //return this._data.decompress();
     }
 
 }
