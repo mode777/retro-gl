@@ -1,4 +1,6 @@
 import { ImageDataBlock } from './blocks';
+import { BitStream } from './BitStream';
+import { SubBlockStream } from './SubBlockStream';
 
 export class GifLzwDecoder {
 
@@ -6,16 +8,8 @@ export class GifLzwDecoder {
     protected _eoiCode: number;
     protected _codeTable: number[][];
     protected _indexStream: number[];
-
-    private _codeCtr: number;
-    private _curCodePtr: number; 
-
-    private _bytePtr: number;
-    private _blockPtr: number;
-    private _bitShift: number;
-    private _bitBuffer: number;
-    private _remainBits: number;
-    
+    protected _codeStream: BitStream;
+  
     constructor(private _block: ImageDataBlock){
         this._clearCode = 1 << _block.lzwMinCodeSize;
         this._eoiCode = this._clearCode + 1;
@@ -24,14 +18,15 @@ export class GifLzwDecoder {
     decompress(){
         this._reset();
 
-        this._indexStream = [];
-
-        let curCode = this._getNextCode(this._block.lzwMinCodeSize);
-        this._initCodeTable();
-        curCode = this._getNextCode(this._block.lzwMinCodeSize);
+        let curCode = this._codeStream.read(this._block.lzwMinCodeSize);
+        console.log(this._block.lzwMinCodeSize);
+        console.log(curCode);
+        if(1 == 1)
+            throw "stop";
+        curCode = this._codeStream.read(this._block.lzwMinCodeSize);
         this._indexStream.concat(this._codeTable[curCode]);
 
-        curCode = this._getNextCode(this._block.lzwMinCodeSize);
+        curCode = this._codeStream.read(this._block.lzwMinCodeSize);
         while (curCode != this._eoiCode) {
             let val = this._codeTable[curCode];
             if(val){
@@ -49,16 +44,14 @@ export class GifLzwDecoder {
             }
             this._indexStream.concat(val);
 
-            curCode = this._getNextCode(this._block.lzwMinCodeSize);
+            curCode = this._codeStream.read(this._block.lzwMinCodeSize);
         }
     }
 
     protected _reset(){
-        this._bytePtr = 0;
-        this._blockPtr = 0;
-        this._bitShift = 0;
-        this._bitBuffer = 0;
-        this._remainBits = 32;
+        this._initCodeTable();
+        this._indexStream = [];
+        this._codeStream = new BitStream(new SubBlockStream(this._block.blocks));
     }
 
     protected _initCodeTable(){
@@ -69,31 +62,6 @@ export class GifLzwDecoder {
         this._codeTable.push([this._clearCode]);
         this._codeTable.push([this._eoiCode]);
     }
-
-    protected get remainBits(){
-        return 
-    }
-
-    protected _getNextCode(bits: number): number{
-        while(this._remainBits >= 8){
-            this._remainBits-=8;
-            this._bitBuffer |= (this._getNextByte() << this._remainBits);
-        }
-        return this._bitBuffer >> (32 - bits);
-    }
-
-    protected _getNextByte(): number {
-        if(this._blockPtr >= this._block.blocks.length-1)
-            return null;
-
-        let data = this._block.blocks[this._blockPtr].data;
-        if(this._bytePtr >= data.length-1){
-            this._bytePtr = 0;
-            this._blockPtr++;
-            return this._getNextByte();      
-        }
-
-        return data[this._bytePtr];
-    }
+   
 
 }

@@ -14,12 +14,12 @@ export class BitStream {
 
     read(bits: number){
         this._fillCache();
-        console.log((this._cache>>>3).toString(2));
 
         if(bits > (CACHE_SIZE - this._bitsEmpty))
             return null;
 
-        let ret = this._cache>>(CACHE_SIZE - bits)
+        let ret = this._cache>>>(CACHE_SIZE - bits)
+        //console.log((ret).toString(2));
         this._cache = this._cache << bits;
         this._bitsEmpty += bits;
         return ret;
@@ -28,7 +28,7 @@ export class BitStream {
     private _fillCache(){
         while(this._bitsEmpty >= BYTE_SIZE){
             let byte = this._stream.read();
-            console.log(byte);
+            //console.log(byte);
             if(byte == null)
                 return;
             this._bitsEmpty -= BYTE_SIZE;

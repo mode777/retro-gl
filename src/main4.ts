@@ -35,9 +35,8 @@ binaryPlugin.register();
         processData: false
     });
 
-    let s = performance.now();
     let gif = new GifReader(buffer);
-    console.log(gif);
+    gif.createRawFrameData(0);
 
 })();
 

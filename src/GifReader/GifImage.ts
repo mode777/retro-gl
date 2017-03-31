@@ -1,4 +1,5 @@
 import { GifBlock, GraphicControlExtensionBlock, ImageDescriptorBlock, ColorTableBock, ImageDataBlock } from './blocks';
+import { GifLzwDecoder } from './GifLzwDecoder';
 
 export class GifImage extends GifBlock {
     
@@ -56,7 +57,8 @@ export class GifImage extends GifBlock {
     }
 
     public decompressRawFrameData() {
-        //return this._data.decompress();
+        let decoder = new GifLzwDecoder(this._data);
+        decoder.decompress();
     }
 
 }
