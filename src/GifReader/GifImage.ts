@@ -58,7 +58,7 @@ export class GifImage extends GifBlock {
 
     public decompressRawFrameData() {
         let decoder = new GifLzwDecoder(this._data);
-        decoder.decompress();
+        return decoder.decompress();
     }
 
 }

@@ -12,17 +12,17 @@ export class SubBlockStream implements ByteStream {
     }
 
     read(){
-        if(this._blockPtr >= this._blocks.length-1)
+        if(this._blockPtr >= this._blocks.length)
             return null;
 
         let data = this._blocks[this._blockPtr].data;
-        if(this._bytePtr >= data.length-1){
+        if(this._bytePtr >= data.length){
             this._bytePtr = 0;
             this._blockPtr++;
             return this.read();      
         }
 
-        return data[this._bytePtr];
+        return data[this._bytePtr++];
     }
 
 }

@@ -2,37 +2,36 @@ import { ByteStream } from './interfaces';
 
 const CACHE_SIZE = 32;
 const BYTE_SIZE = 8;
+const MASK = 0xFFFFFFFFF;
 
 export class BitStream {
     private _cache: number;
-    private _bitsEmpty = CACHE_SIZE;
+    private _bitsFull = 0;
     private _end = false;
 
     constructor(private _stream: ByteStream){
-
+        this._cache = 0>>>0;
     }
 
     read(bits: number){
         this._fillCache();
 
-        if(bits > (CACHE_SIZE - this._bitsEmpty))
+        if(bits > this._bitsFull)
             return null;
 
-        let ret = this._cache>>>(CACHE_SIZE - bits)
-        //console.log((ret).toString(2));
-        this._cache = this._cache << bits;
-        this._bitsEmpty += bits;
+        let ret = this._cache & (MASK>>>(CACHE_SIZE - bits));
+        this._cache = this._cache >>> bits;
+        this._bitsFull -= bits;
         return ret;
     }
 
     private _fillCache(){
-        while(this._bitsEmpty >= BYTE_SIZE){
+        while(this._bitsFull <= (CACHE_SIZE - BYTE_SIZE)){
             let byte = this._stream.read();
-            //console.log(byte);
             if(byte == null)
                 return;
-            this._bitsEmpty -= BYTE_SIZE;
-            this._cache |= (byte << this._bitsEmpty);
+            this._cache |= (byte << this._bitsFull);
+            this._bitsFull += BYTE_SIZE;
         }
     }
 }

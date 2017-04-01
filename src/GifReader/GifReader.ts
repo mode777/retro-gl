@@ -40,7 +40,7 @@ export class GifReader{
 
     createRawFrameData(id: number){
         let img = this._img[id];
-        img.decompressRawFrameData();
+        return img.decompressRawFrameData();
     }
 
     createGlobalPaletteDataRgba(size: number){

@@ -9,6 +9,7 @@ export class GifLzwDecoder {
     protected _codeTable: number[][];
     protected _indexStream: number[];
     protected _codeStream: BitStream;
+    protected _codeBits: number;
   
     constructor(private _block: ImageDataBlock){
         this._clearCode = 1 << _block.lzwMinCodeSize;
@@ -16,51 +17,57 @@ export class GifLzwDecoder {
     }
 
     decompress(){
+        let lastCode = 0;
         this._reset();
+        
+        this._codeStream.read(this._codeBits);
+        this._initCodeTable();
+        
+        let curCode = this._codeStream.read(this._codeBits);
+        this._indexStream = this._indexStream.concat(this._codeTable[curCode]);
 
-        let curCode = this._codeStream.read(this._block.lzwMinCodeSize);
-        console.log(this._block.lzwMinCodeSize);
-        console.log(curCode);
-        if(1 == 1)
-            throw "stop";
-        curCode = this._codeStream.read(this._block.lzwMinCodeSize);
-        this._indexStream.concat(this._codeTable[curCode]);
+        while (true) {
+            lastCode = curCode;
+            curCode = this._codeStream.read(this._codeBits);
+            
+            if(curCode == this._clearCode){
+                this._initCodeTable();
+                continue;
+            }
+            
+            else if(curCode == this._eoiCode)
+                break;
 
-        curCode = this._codeStream.read(this._block.lzwMinCodeSize);
-        while (curCode != this._eoiCode) {
+            let next = this._codeTable[lastCode].slice(0);
             let val = this._codeTable[curCode];
-            if(val){
-                let k = val[0];
-                let next = val.slice(0);
-                next.push(k);
-                this._codeTable.push(next);
-            }
-            else {
-                let last = this._codeTable[curCode-1]; 
-                let k = last[0];
-                let next = val = last.slice(0)
-                next.push(k);    
-                this._codeTable.push(next);
-            }
-            this._indexStream.concat(val);
+            let k = val ? val[0] : next[0];
+            val = val || next;
+            next.push(k);
+            this._codeTable.push(next);
+            this._indexStream = this._indexStream.concat(val);
 
-            curCode = this._codeStream.read(this._block.lzwMinCodeSize);
+            if(this._codeTable.length == (1<<this._codeBits))
+                this._codeBits++;
+            
         }
+        return new Uint8Array(this._indexStream);
     }
 
-    protected _reset(){
-        this._initCodeTable();
+    protected _reset(){               
+        this._codeBits = this._block.lzwMinCodeSize+1; 
         this._indexStream = [];
         this._codeStream = new BitStream(new SubBlockStream(this._block.blocks));
     }
 
     protected _initCodeTable(){
+        console.log("init table");
         this._codeTable = [];
         for (var i = 0; i < this._clearCode; i++) {
             this._codeTable[i] = [i];            
         }
         this._codeTable.push([this._clearCode]);
         this._codeTable.push([this._eoiCode]);
+        this._codeBits = this._block.lzwMinCodeSize + 1;
     }
    
 

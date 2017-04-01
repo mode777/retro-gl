@@ -1,6 +1,7 @@
 import { Buffer, MatrixTransform, RenderableOptions, RenderableBufferOptions } from './interfaces';
 import { PAL_OFFSET } from './constants';
 import { Transform2d } from './Transform';
+import { PixelTexture } from './PixelTexture';
 
 export class Renderable<T extends Buffer> implements RenderableBufferOptions<T> {
     
@@ -19,6 +20,10 @@ export class Renderable<T extends Buffer> implements RenderableBufferOptions<T> 
 
     get texture(){
         return this._options.texture;
+    }
+
+    set texture(value: WebGLTexture){
+        this._options.texture = value;
     }
 
     get buffer(){
