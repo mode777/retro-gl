@@ -11,6 +11,16 @@ binaryPlugin.register();
 
 
 (async function main(){
+    // let testBuffer: ArrayBuffer = await $.ajax(<any>{
+    //     url: "res/textures/test.gif",
+    //     type: "GET",
+    //     dataType: "binary",
+    //     responseType: "arraybuffer",
+    //     processData: false
+    // });
+    // let tGif = new GifReader(testBuffer);
+    // console.log(tGif.createRawFrameData(0));
+
     let gl = initWebGl();
 
     let vs = await $.get("/res/shaders/8bit_vs.glsl");
@@ -32,7 +42,7 @@ binaryPlugin.register();
     requestAnimationFrame(render);
     
     let buffer: ArrayBuffer = await $.ajax(<any>{
-        url: "res/textures/megamanx2_2.gif",
+        url: "res/textures/wiki.gif",
         type: "GET",
         dataType: "binary",
         responseType: "arraybuffer",
@@ -50,6 +60,7 @@ binaryPlugin.register();
     let perf = performance.now();
     let textures: IndexedTexture[] = [];
     for (var i = 0; i < gif.frames; i++) {
+        console.log("frame "+i)
         let data = gif.createRawFrameData(i);
         let idxTex = new IndexedTexture(gl);
         idxTex.setRawData(data);
