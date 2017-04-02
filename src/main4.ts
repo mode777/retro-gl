@@ -42,7 +42,8 @@ binaryPlugin.register();
     requestAnimationFrame(render);
     
     let buffer: ArrayBuffer = await $.ajax(<any>{
-        url: "res/textures/wiki.gif",
+        //url: "res/textures/megamanx2_2.gif",
+        url: "res/textures/mega2.gif",
         type: "GET",
         dataType: "binary",
         responseType: "arraybuffer",
@@ -62,6 +63,7 @@ binaryPlugin.register();
     for (var i = 0; i < gif.frames; i++) {
         console.log("frame "+i)
         let data = gif.createRawFrameData(i);
+
         let idxTex = new IndexedTexture(gl);
         idxTex.setRawData(data);
         idxTex.create();
