@@ -1,4 +1,5 @@
 import { TileBuffer, Renderable, QuadBuffer, MIN_Z } from "./core/index";
+import * as twgl from "twgl.js";
 
 export function initWebGl() {
     let canvas = <HTMLCanvasElement>document.getElementById("canvas");

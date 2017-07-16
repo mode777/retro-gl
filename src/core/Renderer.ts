@@ -1,11 +1,13 @@
 import { Renderable } from './Renderable';
 import { Buffer, RendererSettings, RenderableOptions, RenderableBufferOptions } from './interfaces';
 import { PAL_OFFSET, MAT4_IDENT } from './constants';
+import { mat4, vec3 } from "gl-matrix";
+import * as twgl from "twgl.js";
 
 export class Renderer {
     renderList: Renderable<Buffer>[] = [];
     
-    private _defaults: RendererSettings;
+    /*private*/ _defaults: RendererSettings;
     private _settings: RendererSettings = <any>{};
 
     private _ortho: mat4;
@@ -28,7 +30,7 @@ export class Renderer {
     }
 
     setDefaults(defaults: RendererSettings){
-        this._defaults = $.extend({},defaults);        
+        this._defaults = defaults;//$.extend({},defaults);        
     }      
 
     render(){

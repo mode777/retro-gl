@@ -1,18 +1,13 @@
 {
-  "compileOnSave": true,
-  "compilerOptions": {
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "noImplicitAny": false,
-    "noEmitOnError": true,
-    "removeComments": false,
-    "sourceMap": true,
-    "target": "es5",
-    "module": "amd",
-    "outDir": "out/browser"
-
-  },
-  "exclude": [
-    "bower_components"
-  ]
+	"compilerOptions": {
+		"target": "es5",
+		"module": "commonjs",
+		"sourceMap": true,
+		"outDir": "./dist",
+		"importHelpers": true,
+		"downlevelIteration": true,
+		"noImplicitAny": false,
+		"experimentalDecorators": true,
+		"emitDecoratorMetadata": true
+	}
 }

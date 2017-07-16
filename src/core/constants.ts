@@ -1,3 +1,5 @@
+import { mat4 } from "gl-matrix";
+
 export const FLOAT_SIZE = 4;
 export const SHORT_SIZE = 2;
 export const BYTE_SIZE = 1;

@@ -1,4 +1,5 @@
 import { TEXTURE_SIZE, HUGE } from './constants';
+import * as twgl from "twgl.js";
 
 export enum ColorComponent {
     R = 0,

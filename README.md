@@ -1,3 +1,3 @@
-# 8bit-gl
+# retro-gl
 
-WebGl renderer for palletted images.
+WebGL game framework which emulates 16-bit hardware.

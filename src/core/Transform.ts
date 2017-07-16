@@ -1,5 +1,6 @@
 import { MAT4_IDENT } from './constants';
 import { MatrixTransform } from './interfaces';
+import { mat4, vec3, quat } from "gl-matrix";
 
 export class Transform2d implements MatrixTransform {
     

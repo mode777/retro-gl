@@ -1,6 +1,7 @@
 import { ChunkType, BitDepth, ColorType, LENGTH_LENGTH, TYPE_LENGTH, CRC_LENGTH } from './constants';
+import * as pako from "pako";
 
-export abstract class PngChunk {    
+export abstract class PngChunk {
     constructor(private _length: number, private _type: ChunkType, protected _data: Uint8Array, private _crc: number){
         if(_length != _data.length)
             throw "Invalid length";        

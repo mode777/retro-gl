@@ -1,6 +1,7 @@
 import { MIN_Z, VERTEX_SIZE, VERTICES_QUAD, OFFSET_Z_INDEX, OFFSET_UV } from './constants';
 import { Transform2d } from './Transform';
 import { MatrixTransform } from './interfaces';
+import { mat4, vec2 } from "gl-matrix";
 
 export class Quad{
 

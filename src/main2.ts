@@ -1,4 +1,3 @@
-import * as binaryPlugin from "./lib/JQueryBinaryTransport";
 import { PngReader } from './PngReader/PngReader';
 import { initWebGl, createTexture } from './helpers';
 import { Renderer } from "./core/index";
@@ -7,17 +6,20 @@ import { Renderable } from './core/Renderable';
 import { PaletteTexture } from './core/PaletteTexture';
 import { ColorComponent } from './core/PixelTexture';
 import { IndexedTexture } from './core/IndexedTexture';
-import { JsonRessourceWriter } from './RessourceProcessor/JsonRessourceWriter';
+import * as twgl from "twgl.js";
+import { stringToBuffer } from "./BinaryHelpers";
+import * as SPECTOR from "spectorjs";
 
-binaryPlugin.register();
-
+const spector = new SPECTOR.Spector();
+spector.displayUI();
+spector.spyCanvases();
 
 (async function main(){
     let gl = initWebGl();
 
-    let vs = await $.get("/res/shaders/8bit_vs.glsl");
-    let fs = await $.get("/res/shaders/8bit_fs.glsl");
-    let fs24 = await $.get("/res/shaders/24bit_fs.glsl");
+    let vs = <string>require("../res/shaders/8bit_vs.glsl");
+    let fs = <string>require("../res/shaders/8bit_fs.glsl");
+    let fs24 = <string>require("../res/shaders/24bit_fs.glsl");
     let programInfo = twgl.createProgramInfo(gl, [vs, fs]);    
     let renderer = new Renderer(gl, {
         shader: programInfo,
@@ -27,23 +29,15 @@ binaryPlugin.register();
         zSort: true,
         blendMode: "none"
     });
+
     function render(){
         renderer.render()
         requestAnimationFrame(render);
     }
     requestAnimationFrame(render);
     
-    let buffer: ArrayBuffer = await $.ajax(<any>{
-        url: "res/textures/8bit_test.png",
-        type: "GET",
-        dataType: "binary",
-        responseType: "arraybuffer",
-        processData: false
-    });
-
+    let buffer = stringToBuffer(require("../res/textures/8bit_test.png"));
     let png = new PngReader(buffer);
-
-    
     
     let palTex = new PaletteTexture(gl);
     palTex.setRawPalette(0, png.createPaletteDataRgba(256));
@@ -59,7 +53,7 @@ binaryPlugin.register();
         buffer: quadBuffer,
         texture: idxTex,
         palette: palTex,
-        paletteId: 0
+        paletteId: 0,
     });
 
     renderer.renderList.push(renderable);
@@ -68,11 +62,6 @@ binaryPlugin.register();
         palTex.shift(0, 157, 160);
         palTex.update();
     }, 300)
-
-    let rw = new JsonRessourceWriter();
-    rw.addTexture("texture", idxTex);
-    rw.addTexture("palettes", palTex);
-    rw.download("ressource.json");
 
 })();
 

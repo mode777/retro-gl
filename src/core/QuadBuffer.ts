@@ -2,6 +2,8 @@ import { Rectangle, Buffer, MatrixTransform, SpriteAttributes, Sprite } from './
 import { VERTICES_QUAD, VERTEX_SIZE, INDICES_QUAD, OFFSET_UV, COMP_SIZE_POS, HUGE, QUAD_SIZE, MIN_Z, COMP_POS, COMP_PAL_PAL_SHIFT, COMP_Z_INDEX, OFFSET_Z_INDEX, OFFSET_PAL_SHIFT, COMP_UV, QUAD_SIZE_SHORT, VERTEX_SIZE_SHORT } from './constants';
 import { Quad } from './Quad';
 import { Transform2d } from './Transform';
+import * as twgl from "twgl.js";
+import { mat4 } from "gl-matrix";
 
 const POS_OFFSET_1X = 0;
 const POS_OFFSET_1Y = POS_OFFSET_1X + 1;
@@ -87,7 +89,7 @@ export class QuadBuffer implements Buffer {
     private _shortView: Uint16Array;
     private _byteView: Uint8Array;
     private _indices: Uint16Array;
-    private _data: ArrayBuffer;
+    /*private*/_data: ArrayBuffer;
 
     private _dirty_start = HUGE;
     private _dirty_end = 0;
@@ -133,6 +135,7 @@ export class QuadBuffer implements Buffer {
             let data = new Uint8Array(this._data, this._dirty_start, this._dirty_end - this._dirty_start);
             gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
             gl.bufferSubData(gl.ARRAY_BUFFER, this._dirty_start, data);
+            
             this._dirty_start = HUGE;
             this._dirty_end = 0;
         }
@@ -377,6 +380,11 @@ export class QuadBuffer implements Buffer {
         this._sprites = this._sprites || [];
         this._sprites.push(sprite);
         return sprite;
+    }
+
+    private _resize(){
+        
+        //twgl.
     }
 
     private _createIndices(){

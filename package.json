@@ -1,16 +1,37 @@
 {
-  "name": "8bit-gl",
-  "version": "1.0.0",
-  "description": "Paletted Renderer for webGl",
-  "main": "index.js",
+  "name": "retro-gl",
+  "version": "0.1.0",
+  "description": "WebGL game framework which emulates 16-bit hardware.",
+  "main": "src/main.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "start http-server . && start http://localhost:8080"
+    "start": "node_modules/.bin/webpack-dev-server --open"
   },
   "repository": {
     "type": "git",
     "url": "http://alexklingenbeck.de:3000/mode7/8bit-gl.git"
   },
-  "author": "",
-  "license": "MIT"
+  "author": "Alexander Klingenbeck",
+  "license": "MIT",
+  "dependencies": {
+    "es6-promise": "^4.1.1",
+    "gl-matrix": "^2.3.2",
+    "pako": "^1.0.5",
+    "stats.js": "^0.17.0",
+    "tslib": "^1.7.1",
+    "twgl.js": "^3.4.0"
+  },
+  "devDependencies": {
+    "@types/es6-promise": "0.0.32",
+    "@types/gl-matrix": "^2.2.34",
+    "@types/node": "^8.0.8",
+    "@types/pako": "^1.0.0",
+    "@types/stats": "^0.16.30",
+    "binary-loader": "0.0.1",
+    "raw-loader": "^0.5.1",
+    "spectorjs": "^0.2.3",
+    "ts-loader": "^2.2.2",
+    "typescript": "^2.4.1",
+    "webpack": "^3.1.0",
+    "webpack-dev-server": "^2.5.0"
+  }
 }
