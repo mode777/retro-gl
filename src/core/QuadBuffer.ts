@@ -1,5 +1,5 @@
 import { Rectangle, Buffer, MatrixTransform, SpriteAttributes, Sprite } from './interfaces';
-import { VERTICES_QUAD, VERTEX_SIZE, INDICES_QUAD, OFFSET_UV, COMP_SIZE_POS, HUGE, QUAD_SIZE, MIN_Z, COMP_POS, COMP_PAL_PAL_SHIFT, COMP_Z_INDEX, OFFSET_Z_INDEX, OFFSET_PAL_SHIFT, COMP_UV, QUAD_SIZE_SHORT, VERTEX_SIZE_SHORT } from './constants';
+import { VERTICES_QUAD, VERTEX_SIZE, INDICES_QUAD, OFFSET_UV, COMP_SIZE_POS, HUGE, QUAD_SIZE, MIN_Z, COMP_POS, COMP_PAL_PAL_SHIFT, COMP_Z_INDEX, OFFSET_Z_INDEX, OFFSET_PAL_SHIFT, COMP_UV, QUAD_SIZE_SHORT, VERTEX_SIZE_SHORT, MAX_QUADS } from './constants';
 import { Quad } from './Quad';
 import { Transform2d } from './Transform';
 import * as twgl from "twgl.js";
@@ -35,12 +35,29 @@ const UV_OFFSET_4X = VERTEX_SIZE * 3 + OFFSET_UV;
 const UV_OFFSET_4Y = UV_OFFSET_4X + 1;
 
 class BufferedSprite implements Sprite{
+    readonly tag: {[key: string]: any} = {}
+    
     private _transform: Transform2d;
     private _options: SpriteAttributes;
     private _isDirty = true;
 
     constructor(private _id: number, private _buffer: QuadBuffer, transform?: Transform2d, options?: SpriteAttributes){
         this._transform = transform || new Transform2d();
+        if(options){
+            _buffer.setAttributes(
+                _id,
+                options.x,
+                options.y,
+                options.x + options.w,
+                options.y + options.h,
+                options.textureX,
+                options.textureY,
+                options.textureX + options.w,
+                options.textureY + options.h,
+                options.z,
+                options.palOffset
+            );
+        }
         this._options = options || _buffer.getAttributeInfo(_id);
     }
 
@@ -345,12 +362,10 @@ export class QuadBuffer implements Buffer {
     }
 
     addMany(amount: number){
-        if((this._range + amount) > this._capacity){
-            this._resize(this._capacity * 2);
-        } 
-        const start = this._range;
-        this._range += amount;
-        return [start, start + amount - 1];
+        const res: number[] = [];
+        for (var i = 0; i < amount; i++) {
+            res.push(this.add());
+        }
     }
 
     getAttributeInfo(id: number): SpriteAttributes{
@@ -407,6 +422,9 @@ export class QuadBuffer implements Buffer {
     }
 
     private _resize(size: number){
+        if(size > MAX_QUADS)
+            throw `Maximum quads per buffer (${MAX_QUADS}) exceeded: ${size}`;
+
         this._capacity = size;
         const buffer = this.bufferInfo.attribs["position"].buffer;
 

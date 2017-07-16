@@ -54,6 +54,7 @@ export interface Sprite {
     transform: Transform2d;
     x: number;
     y: number;
+    tag: {[key: string]: any}
 }
 
 export interface SpriteAttributes{

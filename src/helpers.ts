@@ -34,6 +34,8 @@ export function createAlphaTexture(gl: WebGLRenderingContext, path: string){
 }
 
 
+
+
 let offset = 5;
 export function createTileSprite(gl: WebGLRenderingContext, texture,palette, paletteId){
     let tids = [];

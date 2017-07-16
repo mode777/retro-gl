@@ -1,4 +1,4 @@
-import { PaletteChunk, HeaderChunk, DataChunk, EndChunk } from './chunks';
+import { PaletteChunk, HeaderChunk, DataChunk, EndChunk, PngChunk } from './chunks';
 import { ChunkType, SIGN_OFFSET, ColorType } from './constants';
 
 
@@ -141,7 +141,7 @@ export class PngReader {
         offset+=length;
 
         let crc = view.getUint32(offset, false);
-
+        console.log(this._chunkToString(type));
         switch (type) {
             case ChunkType.Header:
                 return new HeaderChunk(length, type, data, crc);
@@ -152,7 +152,17 @@ export class PngReader {
             case ChunkType.End:
                 return new EndChunk(length, type, data, crc);                
             default:
-                //throw "Unsupported chunk";
+                // unknown chunk, return generic chunk
+                return new PngChunk(length, type, data, crc);
         }
+    }
+
+    private _chunkToString(id: number){
+        return [
+            (id >>> 24) & 0x000000FF,
+            (id >>> 16) & 0x000000FF,
+            (id >>> 8) & 0x000000FF,
+            (id) & 0x000000FF
+        ].reduce((p,c,i) => p + String.fromCharCode(c), "");
     }
 }

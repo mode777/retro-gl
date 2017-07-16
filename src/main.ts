@@ -1,9 +1,12 @@
 
-import { Renderer, Renderable, TextBuffer, TileBuffer, Sprite, QuadBuffer, MIN_Z, FontInfo } from "./core";
+import { Renderer, Renderable, TextBuffer, TileBuffer, Sprite, QuadBuffer, MIN_Z, FontInfo, Transform2d, IndexedTexture, PaletteTexture } from "./core";
 import { initWebGl, createAlphaTexture, createTexture, createTileSprite } from './helpers';
 import * as twgl from "twgl.js";
 import Stats = require("stats.js");
 import * as SPECTOR from "spectorjs";
+import { stringToBuffer } from "./BinaryHelpers";
+import { PngReader } from "./PngReader/PngReader";
+
 
 const spector = new SPECTOR.Spector();
 spector.displayUI();
@@ -24,16 +27,26 @@ async function main(){
     document.body.appendChild( stats.dom );
 
     gl = initWebGl();
-    
-    let tileset = createAlphaTexture(gl, "../res/textures/tileset2.png");    
-    let font = createAlphaTexture(gl, "../res/textures/font.png");    
-    let palette = createTexture(gl, "../res/textures/pal_new.png");   
-    let fontInfo = <FontInfo>require("../res/fonts/font.json");
 
+    
     let vs = <string>require("../res/shaders/8bit_vs.glsl");
     let fs = <string>require("../res/shaders/8bit_fs.glsl");
-    let fs24 = <string>require("../res/shaders/24bit_fs.glsl");
-    let programInfo = twgl.createProgramInfo(gl, [vs, fs]);    
+    //let fs24 = <string>require("../res/shaders/24bit_fs.glsl");
+    let programInfo = twgl.createProgramInfo(gl, [vs, fs]);  
+    
+    const palette = new PaletteTexture(gl).create();
+
+    const tilesetPng = new PngReader(stringToBuffer(require("../res/textures/8bit/tiles.png")));
+    const tileset = new IndexedTexture(gl).create();
+    tileset.setRawData(tilesetPng.createPixelData());
+    palette.setRawPalette(0, tilesetPng.createPaletteDataRgba(256));
+
+    const fontPng = new PngReader(stringToBuffer(require("../res/textures/8bit/font.png")));
+    const font = new IndexedTexture(gl).create();
+    const fontInfo = <FontInfo>require("../res/fonts/font.json");
+    font.setRawData(fontPng.createPixelData());
+    palette.setRawPalette(1, fontPng.createPaletteDataRgba(256));
+
     renderer = new Renderer(gl, {
         shader: programInfo,
         palette: palette,
@@ -81,8 +94,19 @@ async function main(){
         sprites.push(sprite);
     }
 
+    const test = new QuadBuffer(gl).create();
+    const sprites2: Sprite[] = [];
+
+    const testR = new Renderable({
+        buffer: test,
+        texture: tileset,
+        paletteId: 0
+    });
+
     renderer.renderList.push(tiles);
     renderer.renderList.push(text);
+    renderer.renderList.push(testR);
+
     let a = .5;
 
     function render(time: number) {
@@ -91,6 +115,33 @@ async function main(){
         t+=0.1;
         a*=0.9;
         sprites.forEach(s => s.transform.y = Math.sin(s.x/4+t)*3);
+
+        const spr = test.createSprite(test.add(), new Transform2d(), {
+            w: 2,
+            h: 2,
+            palOffset: 0,
+            textureX: 32,
+            textureY: 0,
+            x: 1,
+            y: 1,
+            z: 250
+        });
+        spr.tag["dx"] = Math.random();
+        spr.tag["dy"] = Math.random();
+        sprites2.push(spr);
+
+        sprites2.forEach(s => {
+            if(s.transform.x > 320 || s.transform.x < 0){
+                s.tag["dx"] = -s.tag["dx"]; 
+            }
+            if(s.transform.y > 180 || s.transform.y < 0){
+                s.tag["dy"] = -s.tag["dy"]; 
+            }
+            s.transform.x += s.tag["dx"];
+            s.transform.y += s.tag["dy"];
+        })
+        //sprites2.forEach(s => s.transform.update());
+        
 
         renderer.render();
         
