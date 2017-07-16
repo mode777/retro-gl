@@ -64,7 +64,7 @@ async function main(){
 
     //let tiles2 = createTileSprite(tileset, palette, 1);
     
-    let fntBuffer = new TextBuffer(gl, 128, fontInfo).create();
+    let fntBuffer = new TextBuffer(gl, fontInfo).create();
     fntBuffer.write("Start Game", 320, 130,50,4,4);
     fntBuffer.write("Load Game", 320, 130,50+16,4);
     fntBuffer.write("Settings", 320, 130,50+16*2,4);

@@ -31,3 +31,4 @@ export const VERTEX_SIZE_SHORT = VERTEX_SIZE >> 1;
 export const QUAD_SIZE = VERTEX_SIZE * VERTICES_QUAD; 
 export const QUAD_SIZE_SHORT = VERTEX_SIZE_SHORT * VERTICES_QUAD; 
 export const MAT4_IDENT = mat4.identity(mat4.create());
+export const MAX_VERTICES = (2 << 15) -1;

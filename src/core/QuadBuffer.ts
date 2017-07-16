@@ -4,6 +4,7 @@ import { Quad } from './Quad';
 import { Transform2d } from './Transform';
 import * as twgl from "twgl.js";
 import { mat4 } from "gl-matrix";
+import { IndexBuffer } from "./IndexBuffer";
 
 const POS_OFFSET_1X = 0;
 const POS_OFFSET_1Y = POS_OFFSET_1X + 1;
@@ -88,23 +89,23 @@ class BufferedSprite implements Sprite{
 export class QuadBuffer implements Buffer {
     private _shortView: Uint16Array;
     private _byteView: Uint8Array;
-    private _indices: Uint16Array;
+    /*private*/ _indices: Uint16Array;
     /*private*/_data: ArrayBuffer;
 
     private _dirty_start = HUGE;
     private _dirty_end = 0;
-    private _range;
+    private _range: number;
     private _sprites: BufferedSprite[];
 
     private _bufferInfo: twgl.BufferInfo;
 
-    constructor(private _gl: WebGLRenderingContext, private _size: number){
-        this._data = new ArrayBuffer(_size * VERTICES_QUAD * VERTEX_SIZE);
+    constructor(private _gl: WebGLRenderingContext, private _capacity = 16){
+        this._data = new ArrayBuffer(_capacity * VERTICES_QUAD * VERTEX_SIZE);
         this._shortView = new Uint16Array(this._data);
         this._byteView = new Uint8Array(this._data);
-        this._indices = new Uint16Array(_size * INDICES_QUAD);
+        this._indices = new Uint16Array(_capacity * INDICES_QUAD);
         
-        this._createIndices();        
+        //this._createIndices();        
     }
 
     get isDirty(){
@@ -117,13 +118,21 @@ export class QuadBuffer implements Buffer {
         return this._bufferInfo;
     }
 
-    get size(){
-        return this._size;
+    get capacity(){
+        return this._capacity;
     }
 
-    protected get range(){
+    get size(){
         return this._range;
     }
+
+    get vertexSize(){
+        return this._range * INDICES_QUAD;
+    }
+
+    // protected get range(){
+    //     return this._range;
+    // }
 
     update(){
         if(this._sprites){
@@ -163,13 +172,12 @@ export class QuadBuffer implements Buffer {
         var packedBuffer = twgl.createBufferFromTypedArray(
             this._gl, this._data, this._gl.ARRAY_BUFFER, this._gl.DYNAMIC_DRAW);
 
-        var indexBuffer = twgl.createBufferFromTypedArray(
-            this._gl, this._indices, this._gl.ELEMENT_ARRAY_BUFFER);
+        const indexBuffer = new IndexBuffer(this._gl);
 
         this._bufferInfo = {
             numElements: this._range ? this._range * INDICES_QUAD : this._indices.length,
-            indices: indexBuffer,            
-            elementType: this._gl.UNSIGNED_SHORT,  
+            indices: indexBuffer.buffer,            
+            elementType: indexBuffer.elementType,  
             attribs: {
                 position: { 
                     buffer: packedBuffer, 
@@ -205,7 +213,7 @@ export class QuadBuffer implements Buffer {
             },
         };
 
-        this._range = this._bufferInfo.numElements / INDICES_QUAD;
+        this._range = 0;
 
         this._dirty_start = HUGE;
         this._dirty_end = 0;
@@ -329,6 +337,22 @@ export class QuadBuffer implements Buffer {
         this.setQuadDirty(startByte);
     }
 
+    add(){
+        if(this._range >= this._capacity){
+            this._resize(this._capacity * 2);
+        }
+        return this._range++;
+    }
+
+    addMany(amount: number){
+        if((this._range + amount) > this._capacity){
+            this._resize(this._capacity * 2);
+        } 
+        const start = this._range;
+        this._range += amount;
+        return [start, start + amount - 1];
+    }
+
     getAttributeInfo(id: number): SpriteAttributes{
         let startShort = id * QUAD_SIZE_SHORT;
         let startByte = id * QUAD_SIZE;
@@ -372,7 +396,7 @@ export class QuadBuffer implements Buffer {
 
     setAllDirty(){
         this._dirty_start = 0;
-        this._dirty_end = this._size * QUAD_SIZE;
+        this._dirty_end = this._range * QUAD_SIZE;
     }
 
     createSprite(id: number, transform?: Transform2d, options?: SpriteAttributes): Sprite{
@@ -382,34 +406,27 @@ export class QuadBuffer implements Buffer {
         return sprite;
     }
 
-    private _resize(){
+    private _resize(size: number){
+        this._capacity = size;
+        const buffer = this.bufferInfo.attribs["position"].buffer;
+
+        console.log(`resize buffer to ${size}`);
+        const newBuffer = new ArrayBuffer(size * QUAD_SIZE);     
+        const newBytes = new Uint8Array(newBuffer);
+        newBytes.set(this._byteView);
         
-        //twgl.
-    }
+        this._shortView = new Uint16Array(newBuffer);
+        this._byteView = newBytes;
+        this._data = newBuffer;
 
-    private _createIndices(){
-        let indices = this._indices;
-        let max = this._size * INDICES_QUAD;
-        let vertex = 0;
-
-        for(var i = 0; i < max; i += INDICES_QUAD){
-            /*  *1---*2
-                |  /  |
-                *4---*3  */
-            indices[i  ] = vertex;     // 1
-            indices[i+1] = vertex + 1; // 2
-            indices[i+2] = vertex + 3; // 4
-
-            indices[i+3] = vertex + 3; // 4
-            indices[i+4] = vertex + 1; // 2
-            indices[i+5] = vertex + 2; // 3
-
-            vertex += VERTICES_QUAD;
-        }
+        this._gl.bindBuffer(this._gl.ARRAY_BUFFER, buffer);
+        this._gl.bufferData(this._gl.ARRAY_BUFFER, this._data, this._gl.DYNAMIC_DRAW);
     }
 
     private _vec2Transform(x: number, y: number, m: mat4, offset = 0){
         this._shortView[offset] = m[0] * x + m[4] * y + m[12];
         this._shortView[offset+1] = m[1] * x + m[5] * y + m[13];
     }
+
+    
 }

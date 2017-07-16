@@ -48,7 +48,8 @@ export class Renderer {
                 twgl.setUniforms(this._defaults.shader, u);
             }
             twgl.setBuffersAndAttributes(this._gl, this._defaults.shader, r.buffer.bufferInfo);
-            twgl.drawBufferInfo(this._gl, r.buffer.bufferInfo);
+            //console.log(r.buffer.vertexSize)
+            twgl.drawBufferInfo(this._gl, r.buffer.bufferInfo, this._gl.TRIANGLES, r.buffer.vertexSize);
         });
     }
 

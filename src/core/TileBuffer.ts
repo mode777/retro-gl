@@ -23,6 +23,7 @@ export class TileBuffer extends QuadBuffer {
             this.setTiles(tids, baseZ);
         
         super.create();
+        this.addMany(this._width * this._height);
 
         return this;
     }
@@ -76,15 +77,16 @@ export class TileBuffer extends QuadBuffer {
     }
 
     private _createGeometry(){
-        let ctr = 0;
-        let idxCtr = 0;
-        let vertex = 0;
+        
+        // let ctr = 0;
+        // let idxCtr = 0;
+        // let vertex = 0;
 
-        for(let y = 0; y < this._theight * this._height; y += this._theight){
-            for(let x = 0; x < this._twidth * this._width; x += this._twidth){
-                this.setPosition(ctr, x, y, x + this._twidth, y + this._theight);
-                ctr++;
-            }
-        }
+        // for(let y = 0; y < this._theight * this._height; y += this._theight){
+        //     for(let x = 0; x < this._twidth * this._width; x += this._twidth){
+        //         this.add();
+        //         ctr++;
+        //     }
+        // }
     }
 }

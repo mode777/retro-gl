@@ -11,7 +11,8 @@ export interface Rectangle {
 
 export interface Buffer {
     bufferInfo: twgl.BufferInfo;
-    update();
+    update(): void;
+    vertexSize: number;
 }
 
 export interface FontInfo {

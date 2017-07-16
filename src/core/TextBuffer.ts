@@ -9,8 +9,8 @@ export class TextBuffer extends QuadBuffer {
     private _text = "";
     private _ptr = 0;
     
-    constructor(_gl: WebGLRenderingContext, _size: number, private _fontInfo: FontInfo){
-        super(_gl, _size);
+    constructor(_gl: WebGLRenderingContext, private _fontInfo: FontInfo, capacity?: number){
+        super(_gl, capacity);
     }
 
     get text(){
@@ -20,10 +20,10 @@ export class TextBuffer extends QuadBuffer {
     create(text?: string, width = HUGE, x = 0, y = 0, z = MIN_Z){
         this._createFont();
 
-        if(text)
-            this.write(text, width, x, y, z);
 
         super.create();
+        if(text)
+            this.write(text, width, x, y, z);
         //this.range = text ? text.length : 0;
 
         return this;
@@ -54,8 +54,8 @@ export class TextBuffer extends QuadBuffer {
 
     public write(text: string, width = HUGE, x = 0, y = 0, z = MIN_Z, pal = 0){
         let ctr = 0;
-        if(this._ptr + text.length > this.size)
-            text = text.substr(0,this.size - this._ptr);
+        // if(this._ptr + text.length > this.capacity)
+        //     text = text.substr(0,this.capacity - this._ptr);
 
         let ox = x;
         let oy = y;
@@ -66,7 +66,7 @@ export class TextBuffer extends QuadBuffer {
             let y = this._font[offset+1]; 
             let w = this._font[offset+2]; 
             let h = this._font[offset+3];
-            this.setAttributes(this._ptr+i, ox, oy, ox+w, oy+h, x,y,x+w,y+h,z,pal);
+            this.setAttributes(this.add(), ox, oy, ox+w, oy+h, x,y,x+w,y+h,z,pal);
             if(ox>width){
                 oy += h;
                 ox = 0;
