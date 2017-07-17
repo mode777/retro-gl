@@ -19,6 +19,8 @@ void main() {
     
     //lookup color and discard if alpha is present.
     vec4 res = texture2D(palette, palUv);
+
+    //gl_FragColor = vec4(1.0,0.0,1.0,1.0);
     if(res.a < 1.0)
          discard;
     else

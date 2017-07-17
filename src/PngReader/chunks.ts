@@ -107,6 +107,8 @@ export class DataChunk extends PngChunk {
     decompress(){
         return pako.inflate(this._data);
     }
+
+    
 }
 
 export class EndChunk extends PngChunk {

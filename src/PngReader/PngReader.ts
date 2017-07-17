@@ -1,7 +1,13 @@
 import { PaletteChunk, HeaderChunk, DataChunk, EndChunk, PngChunk } from './chunks';
 import { ChunkType, SIGN_OFFSET, ColorType } from './constants';
 
-
+enum PngFilter {
+    None = 0,
+    Sub = 1,
+    Up = 2,
+    Average = 3,
+    Paeth = 4
+}
 
 export class PngReader {
     private _signature: Uint8Array;
@@ -46,23 +52,77 @@ export class PngReader {
         const w = this._header.width;
         const h = this._header.height;
         const c = this.imageColorComponents;
-        let bytes = w * h  * c;
+        const bytes = w * h  * c;
 
-        let pngData = this.imageData.decompress();
-        let data = new Uint8Array(bytes);
+        const pngData = this.imageData.decompress();
+        const data = new Uint8Array(bytes);
 
-        for (var y = 0; y < h; y++) {
-            for (var x = 0; x < w; x++) {
-                let pngOffset =  y * (w*c+1) + x*c+1;
-                let pxOffset =  y * (w*c) + x*c;
-                
-                for (var i = 0; i < c; i++) {
-                    data[pxOffset+i] = pngData[pngOffset+i];     
-                }
-            }            
-        }      
+        let iData = 0;
+        let filter = 0;
+        let column = 0;
+        let row = 0;
+
+        // helpers
+        const left = () => column > 1 
+            ? data[iData-c] 
+            : 0;
+        const above = () => row > 1 
+            ? data[iData-(w+1)] 
+            : 0;
+        const aboveLeft = () => (row > 1 && column > 1) 
+            ? data[iData-(w+1)-c] 
+            : 0;
+
+        for (let i = 0; i < pngData.byteLength; i++) {
+            column = i % (w+1);
+            row = Math.floor(i / (w+1));
+
+            if(column == 0){
+                filter = <PngFilter>pngData[i];
+                //console.log(data);
+                continue;
+            }
+
+            switch (filter) {
+                case PngFilter.None:
+                    data[iData] = pngData[i];
+                    break;
+                case PngFilter.Sub:
+                    data[iData] = pngData[i] + left();
+                    break;
+                case PngFilter.Up:
+                    data[iData] = pngData[i] + above();
+                    break;
+                case PngFilter.Average:
+                    data[iData] = pngData[i] + Math.floor((left()+above())/2);
+                    break;
+                case PngFilter.Paeth:
+                    data[iData] = pngData[i] + this._paethPredictor(left(), above(), aboveLeft())
+                    break;
+                default:
+                    throw `Unsupported PNG filter ${filter}`
+            }
+
+            iData++;               
+        }
         
         return data;
+    }
+
+    private _paethPredictor(left: number, above: number, aboveLeft: number){
+        // a = left, b = above, c = upper left
+        const estimate = left + above - aboveLeft;
+        const distLeft = Math.abs(estimate - left);      
+        const distAbove = Math.abs(estimate - above);
+        const distAboveLeft = Math.abs(estimate - aboveLeft);
+        // return nearest of a,b,c,
+        // breaking ties in order a,b,c.
+        if (distLeft <= distAbove && distLeft <= distAboveLeft)
+            return left;
+        else if (distAbove <= distAboveLeft)
+            return above;
+        else 
+            return aboveLeft;
     }
 
     createPaletteDataRgba(size: number){
@@ -141,7 +201,7 @@ export class PngReader {
         offset+=length;
 
         let crc = view.getUint32(offset, false);
-        console.log(this._chunkToString(type));
+
         switch (type) {
             case ChunkType.Header:
                 return new HeaderChunk(length, type, data, crc);
@@ -152,7 +212,7 @@ export class PngReader {
             case ChunkType.End:
                 return new EndChunk(length, type, data, crc);                
             default:
-                // unknown chunk, return generic chunk
+                // unknown, return generic chunk
                 return new PngChunk(length, type, data, crc);
         }
     }
@@ -163,6 +223,6 @@ export class PngReader {
             (id >>> 16) & 0x000000FF,
             (id >>> 8) & 0x000000FF,
             (id) & 0x000000FF
-        ].reduce((p,c,i) => p + String.fromCharCode(c), "");
+        ].reduce((p,c) => p + String.fromCharCode(c), "");
     }
 }

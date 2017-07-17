@@ -34,18 +34,24 @@ async function main(){
     //let fs24 = <string>require("../res/shaders/24bit_fs.glsl");
     let programInfo = twgl.createProgramInfo(gl, [vs, fs]);  
     
-    const palette = new PaletteTexture(gl).create();
+    const palette = new PaletteTexture(gl);
 
     const tilesetPng = new PngReader(stringToBuffer(require("../res/textures/8bit/tiles.png")));
-    const tileset = new IndexedTexture(gl).create();
+    const tileset = new IndexedTexture(gl);
     tileset.setRawData(tilesetPng.createPixelData());
+    tileset.create();
+
     palette.setRawPalette(0, tilesetPng.createPaletteDataRgba(256));
 
     const fontPng = new PngReader(stringToBuffer(require("../res/textures/8bit/font.png")));
-    const font = new IndexedTexture(gl).create();
-    const fontInfo = <FontInfo>require("../res/fonts/font.json");
+    const font = new IndexedTexture(gl);
     font.setRawData(fontPng.createPixelData());
+    font.create();
+
     palette.setRawPalette(1, fontPng.createPaletteDataRgba(256));
+    palette.create();
+
+    const fontInfo = <FontInfo>require("../res/fonts/font.json");
 
     renderer = new Renderer(gl, {
         shader: programInfo,
@@ -85,7 +91,8 @@ async function main(){
     text = new Renderable({
         buffer: fntBuffer,
         texture: font,
-        paletteId: 1
+        paletteId: 1,
+        palette: palette
     });
 
     let sprites: Sprite[] = [];
@@ -100,7 +107,8 @@ async function main(){
     const testR = new Renderable({
         buffer: test,
         texture: tileset,
-        paletteId: 0
+        paletteId: 0,
+        palette: palette
     });
 
     renderer.renderList.push(tiles);
@@ -117,8 +125,8 @@ async function main(){
         sprites.forEach(s => s.transform.y = Math.sin(s.x/4+t)*3);
 
         const spr = test.createSprite(test.add(), new Transform2d(), {
-            w: 2,
-            h: 2,
+            w: 1,
+            h: 1,
             palOffset: 0,
             textureX: 32,
             textureY: 0,
