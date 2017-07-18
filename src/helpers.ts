@@ -49,8 +49,8 @@ export function createTileSprite(gl: WebGLRenderingContext, texture,palette, pal
     
     return new Renderable({
         buffer: mesh,
-        texture: texture,
-        palette: palette,
+        texture: texture.texture,
+        palette: palette.texture,
         paletteId: paletteId,
 
         //mode7: true,

@@ -8,10 +8,10 @@ import { stringToBuffer } from "./BinaryHelpers";
 import { PngReader } from "./PngReader/PngReader";
 
 
-const spector = new SPECTOR.Spector();
-spector.displayUI();
-spector.spyCanvases();
-
+// const spector = new SPECTOR.Spector();
+// spector.displayUI();
+// spector.spyCanvases();
+window.onerror = (e: string) => alert(e);
 
 let gl: WebGLRenderingContext;
 let t = 0;
@@ -55,8 +55,8 @@ async function main(){
 
     renderer = new Renderer(gl, {
         shader: programInfo,
-        palette: palette,
-        texture: font,
+        palette: palette.texture,
+        texture: font.texture,
         paletteId: 0,
         zSort: true,
         blendMode: "none"
@@ -90,9 +90,9 @@ async function main(){
     fntBuffer.write("Quit", 320, 130,50+16*3,4);    
     text = new Renderable({
         buffer: fntBuffer,
-        texture: font,
+        texture: font.texture,
         paletteId: 1,
-        palette: palette
+        palette: palette.texture
     });
 
     let sprites: Sprite[] = [];
@@ -106,9 +106,9 @@ async function main(){
 
     const testR = new Renderable({
         buffer: test,
-        texture: tileset,
+        texture: tileset.texture,
         paletteId: 0,
-        palette: palette
+        palette: palette.texture
     });
 
     renderer.renderList.push(tiles);

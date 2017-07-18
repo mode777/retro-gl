@@ -108,8 +108,10 @@ export class Renderer {
         let palette = r.palette || this._defaults.palette;
         let paletteId = r.paletteId || this._defaults.paletteId;
 
-        if(texture != this._settings.texture)
+        if(texture != this._settings.texture){
+            //console.log(texture);
             this._settings.texture = u["texture"] = texture;
+        }
 
         if(palette != this._settings.palette)
             this._settings.palette = u["palette"] = palette;
