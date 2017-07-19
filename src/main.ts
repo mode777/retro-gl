@@ -48,7 +48,9 @@ async function main(){
     font.setRawData(fontPng.createPixelData());
     font.create();
 
-    palette.setRawPalette(1, fontPng.createPaletteDataRgba(256));
+    const pal = fontPng.createPaletteDataRgba(256);
+    palette.setRawPalette(1, pal);
+    palette.setPalColor(1, 7, [255,255,255,0]);
     palette.create();
 
     const fontInfo = <FontInfo>require("../res/fonts/font.json");
@@ -92,7 +94,8 @@ async function main(){
         buffer: fntBuffer,
         texture: font.texture,
         paletteId: 1,
-        palette: palette.texture
+        palette: palette.texture,
+        zSort: true
     });
 
     let sprites: Sprite[] = [];
@@ -108,7 +111,7 @@ async function main(){
         buffer: test,
         texture: tileset.texture,
         paletteId: 0,
-        palette: palette.texture
+        palette: palette.texture,
     });
 
     renderer.renderList.push(tiles);

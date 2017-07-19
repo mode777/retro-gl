@@ -1,13 +1,5 @@
-import { PaletteChunk, HeaderChunk, DataChunk, EndChunk, PngChunk } from './chunks';
-import { ChunkType, SIGN_OFFSET, ColorType } from './constants';
-
-enum PngFilter {
-    None = 0,
-    Sub = 1,
-    Up = 2,
-    Average = 3,
-    Paeth = 4
-}
+import { PaletteChunk, HeaderChunk, DataChunk, EndChunk, PngChunk, TransparencyChunk } from './chunks';
+import { ChunkType, SIGN_OFFSET, ColorType, PngFilter } from './constants';
 
 export class PngReader {
     private _signature: Uint8Array;
@@ -15,6 +7,7 @@ export class PngReader {
     private _header: HeaderChunk;
     private _palette: PaletteChunk;
     private _data: DataChunk;
+    private _transparency: TransparencyChunk;
 
     constructor(private data: ArrayBuffer){
         this._dataView = new DataView(data);
@@ -66,20 +59,20 @@ export class PngReader {
         const left = () => column > 1 
             ? data[iData-c] 
             : 0;
-        const above = () => row > 1 
-            ? data[iData-(w+1)] 
+        const above = () => row > 0 
+            ? data[iData-(w*c)] 
             : 0;
-        const aboveLeft = () => (row > 1 && column > 1) 
-            ? data[iData-(w+1)-c] 
+        const aboveLeft = () => (row > 0 && column > 1) 
+            ? data[iData-(w*c)-c] 
             : 0;
 
         for (let i = 0; i < pngData.byteLength; i++) {
-            column = i % (w+1);
-            row = Math.floor(i / (w+1));
+            column = i % (w*c+1);
+            row = Math.floor(i / (w*c+1));
 
             if(column == 0){
                 filter = <PngFilter>pngData[i];
-                //console.log(data);
+                //console.log(row, PngFilter[filter]);
                 continue;
             }
 
@@ -140,7 +133,7 @@ export class PngReader {
             data[offset] = pngData[offsetPng];
             data[offset+1] = pngData[offsetPng+1];
             data[offset+2] = pngData[offsetPng+2];
-            data[offset+3] = 255;
+            data[offset+3] = this._transparency ? this._transparency.getForColorIndex(i) : 255;
         }
 
         return data;
@@ -179,6 +172,8 @@ export class PngReader {
                     case ChunkType.Data:
                         this._data = <DataChunk>chunk;
                         break;
+                    case ChunkType.Transparency:
+                        this._transparency = <TransparencyChunk>chunk;
                     default:
                         break;
                 }
@@ -210,7 +205,9 @@ export class PngReader {
             case ChunkType.Data:
                 return new DataChunk(length, type, data, crc);                
             case ChunkType.End:
-                return new EndChunk(length, type, data, crc);                
+                return new EndChunk(length, type, data, crc);
+            case ChunkType.Transparency:
+                return new TransparencyChunk(length, type, data, crc);
             default:
                 // unknown, return generic chunk
                 return new PngChunk(length, type, data, crc);

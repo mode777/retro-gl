@@ -118,3 +118,18 @@ export class EndChunk extends PngChunk {
             throw "Not a end chunk";
     }
 }
+
+export class TransparencyChunk extends PngChunk {
+
+
+    constructor(length: number, type: ChunkType, data: Uint8Array, crc: number){
+        super(length, type, data, crc);
+        if(type != ChunkType.Transparency)
+            throw "Not a transparency chunk";
+    }
+
+    getForColorIndex(index: number){
+        const alpha = this._data[index]
+        return alpha != undefined ? alpha : 255;
+    }
+}

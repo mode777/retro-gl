@@ -53,6 +53,11 @@ export class PaletteTexture extends RgbaTexture {
         return this.getPixel(index, palId);        
     }
 
+    public setPalColor(palId: number, index: number, color: ArrayLike<number>){
+        this.setPixel(index, palId, color);
+        this.setPalDirty(palId);
+    }
+
     public shift(palId: number, start: number, end: number){
         let len = end - start;
         for (var i = 0; i < len; i++) {

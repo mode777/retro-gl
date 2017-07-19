@@ -3,6 +3,10 @@ import * as twgl from "twgl.js";
 
 export function initWebGl() {
     let canvas = <HTMLCanvasElement>document.getElementById("canvas");
+    canvas["imageSmoothingEnabled"] = false;
+    canvas["mozImageSmoothingEnabled"] = false;
+    canvas["webkitImageSmoothingEnabled"] = false;
+    canvas["msImageSmoothingEnabled"] = false;
 
     let gl = twgl.getContext(canvas, {
         premultipliedAlpha: false,
