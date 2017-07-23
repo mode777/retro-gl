@@ -1,4 +1,4 @@
-import { TileBuffer, Renderable, QuadBuffer, MIN_Z } from "./core/index";
+import { TileBuffer, OldRenderable, QuadBuffer, MIN_Z } from "./core/index";
 import * as twgl from "twgl.js";
 
 export function initWebGl() {
@@ -51,7 +51,7 @@ export function createTileSprite(gl: WebGLRenderingContext, texture,palette, pal
     
     let mesh = new TileBuffer(gl, 32, 32).create(tids, 1);
     
-    return new Renderable({
+    return new OldRenderable({
         buffer: mesh,
         texture: texture.texture,
         palette: palette.texture,
@@ -66,7 +66,7 @@ export function createSprite(gl: WebGLRenderingContext, texture, palette, palett
     let sb = new QuadBuffer(gl,1);
     sb.setAttributes(0,x,y,x+w,y+h,ox,oy,ox+w,oy+w, MIN_Z, 0);
     sb.create();
-    return new Renderable({
+    return new OldRenderable({
         buffer:sb, 
         texture: texture, 
         palette: palette, 

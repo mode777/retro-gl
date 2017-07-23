@@ -10,3 +10,4 @@ export * from "./Transform";
 export * from "./PixelTexture";
 export * from "./IndexedTexture";
 export * from "./PaletteTexture";
+export * from "./BinaryHelpers";

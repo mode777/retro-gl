@@ -1,13 +1,12 @@
 import { PngReader } from './PngReader/PngReader';
 import { initWebGl, createTexture } from './helpers';
-import { Renderer } from "./core/index";
+import { Renderer, stringToBuffer } from "./core/index";
 import { QuadBuffer } from './core/QuadBuffer';
-import { Renderable } from './core/Renderable';
+import { OldRenderable } from './core/Renderable';
 import { PaletteTexture } from './core/PaletteTexture';
 import { ColorComponent } from './core/PixelTexture';
 import { IndexedTexture } from './core/IndexedTexture';
 import * as twgl from "twgl.js";
-import { stringToBuffer } from "./BinaryHelpers";
 import * as SPECTOR from "spectorjs";
 
 const spector = new SPECTOR.Spector();
@@ -28,6 +27,7 @@ spector.spyCanvases();
         paletteId: 0,
         zSort: true,
         blendMode: "none"
+        
     });
 
     function render(){
@@ -49,7 +49,7 @@ spector.spyCanvases();
     let quadBuffer = new QuadBuffer(gl,1);
     quadBuffer.setAttributes(0, 0,0,256,256,0,0,256,256,1,0);
     quadBuffer.create();
-    let renderable = new Renderable({
+    let renderable = new OldRenderable({
         buffer: quadBuffer,
         texture: idxTex,
         palette: palTex,

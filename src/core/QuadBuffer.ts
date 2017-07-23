@@ -5,6 +5,8 @@ import { Transform2d } from './Transform';
 import * as twgl from "twgl.js";
 import { mat4 } from "gl-matrix";
 import { IndexBuffer } from "./IndexBuffer";
+import { BufferedSprite } from "./BufferedSprite";
+import { upperPowerOfTwo } from "./BinaryHelpers";
 
 const POS_OFFSET_1X = 0;
 const POS_OFFSET_1Y = POS_OFFSET_1X + 1;
@@ -34,74 +36,7 @@ const UV_OFFSET_3Y = UV_OFFSET_3X + 1;
 const UV_OFFSET_4X = VERTEX_SIZE * 3 + OFFSET_UV;
 const UV_OFFSET_4Y = UV_OFFSET_4X + 1;
 
-class BufferedSprite implements Sprite{
-    readonly tag: {[key: string]: any} = {}
-    
-    private _transform: Transform2d;
-    private _options: SpriteAttributes;
-    private _isDirty = true;
-
-    constructor(private _id: number, private _buffer: QuadBuffer, transform?: Transform2d, options?: SpriteAttributes){
-        this._transform = transform || new Transform2d();
-        if(options){
-            _buffer.setAttributes(
-                _id,
-                options.x,
-                options.y,
-                options.x + options.w,
-                options.y + options.h,
-                options.textureX,
-                options.textureY,
-                options.textureX + options.w,
-                options.textureY + options.h,
-                options.z,
-                options.palOffset
-            );
-        }
-        this._options = options || _buffer.getAttributeInfo(_id);
-    }
-
-    get transform(){
-        return this._transform;
-    }
-
-    get isDirty(){
-        return this._isDirty;
-    }
-
-    get x(){
-        return this._options.x;
-    }
-
-    get y(){
-        return this._options.y;
-    }
-
-    // setAttribute(key: AttributeKey, value: any){
-    //     this._isDirty = true;
-    //     this._options[key] = value;
-    // }
-
-    update(){
-        if(this._transform.isDirty || this._isDirty){
-            let a = this._options;
-            let m = this._transform.matrix;
-            let id = this._id;
-
-            this._buffer.setPositionTransformed(id,a.x,a.y,a.x+a.w,a.y+a.h,m);
-            this._buffer.setZ(id, a.z || 1);
-            this._buffer.setPalShift(id, a.palOffset || 0);
-            this._buffer.setUv(id, a.textureX, a.textureY, a.textureX+a.w, a.textureY+a.h);
-            this._isDirty = false;
-        }
-    }
-
-    center(){
-        this._transform.ox = this._options.x + this._options.w/2;
-        this._transform.oy = this._options.y + this._options.h/2;
-    }
-
-}
+const EMPTY_QUAD = new Uint8Array(QUAD_SIZE);
 
 export class QuadBuffer implements Buffer {
     private _shortView: Uint16Array;
@@ -113,6 +48,7 @@ export class QuadBuffer implements Buffer {
     private _dirty_end = 0;
     private _range: number;
     private _sprites: BufferedSprite[];
+    private _freeList: number[] = [];
 
     private _bufferInfo: twgl.BufferInfo;
 
@@ -143,6 +79,7 @@ export class QuadBuffer implements Buffer {
         return this._range;
     }
 
+
     get vertexSize(){
         return this._range * INDICES_QUAD;
     }
@@ -152,6 +89,7 @@ export class QuadBuffer implements Buffer {
     // }
 
     update(){
+        
         if(this._sprites){
             this._sprites.forEach(s => s.update());
         }
@@ -251,7 +189,7 @@ export class QuadBuffer implements Buffer {
         pos[start+POS_OFFSET_4X] = x1;
         pos[start+POS_OFFSET_4Y] = y2;
 
-        this.setQuadDirty(start);
+        this._setQuadDirty(start);
     }
 
     setPositionTransformed(id: number, x1: number, y1: number, x2: number, y2: number, m: mat4){
@@ -281,7 +219,7 @@ export class QuadBuffer implements Buffer {
         bytes[start+UV_OFFSET_4X] = x1;
         bytes[start+UV_OFFSET_4Y] = y2 - 1;
 
-        this.setQuadDirty(start);
+        this._setQuadDirty(start);
     }
 
     setPalShift(id: number, pal: number){
@@ -293,7 +231,7 @@ export class QuadBuffer implements Buffer {
         bytes[start+PAL_OFFSET_3] = pal;
         bytes[start+PAL_OFFSET_4] = pal;
         
-        this.setQuadDirty(start);
+        this._setQuadDirty(start);
     }
 
     getPalShift(id: number){
@@ -309,7 +247,7 @@ export class QuadBuffer implements Buffer {
         bytes[start+Z_OFFSET_3] = z;
         bytes[start+Z_OFFSET_4] = z;
         
-        this.setQuadDirty(start);
+        this._setQuadDirty(start);
     }
 
     getZ(id: number){
@@ -351,12 +289,17 @@ export class QuadBuffer implements Buffer {
         bytes[startByte+UV_OFFSET_4X] = uvx1 ;
         bytes[startByte+UV_OFFSET_4Y] = uvy2 - 1;
 
-        this.setQuadDirty(startByte);
+        this._setQuadDirty(startByte);
     }
 
     add(){
+        if(this._freeList.length > 0)
+            return this._freeList.pop();
+        
         if(this._range >= this._capacity){
-            this._resize(this._capacity * 2);
+            const next = this._capacity * 2;
+            //console.log("next:", next);
+            this._resize(next);
         }
         return this._range++;
     }
@@ -392,7 +335,7 @@ export class QuadBuffer implements Buffer {
         let bytes = this._byteView;
         bytes.set(values, startByte);
         
-        this.setQuadDirty(startByte);
+        this._setQuadDirty(startByte);
     }
 
     getAttributeBytes(id: number, values: ArrayLike<number>){
@@ -400,18 +343,9 @@ export class QuadBuffer implements Buffer {
         return new Uint8Array(this._data, startByte, QUAD_SIZE);
     }
 
-    clearQuad(id: number){
-        this.setAttributes(0,0,0,0,0,0,0,0,0,0,0);
-    }
-
-    setQuadDirty(byteOffset: number){
-        this._dirty_start = Math.min(byteOffset, this._dirty_start);
-        this._dirty_end = Math.max(byteOffset+QUAD_SIZE, this._dirty_end);
-    }
-
-    setAllDirty(){
-        this._dirty_start = 0;
-        this._dirty_end = this._range * QUAD_SIZE;
+    deleteQuad(id: number){
+        this._clearQuad(id);
+        this._freeList.push(id);
     }
 
     createSprite(id: number, transform?: Transform2d, options?: SpriteAttributes): Sprite{
@@ -419,6 +353,22 @@ export class QuadBuffer implements Buffer {
         this._sprites = this._sprites || [];
         this._sprites.push(sprite);
         return sprite;
+    }
+
+    private _clearQuad(id: number){
+        const offset = id * QUAD_SIZE;
+        this._byteView.set(EMPTY_QUAD, offset);
+        this._setQuadDirty(offset);
+    }
+
+    private _setQuadDirty(byteOffset: number){
+        this._dirty_start = Math.min(byteOffset, this._dirty_start);
+        this._dirty_end = Math.max(byteOffset+QUAD_SIZE, this._dirty_end);
+    }
+
+    private _setAllDirty(){
+        this._dirty_start = 0;
+        this._dirty_end = this._range * QUAD_SIZE;
     }
 
     private _resize(size: number){

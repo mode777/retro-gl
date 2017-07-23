@@ -3,7 +3,7 @@ import { PAL_OFFSET } from './constants';
 import { Transform2d } from './Transform';
 import { PixelTexture } from './PixelTexture';
 
-export class Renderable<T extends Buffer> implements RenderableBufferOptions<T> {
+export class OldRenderable<T extends Buffer> implements RenderableBufferOptions<T> {
     
     constructor(private _options: RenderableBufferOptions<T>){
         _options.transform = _options.transform || new Transform2d();

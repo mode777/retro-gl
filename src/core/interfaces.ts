@@ -1,6 +1,9 @@
 import { Transform2d } from './Transform';
 import * as twgl from "twgl.js";
 import { mat4 } from "gl-matrix";
+import { ProgramInfo, BufferInfo } from "twgl.js";
+
+export type BlendMode = "none" | "alpha";
 
 export interface Rectangle {
     x: number;
@@ -32,7 +35,7 @@ export interface RendererSettings {
     palette: WebGLTexture,
     shader: twgl.ProgramInfo,
     zSort: boolean,
-    blendMode: "none" | "alpha"
+    blendMode: BlendMode
 }
 
 export interface RenderableOptions {
@@ -41,13 +44,30 @@ export interface RenderableOptions {
     palette?: WebGLTexture,
     shader?: twgl.ProgramInfo
     zSort?: boolean,
-    blendMode?: "none" | "alpha"
+    blendMode?: BlendMode
     mode7?: boolean
 }
 
 export interface RenderableBufferOptions<TBuffer extends Buffer> extends RenderableOptions {
     buffer: TBuffer,
     transform?: Transform2d,
+}
+
+export interface Renderable {
+    update();
+    //programInfo: ProgramInfo,
+    bufferInfo: BufferInfo
+    transformation: mat4,
+    //palette: WebGLTexture,
+    texture: WebGLTexture,
+    uniforms: {[key: string]: any},
+    mode7: boolean,
+    zSort: boolean,
+    blendMode: BlendMode,
+}
+
+export interface IndexedRenderable extends Renderable {
+    palette: number | string;
 }
 
 export interface Sprite {

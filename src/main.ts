@@ -1,10 +1,9 @@
 
-import { Renderer, Renderable, TextBuffer, TileBuffer, Sprite, QuadBuffer, MIN_Z, FontInfo, Transform2d, IndexedTexture, PaletteTexture } from "./core";
+import { Renderer, OldRenderable, TextBuffer, TileBuffer, Sprite, QuadBuffer, MIN_Z, FontInfo, Transform2d, IndexedTexture, PaletteTexture, stringToBuffer } from "./core";
 import { initWebGl, createAlphaTexture, createTexture, createTileSprite } from './helpers';
 import * as twgl from "twgl.js";
 import Stats = require("stats.js");
 import * as SPECTOR from "spectorjs";
-import { stringToBuffer } from "./BinaryHelpers";
 import { PngReader } from "./PngReader/PngReader";
 
 
@@ -17,8 +16,8 @@ let gl: WebGLRenderingContext;
 let t = 0;
 let renderer: Renderer;
 
-let tiles: Renderable<TileBuffer>;
-let text: Renderable<TextBuffer>;
+let tiles: OldRenderable<TileBuffer>;
+let text: OldRenderable<TextBuffer>;
 
 async function main(){
     
@@ -37,20 +36,25 @@ async function main(){
     const palette = new PaletteTexture(gl);
 
     const tilesetPng = new PngReader(stringToBuffer(require("../res/textures/8bit/tiles.png")));
+    palette.setRawPalette(0, tilesetPng.createPaletteDataRgba(256));
     const tileset = new IndexedTexture(gl);
     tileset.setRawData(tilesetPng.createPixelData());
     tileset.create();
 
-    palette.setRawPalette(0, tilesetPng.createPaletteDataRgba(256));
 
     const fontPng = new PngReader(stringToBuffer(require("../res/textures/8bit/font.png")));
+    palette.setRawPalette(1, fontPng.createPaletteDataRgba(256));
+    palette.setPalColor(1, 7, [255,255,255,0]);
     const font = new IndexedTexture(gl);
     font.setRawData(fontPng.createPixelData());
     font.create();
 
-    const pal = fontPng.createPaletteDataRgba(256);
-    palette.setRawPalette(1, pal);
-    palette.setPalColor(1, 7, [255,255,255,0]);
+    const spritesPng = new PngReader(stringToBuffer(require("../res/textures/8bit/sprites.png")));
+    palette.setRawPalette(2, spritesPng.createPaletteDataRgba(256));
+    const spritesTex = new IndexedTexture(gl);
+    spritesTex.setRawData(spritesPng.createPixelData());
+    spritesTex.create();
+    
     palette.create();
 
     const fontInfo = <FontInfo>require("../res/fonts/font.json");
@@ -90,7 +94,7 @@ async function main(){
     fntBuffer.write("Load Game", 320, 130,50+16,4);
     fntBuffer.write("Settings", 320, 130,50+16*2,4);
     fntBuffer.write("Quit", 320, 130,50+16*3,4);    
-    text = new Renderable({
+    text = new OldRenderable({
         buffer: fntBuffer,
         texture: font.texture,
         paletteId: 1,
@@ -107,16 +111,16 @@ async function main(){
     const test = new QuadBuffer(gl).create();
     const sprites2: Sprite[] = [];
 
-    const testR = new Renderable({
+    const testR = new OldRenderable({
         buffer: test,
-        texture: tileset.texture,
-        paletteId: 0,
+        texture: spritesTex.texture,
+        paletteId: 2,
         palette: palette.texture,
     });
 
     renderer.renderList.push(tiles);
-    renderer.renderList.push(text);
     renderer.renderList.push(testR);
+    renderer.renderList.push(text);
 
     let a = .5;
 
@@ -128,14 +132,14 @@ async function main(){
         sprites.forEach(s => s.transform.y = Math.sin(s.x/4+t)*3);
 
         const spr = test.createSprite(test.add(), new Transform2d(), {
-            w: 1,
-            h: 1,
+            w: 16,
+            h: 16,
             palOffset: 0,
-            textureX: 32,
+            textureX: 0,
             textureY: 0,
             x: 1,
             y: 1,
-            z: 250
+            z: 2
         });
         spr.tag["dx"] = Math.random();
         spr.tag["dy"] = Math.random();
@@ -153,7 +157,6 @@ async function main(){
         })
         //sprites2.forEach(s => s.transform.update());
         
-
         renderer.render();
         
         stats.end();
