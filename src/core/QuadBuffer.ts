@@ -212,7 +212,7 @@ export class QuadBuffer implements Buffer {
 
         bytes[start+UV_OFFSET_1X] = x1;
         bytes[start+UV_OFFSET_1Y] = y1;
-        bytes[start+UV_OFFSET_2X] = x2 -1;
+        bytes[start+UV_OFFSET_2X] = x2 - 1;
         bytes[start+UV_OFFSET_2Y] = y1;
         bytes[start+UV_OFFSET_3X] = x2 - 1;
         bytes[start+UV_OFFSET_3Y] = y2 - 1;
@@ -396,5 +396,4 @@ export class QuadBuffer implements Buffer {
         this._shortView[offset+1] = m[1] * x + m[5] * y + m[13];
     }
 
-    
 }

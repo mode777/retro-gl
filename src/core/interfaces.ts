@@ -55,19 +55,18 @@ export interface RenderableBufferOptions<TBuffer extends Buffer> extends Rendera
 
 export interface Renderable {
     update();
-    //programInfo: ProgramInfo,
     bufferInfo: BufferInfo
     transformation: mat4,
-    //palette: WebGLTexture,
     texture: WebGLTexture,
-    uniforms: {[key: string]: any},
     mode7: boolean,
     zSort: boolean,
     blendMode: BlendMode,
+    elements: number;
+    offset: number;
 }
 
 export interface IndexedRenderable extends Renderable {
-    palette: number | string;
+    palette: number;
 }
 
 export interface Sprite {

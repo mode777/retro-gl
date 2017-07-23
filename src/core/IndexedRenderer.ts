@@ -21,10 +21,10 @@ export class IndexedRenderer {
     // state
     private _zSort: boolean = DEFAULT_Z_SORT;
     private _blendMode: BlendMode = DEFAULT_BLEND_MODE;
-    private _paletteId: number = 0;
+    private _paletteId = 0;
     private _texture: WebGLTexture;
 
-    constructor(private _gl: WebGLRenderingContext, paletteTexture: WebGLTexture){
+    constructor(private _gl: WebGLRenderingContext, private _paletteTexture: WebGLTexture){
         
         this._ortho = mat4.ortho(mat4.create(), 0, _gl.canvas.width, _gl.canvas.height, 0, -256, 0);
         this._projection = mat4.perspective(mat4.create(), 1, 1, -255, 0);
@@ -39,20 +39,20 @@ export class IndexedRenderer {
     render(){
         this.renderList.forEach((r)=> r.update());
         
-        //this._gl.clear(this._gl.COLOR_CLEAR_VALUE);
         this._gl.useProgram(this._shader.program);
-        
+        twgl.setUniforms(this._shader, { palette: this._paletteTexture });
+                
         this.renderList.forEach((r)=>{
             this._updateRenderState(r);
             this._updateMatrix(r);
             let u = this._getUniforms(r);
             
-            if(u){
+            if(u)
                 twgl.setUniforms(this._shader, u);
-            }
-            twgl.setBuffersAndAttributes(this._gl, this._defaults.shader, r.buffer.bufferInfo);
+
+            twgl.setBuffersAndAttributes(this._gl, this._shader, r.bufferInfo);
             //console.log(r.buffer.vertexSize)
-            twgl.drawBufferInfo(this._gl, r.buffer.bufferInfo, this._gl.TRIANGLES, r.buffer.vertexSize);
+            twgl.drawBufferInfo(this._gl, r.bufferInfo, this._gl.TRIANGLES, r.elements, r.offset);
         });
     }
 
@@ -95,31 +95,18 @@ export class IndexedRenderer {
         }
     }
 
-
-
     protected _getUniforms(r: IndexedRenderable){
-        
-        //this.a-=0.0001;
-        //let a = this.a;
-
         const u = {
             matrix: this._matrix,
         };
-
-        const palId = typeof(r.palette) == "number" 
-            ? r.palette
-            : 0 // TODO: Use a real palette object here.
 
         if(r.texture != this._texture){
             this._texture = u["texture"] = r.texture;
         }
 
-        if(palette != this._settings.palette)
-            this._settings.palette = u["palette"] = palette;
-
-        if(paletteId != this._settings.paletteId){
-            this._settings.paletteId = paletteId;
-            u["pal_offset"] = paletteId * PAL_OFFSET;
+        if(r.palette != this._paletteId) {
+            this._paletteId = r.palette;
+            u["pal_offset"] = this._paletteId * PAL_OFFSET;
         }
 
         return u;
