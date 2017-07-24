@@ -54,7 +54,7 @@ export class QuadBuffer implements Buffer {
 
     constructor(private _gl: WebGLRenderingContext, private _capacity = 16){
         this._data = new ArrayBuffer(_capacity * VERTICES_QUAD * VERTEX_SIZE);
-        this._shortView = new Uint16Array(this._data);
+        this._shortView = new Int16Array(this._data);
         this._byteView = new Uint8Array(this._data);
         this._indices = new Uint16Array(_capacity * INDICES_QUAD);
         
@@ -137,7 +137,7 @@ export class QuadBuffer implements Buffer {
                 position: { 
                     buffer: packedBuffer, 
                     numComponents: COMP_POS, 
-                    type: this._gl.UNSIGNED_SHORT, 
+                    type: this._gl.SHORT, 
                     stride: VERTEX_SIZE, 
                     offset: 0 
                 },

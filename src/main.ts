@@ -5,6 +5,10 @@ import * as twgl from "twgl.js";
 import Stats = require("stats.js");
 import * as SPECTOR from "spectorjs";
 import { PngReader } from "./PngReader/PngReader";
+import { IndexedRenderer } from "./core/IndexedRenderer";
+import { gl, paletteTexture, spritesTexure, spritesPalette } from "./resources";
+import { SpriteBatch } from "./renderables/SpriteBatch";
+import { IndexedSpriteBatch } from "./renderables/IndexedSpriteBatch";
 
 
 // const spector = new SPECTOR.Spector();
@@ -12,9 +16,8 @@ import { PngReader } from "./PngReader/PngReader";
 // spector.spyCanvases();
 window.onerror = (e: string) => alert(e);
 
-let gl: WebGLRenderingContext;
 let t = 0;
-let renderer: Renderer;
+//let renderer: Renderer;
 
 let tiles: OldRenderable<TileBuffer>;
 let text: OldRenderable<TextBuffer>;
@@ -25,138 +28,40 @@ async function main(){
     stats.showPanel( 0 ); // 0: fps, 1: ms, 2: mb, 3+: custom
     document.body.appendChild( stats.dom );
 
-    gl = initWebGl();
-
+    const renderer = new IndexedRenderer(gl, paletteTexture);
+    const batch = new IndexedSpriteBatch(gl, spritesTexure, spritesPalette)
     
-    let vs = <string>require("../res/shaders/8bit_vs.glsl");
-    let fs = <string>require("../res/shaders/8bit_fs.glsl");
-    //let fs24 = <string>require("../res/shaders/24bit_fs.glsl");
-    let programInfo = twgl.createProgramInfo(gl, [vs, fs]);  
+    const sprites: Sprite[] = [];
     
-    const palette = new PaletteTexture(gl);
-
-    const tilesetPng = new PngReader(stringToBuffer(require("../res/textures/8bit/tiles.png")));
-    palette.setRawPalette(0, tilesetPng.createPaletteDataRgba(256));
-    const tileset = new IndexedTexture(gl);
-    tileset.setRawData(tilesetPng.createPixelData());
-    tileset.create();
-
-
-    const fontPng = new PngReader(stringToBuffer(require("../res/textures/8bit/font.png")));
-    palette.setRawPalette(1, fontPng.createPaletteDataRgba(256));
-    palette.setPalColor(1, 7, [255,255,255,0]);
-    const font = new IndexedTexture(gl);
-    font.setRawData(fontPng.createPixelData());
-    font.create();
-
-    const spritesPng = new PngReader(stringToBuffer(require("../res/textures/8bit/sprites.png")));
-    palette.setRawPalette(2, spritesPng.createPaletteDataRgba(256));
-    const spritesTex = new IndexedTexture(gl);
-    spritesTex.setRawData(spritesPng.createPixelData());
-    spritesTex.create();
-    
-    palette.create();
-
-    const fontInfo = <FontInfo>require("../res/fonts/font.json");
-
-    renderer = new Renderer(gl, {
-        shader: programInfo,
-        palette: palette.texture,
-        texture: font.texture,
-        paletteId: 0,
-        zSort: true,
-        blendMode: "none"
-    });
-
-    tiles = createTileSprite(gl, tileset, palette, 0);
-
-    // const vertBuffer = gl.createBuffer();
-    // gl.bindBuffer(gl.ARRAY_BUFFER, vertBuffer);
-    // gl.bufferData(gl.ARRAY_BUFFER, tiles.buffer._data, gl.STATIC_DRAW);
-
-    // const indexBuffer = gl.createBuffer();
-    // gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-    // gl.bufferData(gl.ARRAY_BUFFER, tiles.buffer._indices, gl.STATIC_DRAW);
-
-    // //each draw?
-    // gl.bindBuffer(gl.ARRAY_BUFFER, vertBuffer);
-    // gl.vertexAttribPointer(0, 2, gl.UNSIGNED_SHORT, false, 8, 0);
-    // gl.vertexAttribPointer(1, 1, gl.UNSIGNED_BYTE, false, 8, 4);
-    // gl.vertexAttribPointer(2, 1, gl.UNSIGNED_BYTE, true, 8, 5);
-    // gl.vertexAttribPointer(3, 2, gl.UNSIGNED_BYTE, false, 8, 6);
-
-    // gl.useProgram(renderer._defaults.shader.program);
-
-    //let tiles2 = createTileSprite(tileset, palette, 1);
-    
-    let fntBuffer = new TextBuffer(gl, fontInfo).create();
-    fntBuffer.write("Start Game", 320, 130,50,4,4);
-    fntBuffer.write("Load Game", 320, 130,50+16,4);
-    fntBuffer.write("Settings", 320, 130,50+16*2,4);
-    fntBuffer.write("Quit", 320, 130,50+16*3,4);    
-    text = new OldRenderable({
-        buffer: fntBuffer,
-        texture: font.texture,
-        paletteId: 1,
-        palette: palette.texture,
-        zSort: true
-    });
-
-    let sprites: Sprite[] = [];
-    for (var i = 0; i < "Start Game".length; i++) {
-        let sprite = fntBuffer.createSprite(i);
-        sprites.push(sprite);
-    }
-
-    const test = new QuadBuffer(gl).create();
-    const sprites2: Sprite[] = [];
-
-    const testR = new OldRenderable({
-        buffer: test,
-        texture: spritesTex.texture,
-        paletteId: 2,
-        palette: palette.texture,
-    });
-
-    renderer.renderList.push(tiles);
-    renderer.renderList.push(testR);
-    renderer.renderList.push(text);
-
-    let a = .5;
+    renderer.renderList.push(batch);
 
     function render(time: number) {
         stats.begin();
-        
-        t+=0.1;
-        a*=0.9;
-        sprites.forEach(s => s.transform.y = Math.sin(s.x/4+t)*3);
 
-        const spr = test.createSprite(test.add(), new Transform2d(), {
-            w: 16,
-            h: 16,
-            palOffset: 0,
-            textureX: 0,
-            textureY: 0,
-            x: 1,
-            y: 1,
-            z: 2
+        const spr = batch.createSprite(0,0, 16,16);
+        spr.transform.ox = 8;
+        spr.transform.oy = 8;
+        spr.transform.x = 10;
+        spr.transform.y = 10;
+        spr.tag = {
+            x: Math.random(), 
+            y: Math.random(),
+            rot: -0.005 + Math.random() / 50
+        };
+        sprites.push(spr);
+        
+        sprites.forEach(spr => {
+            spr.transform.x += spr.tag.x;
+            spr.transform.y += spr.tag.y;
+            spr.transform.rot += spr.tag.rot;
+            if(spr.transform.x > 320 || spr.transform.y < 0)
+                spr.tag.x *= -1;
+            if(spr.transform.y > 180 || spr.transform.y < 0)
+                spr.tag.y *= -1;
+
+
         });
-        spr.tag["dx"] = Math.random();
-        spr.tag["dy"] = Math.random();
-        sprites2.push(spr);
 
-        sprites2.forEach(s => {
-            if(s.transform.x > 320 || s.transform.x < 0){
-                s.tag["dx"] = -s.tag["dx"]; 
-            }
-            if(s.transform.y > 180 || s.transform.y < 0){
-                s.tag["dy"] = -s.tag["dy"]; 
-            }
-            s.transform.x += s.tag["dx"];
-            s.transform.y += s.tag["dy"];
-        })
-        //sprites2.forEach(s => s.transform.update());
-        
         renderer.render();
         
         stats.end();

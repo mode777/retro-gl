@@ -3,6 +3,7 @@ import { Buffer, RendererSettings, RenderableOptions, RenderableBufferOptions, I
 import { PAL_OFFSET, MAT4_IDENT } from './constants';
 import { mat4, vec3 } from "gl-matrix";
 import * as twgl from "twgl.js";
+import { PixelTexture } from "./PixelTexture";
 
 const DEFAULT_Z_SORT = false;
 const DEFAULT_BLEND_MODE: BlendMode = "none";
@@ -23,9 +24,10 @@ export class IndexedRenderer {
     private _blendMode: BlendMode = DEFAULT_BLEND_MODE;
     private _paletteId = 0;
     private _texture: WebGLTexture;
+    private _paletteTexture: WebGLTexture;
 
-    constructor(private _gl: WebGLRenderingContext, private _paletteTexture: WebGLTexture){
-        
+    constructor(private _gl: WebGLRenderingContext, paletteTexture: PixelTexture){
+        this._paletteTexture = paletteTexture.texture;
         this._ortho = mat4.ortho(mat4.create(), 0, _gl.canvas.width, _gl.canvas.height, 0, -256, 0);
         this._projection = mat4.perspective(mat4.create(), 1, 1, -255, 0);
         this._view = mat4.lookAt(mat4.create(), vec3.fromValues(0,-1,1.5), vec3.fromValues(0,1,.7), vec3.fromValues(0, 1, 0));
@@ -113,8 +115,8 @@ export class IndexedRenderer {
     }
 
     private _createShader(){
-        let vs = <string>require("../res/shaders/8bit_vs.glsl");
-        let fs = <string>require("../res/shaders/8bit_fs.glsl");
+        let vs = <string>require("../../res/shaders/8bit_vs.glsl");
+        let fs = <string>require("../../res/shaders/8bit_fs.glsl");
         //let fs24 = <string>require("../res/shaders/24bit_fs.glsl");
         this._shader = twgl.createProgramInfo(this._gl, [vs, fs]); 
     }
