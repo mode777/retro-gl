@@ -2,21 +2,6 @@ import { getContext } from "twgl.js";
 import { PaletteTexture, stringToBuffer, IndexedTexture, FontInfo } from "./core";
 import { PngReader } from "./PngReader/PngReader";
 
-function initWebGl() {
-    let canvas = <HTMLCanvasElement>document.getElementById("canvas");
-
-    let gl = getContext(canvas, {
-        premultipliedAlpha: false,
-        alpha: false,
-        antialias: false
-    });
-
-    //twgl.resizeCanvasToDisplaySize(gl.canvas);
-    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-    return gl;
-}
-
-export const gl = initWebGl();
 export const paletteTexture = new PaletteTexture(gl);
 
 const tilesetPng = new PngReader(stringToBuffer(require("../res/textures/8bit/tiles.png")));

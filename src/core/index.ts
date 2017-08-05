@@ -11,3 +11,4 @@ export * from "./PixelTexture";
 export * from "./IndexedTexture";
 export * from "./PaletteTexture";
 export * from "./BinaryHelpers";
+export * from "./IndexedRenderer";

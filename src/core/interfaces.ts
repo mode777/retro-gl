@@ -86,3 +86,8 @@ export interface SpriteAttributes{
     textureX: number,
     textureY: number,
 }
+
+export interface Renderer {
+    readonly renderList: Renderable[];
+    render();
+}

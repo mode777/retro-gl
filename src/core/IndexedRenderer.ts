@@ -1,5 +1,5 @@
 import { OldRenderable } from './Renderable';
-import { Buffer, RendererSettings, RenderableOptions, RenderableBufferOptions, IndexedRenderable, BlendMode } from './interfaces';
+import { Buffer, RendererSettings, RenderableOptions, RenderableBufferOptions, IndexedRenderable, BlendMode, Renderer } from './interfaces';
 import { PAL_OFFSET, MAT4_IDENT } from './constants';
 import { mat4, vec3 } from "gl-matrix";
 import * as twgl from "twgl.js";
@@ -8,7 +8,7 @@ import { PixelTexture } from "./PixelTexture";
 const DEFAULT_Z_SORT = false;
 const DEFAULT_BLEND_MODE: BlendMode = "none";
 
-export class IndexedRenderer {
+export class IndexedRenderer implements Renderer {
     private _ortho: mat4;
     private _projection: mat4;
     private _view: mat4;
