@@ -8,7 +8,7 @@ import { PixelTexture } from "./PixelTexture";
 const DEFAULT_Z_SORT = false;
 const DEFAULT_BLEND_MODE: BlendMode = "none";
 
-export class IndexedRenderer implements Renderer {
+export class IndexedRenderer implements Renderer<IndexedRenderable> {
     private _ortho: mat4;
     private _projection: mat4;
     private _view: mat4;

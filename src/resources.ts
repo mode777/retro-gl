@@ -1,6 +1,9 @@
 import { getContext } from "twgl.js";
 import { PaletteTexture, stringToBuffer, IndexedTexture, FontInfo } from "./core";
 import { PngReader } from "./PngReader/PngReader";
+import { createGlContext } from "./engine";
+
+export const gl = createGlContext(<HTMLCanvasElement>document.getElementById("canvas"));
 
 export const paletteTexture = new PaletteTexture(gl);
 

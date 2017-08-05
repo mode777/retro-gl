@@ -87,7 +87,14 @@ export interface SpriteAttributes{
     textureY: number,
 }
 
-export interface Renderer {
-    readonly renderList: Renderable[];
+export interface Renderer<T extends Renderable> {
+    readonly renderList: T[];
     render();
+}
+
+export interface Tileset {
+    readonly pixelWidth: number; 
+    readonly pixelHeght: number;
+    readonly texture: WebGLTexture;
+    readonly positionData: Uint8Array; 
 }

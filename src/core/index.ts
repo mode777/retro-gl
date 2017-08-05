@@ -3,7 +3,6 @@ export * from "./interfaces";
 export * from "./Quad";
 export * from "./QuadBuffer";
 export * from "./Renderable";
-export * from "./Renderer";
 export * from "./TextBuffer";
 export * from "./TileBuffer";
 export * from "./Transform";
