@@ -8,10 +8,8 @@ export class RenderableBase implements Renderable {
     
     protected _buffer: QuadBuffer;
     protected _transform = new Transform2d();
-    protected _texture: WebGLTexture;
 
-    constructor(protected _gl: WebGLRenderingContext, protected _pixelTexture: PixelTexture, initialCapacity = 16){
-        this._texture = _pixelTexture.texture;
+    constructor(protected _gl: WebGLRenderingContext, protected _texture: WebGLTexture, initialCapacity = 16){
         this._buffer = new QuadBuffer(this._gl, initialCapacity).create()
     }  
     

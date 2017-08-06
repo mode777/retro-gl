@@ -17,7 +17,7 @@ window.onerror = (e: string) => alert(e);
 
 const renderer = new IndexedRenderer(gl, paletteTexture);
 const scene = new Scene<IndexedRenderable>(renderer);
-const batch = new IndexedSpriteBatch(gl, spritesTexure, spritesPalette)
+const batch = new IndexedSpriteBatch(gl, spritesTexure.texture, spritesPalette)
 const sprites: Sprite[] = [];
 
 scene.add(batch);

@@ -94,7 +94,15 @@ export interface Renderer<T extends Renderable> {
 
 export interface Tileset {
     readonly pixelWidth: number; 
-    readonly pixelHeght: number;
+    readonly pixelHeight: number;
     readonly texture: WebGLTexture;
     readonly positionData: Uint8Array; 
+}
+
+export interface Tilemap {
+    readonly width: number;
+    readonly height: number;
+    readonly tileIds: number[] | Uint16Array;
+    get(x: number, y: number): number;
+    set(x: number, y: number, tid: number);
 }

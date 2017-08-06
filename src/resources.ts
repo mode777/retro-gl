@@ -29,6 +29,13 @@ export const spritesTexure = new IndexedTexture(gl);
 spritesTexure.setRawData(spritesPng.createPixelData());
 spritesTexure.create();
 
+const minecraftPng = new PngReader(stringToBuffer(require("../res/textures/8bit/minecraft.png")));
+export const minecraftPalette = paletteTexture.add();
+paletteTexture.setRawPalette(minecraftPalette, minecraftPng.createPaletteDataRgba(256));
+export const minecraftTexure = new IndexedTexture(gl);
+minecraftTexure.setRawData(minecraftPng.createPixelData());
+minecraftTexure.create();
+
 paletteTexture.create();
 
 export const fontInfo = <FontInfo>require("../res/fonts/font.json");
