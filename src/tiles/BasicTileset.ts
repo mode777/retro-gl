@@ -4,13 +4,13 @@ function createTilesetData(pxWidth: number, pxHeight: number, tWidth: number, tH
     let ctr = 0;
     const tileset = new Uint8Array(tWidth * tHeight * VERTICES_QUAD);
 
-    for(let y = 0; y < TEXTURE_SIZE; y += this._pxWidth){
-        for(let x = 0; x < TEXTURE_SIZE; x += this._pxHeight){
+    for(let y = 0; y < TEXTURE_SIZE; y += pxWidth){
+        for(let x = 0; x < TEXTURE_SIZE; x += pxHeight){
             tileset[ctr++] = x;
             tileset[ctr++] = y;
 
-            tileset[ctr++] = x + this._twidth;
-            tileset[ctr++] = y + this._theight;
+            tileset[ctr++] = x + tWidth;
+            tileset[ctr++] = y + tHeight;
         }
     }
 
