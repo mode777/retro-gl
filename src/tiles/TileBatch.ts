@@ -1,5 +1,23 @@
 import { RenderableBase } from "../renderables";
-import { PixelTexture, Tileset, Tilemap } from "../core";
+import { PixelTexture, Tileset, Tilemap, VERTICES_QUAD, QuadBuffer } from "../core";
+
+function createTiles(buffer: QuadBuffer, tileset: Tileset, width: number, height: number) {
+    
+    const tWidth = tileset.pixelWidth;
+    const tHeight = tileset.pixelHeight;
+    const totalWidth = width * tWidth;
+    const totalHeight = height * tHeight;
+
+    let ctr = 0;
+
+    for(let y = 0; y < totalWidth; y += tWidth){
+        for(let x = 0; x < totalHeight; x += tHeight){
+            const id = buffer.add();            
+            buffer.setPosition(id, x, y, x+tWidth, y+tHeight);
+        }
+    }
+
+}
 
 export class TileBatch extends RenderableBase {
     
@@ -11,12 +29,12 @@ export class TileBatch extends RenderableBase {
         
         super(gl, tileset.texture, width * height);
 
-        for(let i = 0; i < width * height; i++){
-            this._buffer.add();
-        }
+        createTiles(this._buffer, tileset, width, height);
     }
 
     setTilemap(tilemap: Tilemap, offsetX = 0, offsetY = 0){
+        const data = this.tileset.positionData;
+        
         let quadOffset = 0;
         
         for (let y = 0; y < this.height; y++) {
@@ -26,11 +44,16 @@ export class TileBatch extends RenderableBase {
                 const tid = tilemap.get(mx, my);
 
                 if(tid === 0){
-                    this._buffer.setAttributes(quadOffset,0,0,0,0,0,0,0,0,0,0);
+                    this._buffer.setUv(quadOffset,0,0,0,0);
                 }
-                else {
-                    
-                    this._buffer.setAttributes(quadOffset, )
+                else {            
+                    const tOffset = (tid-1) * VERTICES_QUAD;
+                    this._buffer.setUv(
+                        quadOffset,
+                        data[tOffset], 
+                        data[tOffset+1], 
+                        data[tOffset+2], 
+                        data[tOffset+3]);
                 }
                 quadOffset++;
             }            

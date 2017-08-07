@@ -23,4 +23,6 @@ export class RenderableBase implements Renderable {
     get texture() { return this._texture; }
     get elements() { return this._buffer.vertexSize; }
     get offset() { return 0; };
+
+    get transform() { return this._transform; }
 }

@@ -4,8 +4,8 @@ function createTilesetData(pxWidth: number, pxHeight: number, tWidth: number, tH
     let ctr = 0;
     const tileset = new Uint8Array(tWidth * tHeight * VERTICES_QUAD);
 
-    for(let y = 0; y < TEXTURE_SIZE; y += pxWidth){
-        for(let x = 0; x < TEXTURE_SIZE; x += pxHeight){
+    for(let y = 0; y < TEXTURE_SIZE; y += pxHeight){
+        for(let x = 0; x < TEXTURE_SIZE; x += pxWidth){
             tileset[ctr++] = x;
             tileset[ctr++] = y;
 
@@ -13,7 +13,6 @@ function createTilesetData(pxWidth: number, pxHeight: number, tWidth: number, tH
             tileset[ctr++] = y + tHeight;
         }
     }
-
     return tileset;
 }
 

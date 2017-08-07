@@ -5,9 +5,10 @@ import * as SPECTOR from "spectorjs";
 import { PngReader } from "./PngReader/PngReader";
 
 import { IndexedRenderer, Sprite, IndexedRenderable } from "./core";
-import { paletteTexture, spritesTexure, spritesPalette, gl } from "./resources";
+import { paletteTexture, spritesTexure, spritesPalette, gl, minecraftTexure, minecraftPalette } from "./resources";
 import { Scene, createGlContext } from "./engine";
 import { IndexedSpriteBatch } from "./renderables";
+import { BasicTileset, BasicTilemap, IndexedTileBatch } from "./tiles";
 
 
 // const spector = new SPECTOR.Spector();
@@ -20,10 +21,27 @@ const scene = new Scene<IndexedRenderable>(renderer);
 const batch = new IndexedSpriteBatch(gl, spritesTexure.texture, spritesPalette)
 const sprites: Sprite[] = [];
 
+const tileset = new BasicTileset(16,16, minecraftTexure.texture);
+const tilemap = new BasicTilemap(3,3, [1,2,3,4,5,6,7,8,9])
+const tilebatch = new IndexedTileBatch(gl, tileset, 16,32, minecraftPalette);
+
+tilebatch.setTilemap(tilemap);
+
+scene.add(tilebatch);
 scene.add(batch);
 scene.start();
 
+let x = 0;
+let y = 0;
+
 scene.registerUpdateCallback(() => { 
+    x++;
+    y++;
+    
+    tilebatch.setTilemap(tilemap, Math.floor(x/16),0);
+    tilebatch.transform.x = -(x%16);
+    //tilebatch.transform.y = -(y%16);
+
     createSprite(sprites);
     updateSprites(sprites);
 });
