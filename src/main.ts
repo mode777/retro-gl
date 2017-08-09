@@ -23,9 +23,10 @@ const sprites: Sprite[] = [];
 
 const tileset = new BasicTileset(16,16, minecraftTexure.texture);
 const tilemap = new BasicTilemap(3,3, [1,2,3,4,5,6,7,8,9])
-const tilebatch = new IndexedTileBatch(gl, tileset, 16,32, minecraftPalette);
+const tilebatch = new IndexedTileBatch(gl, tileset, 32,16, minecraftPalette);
 
 tilebatch.setTilemap(tilemap);
+//tilebatch.mode7 = true;
 
 scene.add(tilebatch);
 scene.add(batch);
@@ -35,14 +36,14 @@ let x = 0;
 let y = 0;
 
 scene.registerUpdateCallback(() => { 
-    x++;
-    y++;
+    x+=1;
+    y+=1;
     
-    tilebatch.setTilemap(tilemap, Math.floor(x/16),0);
-    tilebatch.transform.x = -(x%16);
-    //tilebatch.transform.y = -(y%16);
+    tilebatch.setTilemap(tilemap, Math.floor(x/32), Math.floor(y/32));
+    tilebatch.transform.x = Math.floor(-(x%32));
+    tilebatch.transform.y = Math.floor(-(y%32));
 
-    createSprite(sprites);
+    //createSprite(sprites);
     updateSprites(sprites);
 });
 
