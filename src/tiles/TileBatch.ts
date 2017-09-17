@@ -2,7 +2,8 @@ import { RenderableBase } from "../renderables";
 import { PixelTexture, Tileset, Tilemap, VERTICES_QUAD, QuadBuffer } from "../core";
 
 function createTiles(buffer: QuadBuffer, tileset: Tileset, width: number, height: number) {
-    
+    console.log(width, height);
+
     const tWidth = tileset.pixelWidth;
     const tHeight = tileset.pixelHeight;
     const totalWidth = width * tWidth;
@@ -10,8 +11,8 @@ function createTiles(buffer: QuadBuffer, tileset: Tileset, width: number, height
 
     let ctr = 0;
 
-    for(let y = 0; y < totalWidth; y += tWidth){
-        for(let x = 0; x < totalHeight; x += tHeight){
+    for(let y = 0; y < totalHeight; y += tHeight){
+        for(let x = 0; x < totalWidth; x += tWidth){
             const id = buffer.add();            
             buffer.setPosition(id, x, y, x+tWidth, y+tHeight);
         }
