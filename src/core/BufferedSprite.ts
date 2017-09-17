@@ -22,8 +22,10 @@ export class BufferedSprite implements Sprite {
                 options.textureY,
                 options.textureX + options.w,
                 options.textureY + options.h,
-                options.z,
-                options.palOffset
+                options.r,
+                options.g,
+                options.b,
+                options.a
             );
         }
         this._options = options || _buffer.getAttributeInfo(_id);

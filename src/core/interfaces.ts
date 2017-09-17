@@ -81,8 +81,10 @@ export interface SpriteAttributes{
     y: number,
     w: number,
     h: number,
-    z: number,
-    palOffset: number,
+    r: number,
+    g: number,
+    b: number,
+    a: number,
     textureX: number,
     textureY: number,
 }

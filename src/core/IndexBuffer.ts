@@ -13,9 +13,11 @@ function init(gl: WebGLRenderingContext){
 
     let vertex = 0;
     for(let i = 0; i < max; i += INDICES_QUAD){
-        /*  *1---*2
-            |  /  |
-            *4---*3  */
+        /*  
+            *1---*2
+             | // |
+            *4---*3  
+        */
         indices[i  ] = vertex;     // 1
         indices[i+1] = vertex + 1; // 2
         indices[i+2] = vertex + 3; // 4
