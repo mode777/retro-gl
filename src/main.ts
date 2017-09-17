@@ -10,7 +10,6 @@ import { Scene, createGlContext } from "./engine";
 import { IndexedSpriteBatch } from "./renderables";
 import { BasicTileset, BasicTilemap, IndexedTileBatch } from "./tiles";
 
-
 // const spector = new SPECTOR.Spector();
 // spector.displayUI();
 // spector.spyCanvases();

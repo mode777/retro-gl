@@ -1,12 +1,14 @@
-import { getContext } from "twgl.js";
+import * as twgl from "twgl.js";
 
 export function createGlContext(canvas: HTMLCanvasElement){
-    const gl = getContext(canvas, {
+    const gl = twgl.getContext(canvas, {
         premultipliedAlpha: false,
         alpha: false,
         antialias: false
     });
+    twgl.resizeCanvasToDisplaySize(canvas);
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+
     return gl;
 }
 
